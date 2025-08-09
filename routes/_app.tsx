@@ -14,21 +14,6 @@ Deno.cron("fetch job listings", { hour: { start: 9, end: 17 } }, async () => {
   console.log('- finished CRON job "fetch job listings"');
 });
 
-// do first scrape only if no data exists
-(async () => {
-  const kv = await initDb();
-  const hasData = !(await kv.list({ prefix: ["listing"] }).next()).done;
-  if (!hasData) {
-    const jobs = await fetchListings();
-    for (const job of jobs as Listing[]) {
-      await kv.set(["listing", job.link], job);
-    }
-    console.log("- finished initial job listings fetch");
-  } else {
-    console.log("- job listings already exist, skipping initial fetch");
-  }
-})();
-
 export default function App({ Component }: PageProps) {
   return (
     <html>
