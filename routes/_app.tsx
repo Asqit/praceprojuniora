@@ -1,18 +1,4 @@
 import { type PageProps } from "$fresh/server.ts";
-import { initDb } from "../lib/db/index.ts";
-import { fetchListings } from "../lib/scraping/index.ts";
-import { Listing } from "../lib/scraping/types.ts";
-
-// Every-Hour between 9-17
-Deno.cron("fetch job listings", { hour: { start: 9, end: 17 } }, async () => {
-  console.log('- starting CRON job "fetch job listings"');
-  const jobs = await fetchListings();
-  const kv = await initDb();
-  for (const job of jobs as Listing[]) {
-    await kv.set(["listing", job.link], job);
-  }
-  console.log('- finished CRON job "fetch job listings"');
-});
 
 export default function App({ Component }: PageProps) {
   return (
