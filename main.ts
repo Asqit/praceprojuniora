@@ -10,27 +10,77 @@ import config from "./fresh.config.ts";
 import { start } from "$fresh/server.ts";
 import { initDb } from "./lib/db/index.ts";
 import { fetchListings } from "./lib/scraping/index.ts";
-import { Listing } from "./lib/scraping/types.ts";
+import { ListingController } from "./lib/listing-controller.ts";
 
-Deno.cron("fetch job listings", "0 9 * * *", async () => {
+Deno.cron("fetch job listings", "0 6 * * *", async () => {
   console.log('- starting CRON job "fetch job listings"');
+  const db = await initDb();
+  const controller = new ListingController(db);
   const jobs = await fetchListings();
-  const kv = await initDb();
-  const createdAt = new Date().toISOString();
-  const juniorListings = jobs.filter(
-    (job) =>
-      job.title.toLowerCase().includes("junior") ||
-      job.title.toLowerCase().includes("entry"),
-  );
 
-  for (const job of juniorListings as Listing[]) {
-    const jobWithDate = {
-      ...job,
-      createdAt, // Add creation date to the job
-    };
-    await kv.set(["listing", job.link], jobWithDate);
+  for (const job of jobs) {
+    await controller.create(job);
   }
   console.log('- finished CRON job "fetch job listings"');
 });
 
-await start(manifest, config);
+Deno.cron("delete old postings", "0 0 1 */3 *", async () => {
+  console.log('- starting CRON job "delete old postings"');
+  const db = await initDb();
+  const controller = new ListingController(db);
+  const deletedCount = await controller.deleteOldListings(90);
+  console.log(`- Deleted ${deletedCount} expired listings`);
+});
+
+Deno.cron("update listing status meta", "0 6 * * *", async () => {
+  console.log('- starting CRON job "update listing status meta"');
+  const db = await initDb();
+  const controller = new ListingController(db);
+
+  let updatedCount = 0;
+  const listings = await controller.list();
+
+  for (const listing of listings) {
+    const newStatusMeta = controller["getStatusMeta"](
+      listing.createdAt,
+      listing.status,
+    );
+
+    if (listing.statusMeta !== newStatusMeta) {
+      listing.statusMeta = newStatusMeta;
+      listing.updatedAt = new Date().toISOString();
+      await db.set(["listings", listing.id], listing);
+      updatedCount++;
+    }
+  }
+
+  console.log(`- Updated statusMeta for ${updatedCount} listings`);
+});
+
+const fetchInitials = async () => {
+  const db = await initDb();
+  const controller = new ListingController(db);
+  const existing = await controller.list();
+  if (existing.length > 0) {
+    console.log("Listings already exist — skipping fetch.");
+    return;
+  }
+
+  console.log("No listings found — fetching...");
+  try {
+    const jobs = await fetchListings();
+    for (const job of jobs) {
+      await controller.create(job);
+    }
+    console.log(`Fetched and stored ${jobs.length} junior jobs.`);
+  } catch (err) {
+    console.error("Failed to fetch and store listings:", err);
+  }
+};
+
+//await start(manifest, config);
+
+(async () => {
+  await fetchInitials();
+  await start(manifest, config);
+})();

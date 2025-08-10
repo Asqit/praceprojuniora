@@ -47,5 +47,21 @@ export default {
     "border-gruvbox-purple",
     "border-gruvbox-aqua",
     "border-gruvbox-orange",
+
+    "before:border-gruvbox-red",
+    "before:border-gruvbox-green",
+    "before:border-gruvbox-yellow",
+    "before:border-gruvbox-blue",
+    "before:border-gruvbox-purple",
+    "before:border-gruvbox-aqua",
+    "before:border-gruvbox-orange",
+
+    "text-gruvbox-red",
+    "text-gruvbox-green",
+    "text-gruvbox-yellow",
+    "text-gruvbox-blue",
+    "text-gruvbox-purple",
+    "text-gruvbox-aqua",
+    "text-gruvbox-orange",
   ],
 } satisfies Config;

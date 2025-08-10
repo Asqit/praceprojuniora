@@ -1,6 +1,6 @@
 import type { JSX } from "preact";
+import type { Listing } from "../lib/types.ts";
 import { useCallback, useEffect, useState } from "preact/hooks";
-import { Listing } from "../lib/scraping/types.ts";
 import ky from "ky";
 import clsx from "clsx";
 
@@ -117,8 +117,24 @@ export default function JobList() {
             onChange={handleSearch}
             type="text"
             placeholder="type to filter.."
-            className="border px-2 py-1 border-gruvbox-bg1 bg-transparent focus:outline-gruvbox-green w-full sticky top-40"
+            className="border px-2 py-1 border-gruvbox-bg1 focus:outline-gruvbox-green w-full sticky top-40 bg-gruvbox-bg"
           />
+          <div className="border border-gruvbox-bg1 p-2 my-3">
+            <h3 className="text-lg font-bold mb-3">O Stránce</h3>
+            <p>
+              V dnešní době je těžké najít práci v oboru IT, zvlášť na juniorní
+              pozici. Proto jsem vytvořil tento malý web, kde lze snadno
+              sledovat aktuální nabídky práce. Momentálně je zobrazeno{" "}
+              <span className="text-gruvbox-aqua font-black">1114</span>{" "}
+              nabídek. Pro kontakt s administrátorem webu můžete využít{" "}
+              <a
+                href="mailto:ondrejtucek9@gmail.com"
+                className="text-gruvbox-aqua"
+              >
+                e-mail
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </div>

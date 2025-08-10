@@ -1,95 +1,95 @@
 import * as cheerio from "cheerio";
 import ky from "ky";
-import type { Listing } from "../types.ts";
+import { Listing } from "../../types.ts";
 
 const DOMAIN = "https://www.jobs.cz";
-const BASE_URL = "https://www.jobs.cz/prace/is-it-vyvoj-aplikaci-a-systemu/";
-//const BASE_URL = "https://www.jobs.cz/prace/?q%5B%5D=Frontend%20developer";
+const BASE_URL = `${DOMAIN}/prace/is-it-vyvoj-aplikaci-a-systemu/`;
 
-function getPageListings(html: string): Listing[] {
+function parseJobCards(html: string): Listing[] {
   const $ = cheerio.load(html);
   const cards = $("article.SearchResultCard");
-  const result = new Set<Listing>();
+  const jobs: Listing[] = [];
 
-  cards.each((_, element) => {
-    const title = $(element).find(".SearchResultCard__titleLink").text().trim();
-    const link = $(element).find(".SearchResultCard__titleLink").attr("href");
-    const status = $(element).find(".SearchResultCard__status").text().trim();
-    const location = $(element)
-      .find(".SearchResultCard__footerItem")
-      .last()
-      .text()
+  cards.each((_, el) => {
+    const title = $(el).find(".SearchResultCard__titleLink").text().trim();
+    const link = $(el).find(".SearchResultCard__titleLink").attr("href") ?? "";
+    const status = $(el).find(".SearchResultCard__status").text().trim();
+    const company = $(el).find(".SearchResultCard__footerItem").first().text()
       .trim();
+    const location = $(el).find('li[data-test="serp-locality"]').text().trim();
 
-    result.add({ title, status, link: link ?? "", location });
+    if (!title || !link) return;
+
+    jobs.push({
+      id: crypto.randomUUID(),
+      title,
+      link: link.startsWith("http") ? link : `${DOMAIN}${link}`,
+      status,
+      location: `${company} · ${location}`,
+      createdAt: new Date().toISOString(),
+      clicks: 0,
+      source: "jobs.cz",
+    });
   });
 
-  return Array.from(result);
+  return jobs;
 }
 
-function getNextLinks(html: string): string[] {
+function getPaginationUrls(html: string): string[] {
   const $ = cheerio.load(html);
-  const paginationLinks = $(".Pagination__link");
   const urls: string[] = [];
 
-  paginationLinks.each((_, element) => {
-    const href = $(element).attr("href");
-    const isNextButton = $(element).hasClass("Pagination__button--next");
-    if (!isNextButton && href) {
-      urls.push(href);
+  $(".Pagination__link").each((_, el) => {
+    const href = $(el).attr("href");
+    const isNextBtn = $(el).hasClass("Pagination__button--next");
+
+    if (!isNextBtn && href) {
+      urls.push(href.startsWith("http") ? href : `${DOMAIN}${href}`);
     }
   });
 
   return urls;
 }
 
-async function crawl() {
-  const pending = new Set<string>([BASE_URL]);
-  const history = new Set<string>();
-  const listings: Listing[] = [];
+async function crawlJobsCZ(): Promise<Listing[]> {
+  const queue = new Set<string>([BASE_URL]);
+  const visited = new Set<string>();
+  const results: Listing[] = [];
 
-  while (pending.size > 0) {
-    const url = pending.values().next().value;
+  while (queue.size > 0) {
+    const url = queue.values().next().value;
     if (!url) continue;
-    console.log(`Crawling: ${url}`);
+    queue.delete(url);
 
-    if (history.has(url)) {
-      pending.delete(url);
-      continue;
-    }
+    if (!url || visited.has(url)) continue;
 
     try {
-      const html = await (await ky.get(url)).text();
-      const pagination = getNextLinks(html);
+      console.log(`crawling: ${url}`);
+      const html = await ky.get(url).text();
 
-      for (const page of pagination) {
-        pending.add(`${DOMAIN}${page}`);
+      const newPages = getPaginationUrls(html);
+      newPages.forEach((p) => queue.add(p));
+
+      const jobs = parseJobCards(html);
+
+      for (const job of jobs) {
+        const isDuplicate = results.some(
+          (j) =>
+            j.link === job.link ||
+            j.title.toLowerCase() === job.title.toLowerCase(),
+        );
+        if (!isDuplicate) results.push(job);
       }
 
-      for (const job of getPageListings(html)) {
-        if (
-          listings.find((i) =>
-            i.link === job.link ||
-            i.title.toLocaleLowerCase() === job.title.toLowerCase()
-          )
-        ) {
-          continue;
-        }
-
-        listings.push(job);
-      }
-
-      pending.delete(url);
-      history.add(url);
-    } catch (error) {
-      console.error(`Error fetching ${url}:`, error);
-      pending.delete(url);
+      visited.add(url);
+    } catch (err) {
+      console.error(`❌ Failed to fetch ${url}:`, err);
     }
   }
 
-  return listings;
+  return results;
 }
 
-export async function jobscz() {
-  return await crawl();
+export async function jobscz(): Promise<Listing[]> {
+  return await crawlJobsCZ();
 }
