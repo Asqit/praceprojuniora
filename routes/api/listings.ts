@@ -16,14 +16,7 @@ export async function handler(
     listings.push(entry.value as Listing);
   }
 
-  // Filter for junior positions
-  const juniorListings = listings.filter(
-    (job) =>
-      job.title.toLowerCase().includes("junior") ||
-      job.title.toLowerCase().includes("entry"),
-  );
-
-  return new Response(JSON.stringify({ data: juniorListings }), {
+  return new Response(JSON.stringify({ data: listings }), {
     headers: { "Content-Type": "application/json" },
   });
 }
