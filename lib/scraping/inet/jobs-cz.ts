@@ -1,6 +1,7 @@
 import * as cheerio from "cheerio";
-import ky from "ky";
 import { Listing } from "../../types.ts";
+import { randomDelay, userAgents } from "./misc.ts";
+import { createHttpClient } from "./http.ts";
 
 const DOMAIN = "https://www.jobs.cz";
 const BASE_URL = `${DOMAIN}/prace/is-it-vyvoj-aplikaci-a-systemu/`;
@@ -64,8 +65,15 @@ async function crawlJobsCZ(): Promise<Listing[]> {
     if (!url || visited.has(url)) continue;
 
     try {
+      await randomDelay(1000, 5000);
       console.log(`crawling: ${url}`);
-      const html = await ky.get(url).text();
+      const http = await createHttpClient();
+      const agent = userAgents[Math.floor(Math.random() * userAgents.length)];
+      const res = await fetch(url, {
+        client: http,
+        headers: { "user-agent": agent },
+      });
+      const html = await res.text();
 
       const newPages = getPaginationUrls(html);
       newPages.forEach((p) => queue.add(p));

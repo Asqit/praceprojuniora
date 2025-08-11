@@ -1,42 +1,45 @@
 import { type PageProps } from "$fresh/server.ts";
 
 export default function App({ Component }: PageProps) {
+  const title = "Práce Pro Juniora – Práce pro juniory v IT";
+  const description =
+    "Najděte si práci vhodnou pro juniory v IT oboru – aktuální nabídky juniorních pozic, frontend, backend a další vývojářské role.";
+  const url = "https://praceprojuniora.cz";
+  const image = `${url}/preview-image.png`;
+
   return (
-    <html>
+    <html lang="cs">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Práce Pro Juniora</title>
-        <meta
-          name="description"
-          content="Najděte si práci vhodnou pro juniory v IT oboru – aktuální nabídky juniorních pozic, frontend, backend, a další vývojářské role."
-        />
-        <link rel="canonical" href="https://praceprojuniora.cz" />
+        {/* Responsive viewport */}
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <meta property="og:title" content="Práce Pro Juniora" />
-        <meta
-          property="og:description"
-          content="Najděte si práci vhodnou pro juniory v IT oboru – aktuální nabídky juniorních pozic, frontend, backend, a další vývojářské role."
-        />
+        {/* Title with branding + keywords */}
+        <title>{title}</title>
+
+        {/* Meta description - concise and unique */}
+        <meta name="description" content={description} />
+
+        {/* Canonical URL */}
+        <link rel="canonical" href={url} />
+
+        {/* Open Graph tags for social sharing */}
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://praceprojuniora.cz" />
-        <meta
-          property="og:image"
-          content="https://praceprojuniora.cz/preview-image.png"
-        />
+        <meta property="og:url" content={url} />
+        <meta property="og:image" content={image} />
+        <meta property="og:image:alt" content="Práce Pro Juniora - Logo" />
+        <meta property="og:locale" content="cs_CZ" />
 
+        {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Práce Pro Juniora" />
-        <meta
-          name="twitter:description"
-          content="Najděte si práci vhodnou pro juniory v IT oboru – aktuální nabídky juniorních pozic, frontend, backend, a další vývojářské role."
-        />
-        <meta
-          name="twitter:image"
-          content="https://praceprojuniora.cz/preview-image.png"
-        />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={image} />
+        <meta name="twitter:image:alt" content="Práce Pro Juniora - Logo" />
 
-        <link rel="stylesheet" href="/styles.css" />
+        {/* Favicons */}
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -54,8 +57,13 @@ export default function App({ Component }: PageProps) {
           sizes="16x16"
           href="/favicon-16x16.png"
         />
-        <link rel="manifest" href="/site.webmanifest"></link>
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content="#282828" />
 
+        {/* Stylesheet */}
+        <link rel="stylesheet" href="/styles.css" />
+
+        {/* Analytics script only in production */}
         {Deno.env.get("ENV") === "production" && (
           <script
             defer
