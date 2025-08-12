@@ -6,7 +6,7 @@ import App from "../islands/app/index.tsx";
 
 export const handler: Handlers = {
   async GET(_req, ctx) {
-    const res = await fetch("https://praceprojuniora.cz/api/listings");
+    const res = await fetch("/api/listings");
     const { data } = await res.json();
     return ctx.render(data as Listing[]);
   },
