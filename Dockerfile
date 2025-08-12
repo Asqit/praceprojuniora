@@ -8,4 +8,4 @@ RUN deno cache --unstable main.ts
 
 EXPOSE 8000
 
-CMD ["run", "--unstable", "--allow-net", "--allow-read", "--allow-env", "main.ts"]
+CMD ["run", "--unstable-*", "--allow-net", "--allow-read", "--allow-env", "main.ts"]
