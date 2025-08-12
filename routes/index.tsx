@@ -9,7 +9,7 @@ export const handler: Handlers = {
   async GET(req, ctx) {
     try {
       const url = new URL("/api/listings", req.url);
-      const res = await ky.get(url);
+      const res = await ky.get(url, { timeout: 1000 });
       const { data } = await res.json<{ data: Listing[] }>();
       return ctx.render(data);
     } catch (error) {
