@@ -8,5 +8,5 @@ services:
     volumes:
       - ./data:/app/data
     environment:
-      - ENVIRONMENT=production
+      - ENV=production
     restart: unless-stopped
