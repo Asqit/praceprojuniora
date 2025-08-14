@@ -24,6 +24,7 @@ export function ListItem(props: Props) {
     createdAt,
     source,
     statusMeta,
+    company,
     ...rest
   } = props;
   const [clicks, setClicks] = useState<number>(rest?.clicks);
@@ -71,6 +72,9 @@ export function ListItem(props: Props) {
       <ul>
         <li className="text-xl font-black">
           ┌ <span className={`text-gruvbox-${color}`}>{title}</span>
+        </li>
+        <li>
+          ├ <span className="font-bold text-lg">{company}</span>
         </li>
         <li>├ {location}</li>
         <li>├ {status}</li>

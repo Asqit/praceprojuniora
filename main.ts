@@ -24,7 +24,7 @@ Deno.cron("fetch job listings", "0 6 * * *", async () => {
   console.log('- finished CRON job "fetch job listings"');
 });
 
-Deno.cron("delete old postings", "0 0 1 */3 *", async () => {
+Deno.cron("delete old postings", "0 6 * * *", async () => {
   console.log('- starting CRON job "delete old postings"');
   const db = await initDb();
   const controller = new ListingController(db);
@@ -78,9 +78,4 @@ const fetchInitials = async () => {
   }
 };
 
-//await start(manifest, config);
-
-(async () => {
-  await fetchInitials();
-  await start(manifest, config);
-})();
+await Promise.all([fetchInitials(), start(manifest, config)]);

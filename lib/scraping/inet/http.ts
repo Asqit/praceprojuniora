@@ -1,4 +1,4 @@
-export async function createHttpClient(): Promise<Deno.HttpClient> {
+export function createHttpClient(): Deno.HttpClient {
   return Deno.createHttpClient({
     proxy: {
       transport: "http",

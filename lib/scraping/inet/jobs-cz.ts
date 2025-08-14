@@ -24,12 +24,14 @@ function parseJobCards(html: string): Listing[] {
     jobs.push({
       id: crypto.randomUUID(),
       title,
-      link: link.startsWith("http") ? link : `${DOMAIN}${link}`,
       status,
-      location: `${company} · ${location}`,
+      location,
+      company,
+      link: link.startsWith("http") ? link : `${DOMAIN}${link}`,
       createdAt: new Date().toISOString(),
       clicks: 0,
       source: "jobs.cz",
+      expiredAt: "",
     });
   });
 
@@ -56,6 +58,7 @@ async function crawlJobsCZ(): Promise<Listing[]> {
   const queue = new Set<string>([BASE_URL]);
   const visited = new Set<string>();
   const results: Listing[] = [];
+  const agent = userAgents[Math.floor(Math.random() * userAgents.length)];
 
   while (queue.size > 0) {
     const url = queue.values().next().value;
@@ -68,7 +71,6 @@ async function crawlJobsCZ(): Promise<Listing[]> {
       await randomDelay(1000, 5000);
       console.log(`crawling: ${url}`);
       const http = await createHttpClient();
-      const agent = userAgents[Math.floor(Math.random() * userAgents.length)];
       const res = await fetch(url, {
         client: http,
         headers: { "user-agent": agent },

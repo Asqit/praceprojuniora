@@ -14,13 +14,37 @@ export class ListingController {
     },
   ): Promise<Listing> {
     const now = new Date().toISOString();
-    const id = crypto.randomUUID();
     const manuallyAdded = listingData.manuallyAdded ?? false;
     const source = manuallyAdded ? "manual" : "jobs.cz";
 
+    // Check for existing listing via link
+    for await (const entry of this.kv.list<Listing>({ prefix: ["listings"] })) {
+      if (entry.value.link === listingData.link) {
+        const updatedListing: Listing = {
+          ...entry.value,
+          title: listingData.title,
+          company: listingData.company ?? entry.value.company,
+          location: listingData.location,
+          status: listingData.status ?? entry.value.status,
+          description: listingData.description ?? entry.value.description,
+          manuallyAdded,
+          source,
+          updatedAt: now,
+          statusMeta: this.getStatusMeta(now, listingData.status),
+          expiredAt: this.getExpiredAt(listingData.status ?? ""),
+        };
+
+        await this.kv.set(entry.key, updatedListing);
+        return updatedListing;
+      }
+    }
+
+    // no duplicate, creating new
+    const id = crypto.randomUUID();
     const listing: Listing = {
       id,
       title: listingData.title,
+      company: listingData.company ?? "N/A",
       link: listingData.link,
       location: listingData.location,
       status: listingData.status ?? "Nové",
@@ -31,6 +55,7 @@ export class ListingController {
       manuallyAdded,
       source,
       statusMeta: this.getStatusMeta(now, listingData.status),
+      expiredAt: this.getExpiredAt(listingData.status ?? ""),
     };
 
     await this.kv.set(["listings", id], listing);
@@ -86,9 +111,28 @@ export class ListingController {
     const ageMs = now.getTime() - created.getTime();
     const ageDays = ageMs / (1000 * 60 * 60 * 24);
 
-    if (ageDays > 90) return "expired";
+    if (ageDays > 30) return "expired";
     if (rawStatus?.toLowerCase().includes("končí")) return "expiring";
     if (ageDays <= 7) return "new";
     return "stale";
+  }
+
+  private getExpiredAt(rawStatus: string): Listing["createdAt"] {
+    const compare = rawStatus.toLowerCase();
+    const today = new Date();
+
+    if (compare.includes("končí")) {
+      if (compare.includes("zítra")) {
+        // ending in hours, remove day after tomorrow
+        // (we don't have exact time of expiration so we assume whole day)
+        return new Date(today.getDate() + 2).toISOString();
+      }
+
+      // ending in hours, remove tomorrow
+      return new Date(today.getDate() + 1).toISOString();
+    }
+
+    // otherwise remove the listing after 30 days.
+    return new Date(today.getDate() + 30).toISOString();
   }
 }
