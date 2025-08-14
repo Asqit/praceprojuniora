@@ -1,7 +1,6 @@
 FROM denoland/deno:2.4.3
 WORKDIR /app
 COPY . .
-RUN deno cache --unstable main.ts
 RUN deno task build
 EXPOSE 8000
 CMD ["run", "--unstable", "--unstable-kv", "--unstable-cron", "-A", "main.ts"]
