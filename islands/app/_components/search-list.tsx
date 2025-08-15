@@ -1,5 +1,5 @@
-import { useState } from "preact/hooks";
 import type { JSX } from "preact";
+import { useState } from "preact/hooks";
 import { Listing } from "../../../lib/types.ts";
 import clsx from "clsx";
 
@@ -10,7 +10,7 @@ type Props = {
   className?: string;
 };
 
-const lifetimeOptions = ["new", "stale", "expiring", "expired"] as const;
+const lifetimeOptions = ["new", "stale", "expiring"] as const;
 
 export function SearchList({ setData, storeData, className }: Props) {
   const [searchTerm, setSearchTerm] = useState("");

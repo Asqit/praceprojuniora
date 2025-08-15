@@ -117,6 +117,12 @@ export class ListingController {
     return "stale";
   }
 
+  private addDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
   private getExpiredAt(rawStatus: string): Listing["createdAt"] {
     const compare = rawStatus.toLowerCase();
     const today = new Date();
@@ -125,14 +131,23 @@ export class ListingController {
       if (compare.includes("zítra")) {
         // ending in hours, remove day after tomorrow
         // (we don't have exact time of expiration so we assume whole day)
-        return new Date(today.getDate() + 2).toISOString();
+        return this.addDays(today, 2).toISOString();
+      }
+
+      // ending in N days...
+      if (compare.includes("dny")) {
+        const parsed = Number(
+          compare.split(" ").find((word) => parseInt(word)),
+        );
+        const days = isNaN(parsed) ? 1 : parsed;
+        return this.addDays(today, days).toISOString();
       }
 
       // ending in hours, remove tomorrow
-      return new Date(today.getDate() + 1).toISOString();
+      return this.addDays(today, 1).toISOString();
     }
 
     // otherwise remove the listing after 30 days.
-    return new Date(today.getDate() + 30).toISOString();
+    return this.addDays(today, 30).toISOString();
   }
 }
