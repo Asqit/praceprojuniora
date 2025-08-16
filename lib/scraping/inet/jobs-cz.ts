@@ -76,12 +76,12 @@ async function crawlJobsCZ(): Promise<Listing[]> {
         headers: { "user-agent": agent },
       });
       const html = await res.text();
-
-      const newPages = getPaginationUrls(html);
+      const MAX_PAGES = 100;
+      const newPages = getPaginationUrls(html).slice(0, MAX_PAGES);
       newPages.forEach((p) => queue.add(p));
 
-      const jobs = parseJobCards(html);
-
+      const MAX_JOBS = 300;
+      const jobs = parseJobCards(html).slice(0, MAX_JOBS);
       for (const job of jobs) {
         const isDuplicate = results.some(
           (j) =>
@@ -100,6 +100,6 @@ async function crawlJobsCZ(): Promise<Listing[]> {
   return results;
 }
 
-export async function jobscz(): Promise<Listing[]> {
-  return await crawlJobsCZ();
+export function jobscz(): Promise<Listing[]> {
+  return crawlJobsCZ();
 }

@@ -8,12 +8,21 @@ import App from "../islands/app/index.tsx";
 export const handler: Handlers = {
   async GET(req, ctx) {
     try {
-      const url = new URL("/api/listings", req.url);
+      const baseUrl = new URL(req.url);
+      const url = new URL(
+        "/api/listings",
+        `${baseUrl.protocol}//${baseUrl.host}`,
+      );
       const res = await ky.get(url, { timeout: 1000 });
       const { data } = await res.json<{ data: Listing[] }>();
       return ctx.render(data);
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch listings:", {
+        error: (error as Error)?.message ?? "unknown error",
+        url: req.url,
+        timestamp: new Date().toISOString(),
+        userAgent: req.headers.get("user-agent"),
+      });
       return ctx.render([]);
     }
   },

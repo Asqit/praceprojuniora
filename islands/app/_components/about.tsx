@@ -14,6 +14,8 @@ export function About({ listingsCount }: Props) {
         {" "}
         nabídek.
 
+        {
+          /*
         Pro kontakt s administrátorem webu můžete využít{" "}
         <a
           href="mailto:ondrejtucek9@gmail.com"
@@ -21,6 +23,8 @@ export function About({ listingsCount }: Props) {
         >
           e-mail
         </a>
+        */
+        }
       </p>
     </div>
   );

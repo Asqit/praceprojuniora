@@ -24,16 +24,9 @@ export function Footer() {
             className="text-gruvbox-aqua"
             href="https://fresh.deno.dev/"
             target="_blank"
+            rel="noopener noreferrer"
           >
             Fresh.js
-          </a>{" "}
-          by{" "}
-          <a
-            className="text-gruvbox-aqua"
-            href="https://asqit.space"
-            target="_blank"
-          >
-            Asqit
           </a>
         </p>
         <p>&copy; 2025</p>

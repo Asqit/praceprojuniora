@@ -17,9 +17,12 @@ export class ListingController {
     const manuallyAdded = listingData.manuallyAdded ?? false;
     const source = manuallyAdded ? "manual" : "jobs.cz";
 
-    // Check for existing listing via link
+    // Check for existing listing via link or title
     for await (const entry of this.kv.list<Listing>({ prefix: ["listings"] })) {
-      if (entry.value.link === listingData.link) {
+      if (
+        entry.value.link === listingData.link ||
+        entry.value.title.toLowerCase() === listingData.title.toLowerCase()
+      ) {
         const updatedListing: Listing = {
           ...entry.value,
           title: listingData.title,
@@ -30,7 +33,10 @@ export class ListingController {
           manuallyAdded,
           source,
           updatedAt: now,
-          statusMeta: this.getStatusMeta(now, listingData.status),
+          statusMeta: this.getStatusMeta(
+            entry.value.createdAt,
+            listingData.status,
+          ),
           expiredAt: this.getExpiredAt(listingData.status ?? ""),
         };
 
