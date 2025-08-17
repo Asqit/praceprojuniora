@@ -23,6 +23,7 @@ export class ListingController {
         entry.value.link === listingData.link ||
         entry.value.title.toLowerCase() === listingData.title.toLowerCase()
       ) {
+        console.log(`found duplicate, updating now.`);
         const updatedListing: Listing = {
           ...entry.value,
           title: listingData.title,
@@ -108,7 +109,7 @@ export class ListingController {
     return deleted;
   }
 
-  private getStatusMeta(
+  getStatusMeta(
     createdAt: string,
     rawStatus?: string,
   ): Listing["statusMeta"] {

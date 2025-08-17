@@ -41,15 +41,18 @@ Deno.cron("update listing status meta", "0 6 * * *", async () => {
   const listings = await controller.list();
 
   for (const listing of listings) {
-    const newStatusMeta = controller["getStatusMeta"](
+    const newStatusMeta = controller.getStatusMeta(
       listing.createdAt,
       listing.status,
     );
 
     if (listing.statusMeta !== newStatusMeta) {
-      listing.statusMeta = newStatusMeta;
-      listing.updatedAt = new Date().toISOString();
-      await db.set(["listings", listing.id], listing);
+      const updatedListing = {
+        ...listing,
+        statusMeta: newStatusMeta,
+        updatedAt: new Date().toISOString(),
+      };
+      await db.set(["listings", listing.id], updatedListing);
       updatedCount++;
     }
   }
