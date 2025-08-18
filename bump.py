@@ -94,6 +94,13 @@ def main() -> None:
     part = sys.argv[1]
     current_version = read_version()
     next_version = bump(current_version, part)
+
+    print(f"bumping from {current_version} to {next_version}")
+    confirm = input("are you sure? [y/N]")
+    if confirm.lower() != "y":
+        print("🚫 aborting")
+        sys.exit(1)
+
     write_version(next_version)
     create_changelog(next_version)
     release_tag(next_version)

@@ -1,14 +1,11 @@
-
-## 0.3.0 – 18-08-2025
-
-### Added
-
-- [Short description of a new feature]
+## 0.2.2 – 18-08-2025
 
 ### Changed
 
-- [Short description of a change to existing functionality]
+- all cron jobs besides scraping now runs twice a day at 6:00AM and 6:00PM UTC
+  time.
 
 ### Fixed
 
-- [Short description of a bug fix]
+- calculation of old listings.
+
