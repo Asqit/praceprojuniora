@@ -93,14 +93,13 @@ export class ListingController {
     await this.kv.set(["listings", id], listing);
   }
 
-  async deleteOldListings(maxAgeDays = 90): Promise<number> {
-    const now = Date.now();
-    const maxAge = maxAgeDays * 24 * 60 * 60 * 1000;
+  async deleteOldListings(): Promise<number> {
+    const now = new Date();
     let deleted = 0;
 
     for await (const entry of this.kv.list<Listing>({ prefix: ["listings"] })) {
-      const createdAt = new Date(entry.value.createdAt).getTime();
-      if (now - createdAt > maxAge) {
+      const expiredAt = new Date(entry.value.expiredAt);
+      if (now >= expiredAt) {
         await this.kv.delete(entry.key);
         deleted++;
       }

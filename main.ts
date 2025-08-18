@@ -24,15 +24,15 @@ Deno.cron("fetch job listings", "0 6 * * *", async () => {
   console.log('- finished CRON job "fetch job listings"');
 });
 
-Deno.cron("delete old postings", "0 6 * * *", async () => {
+Deno.cron("delete old postings", "0 6,18 * * *", async () => {
   console.log('- starting CRON job "delete old postings"');
   const db = await initDb();
   const controller = new ListingController(db);
-  const deletedCount = await controller.deleteOldListings(90);
+  const deletedCount = await controller.deleteOldListings();
   console.log(`- Deleted ${deletedCount} expired listings`);
 });
 
-Deno.cron("update listing status meta", "0 6 * * *", async () => {
+Deno.cron("update listing status meta", "0 6,18 * * *", async () => {
   console.log('- starting CRON job "update listing status meta"');
   const db = await initDb();
   const controller = new ListingController(db);
