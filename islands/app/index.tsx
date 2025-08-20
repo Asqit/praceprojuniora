@@ -21,7 +21,7 @@ export default function App({ initialData }: Props) {
           setData={(data) => setData(data)}
           className="hidden md:block"
         />
-        <About listingsCount={dataStore.length} />
+        <About listingsCount={data.length} />
       </div>
       <div className="md:col-span-2">
         <SearchList
