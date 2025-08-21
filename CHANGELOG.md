@@ -1,9 +1,6 @@
-## 0.2.3 – 20-08-2025
-
-### Added
-
-- simple sorting ability (by clicks, expiredAt)
+## 0.2.4 – 21-08-2025
 
 ### Changed
 
-- list-item
+- Changed CRON for deleting old postings to run every hour
+
