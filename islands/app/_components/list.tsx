@@ -28,7 +28,7 @@ export function List({ data }: Props) {
 
   return (
     <div>
-      <div className="w-full sticky top-8 z-10">
+      <div className="w-full sticky top-56 md:top-8 z-10">
         <div className="inline-flex items-center gap-4 float-right bg-gruvbox-bg">
           <button
             type="button"
@@ -77,6 +77,7 @@ export function List({ data }: Props) {
               )}
           </button>
           <select
+            value={sortBy}
             onChange={(e) =>
               setSortBy(e.currentTarget.value as "expiry" | "clicks")}
             className="bg-transparent border border-grubox-fg p-2 ml-2 transition-colors hover:border-gruvbox-orange"
@@ -87,7 +88,7 @@ export function List({ data }: Props) {
         </div>
       </div>
 
-      <ul className="w-full grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-16 p-8">
+      <ul className="w-full grid grid-cols-1 xl:grid-cols-2 gap-x-8 gap-y-16 p-8">
         {renderData.map((listing) => (
           <li key={listing.id}>
             <ListItem {...listing} />

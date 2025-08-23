@@ -8,13 +8,13 @@ import * as $api_listings_click from "./routes/api/listings/click.ts";
 import * as $api_listings_index from "./routes/api/listings/index.ts";
 import * as $api_listings_new from "./routes/api/listings/new.ts";
 import * as $index from "./routes/index.tsx";
+import * as $legal from "./routes/legal.tsx";
 import * as $sitemap_xml from "./routes/sitemap.xml.ts";
 import * as $app_components_about from "./islands/app/_components/about.tsx";
 import * as $app_components_list_item from "./islands/app/_components/list-item.tsx";
 import * as $app_components_list from "./islands/app/_components/list.tsx";
 import * as $app_components_search_list from "./islands/app/_components/search-list.tsx";
 import * as $app_index from "./islands/app/index.tsx";
-import * as $job_list from "./islands/job-list.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -25,6 +25,7 @@ const manifest = {
     "./routes/api/listings/index.ts": $api_listings_index,
     "./routes/api/listings/new.ts": $api_listings_new,
     "./routes/index.tsx": $index,
+    "./routes/legal.tsx": $legal,
     "./routes/sitemap.xml.ts": $sitemap_xml,
   },
   islands: {
@@ -33,7 +34,6 @@ const manifest = {
     "./islands/app/_components/list.tsx": $app_components_list,
     "./islands/app/_components/search-list.tsx": $app_components_search_list,
     "./islands/app/index.tsx": $app_index,
-    "./islands/job-list.tsx": $job_list,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

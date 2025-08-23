@@ -13,8 +13,8 @@ export default function App({ initialData }: Props) {
   const [data, setData] = useState(initialData);
 
   return (
-    <main className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div className="space-y-4">
+    <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <aside className="space-y-4" aria-label="Search and information">
         <SearchList
           renderData={data}
           storeData={dataStore}
@@ -22,8 +22,8 @@ export default function App({ initialData }: Props) {
           className="hidden md:block"
         />
         <About listingsCount={data.length} />
-      </div>
-      <div className="md:col-span-2">
+      </aside>
+      <article className="md:col-span-2" aria-label="Job listings">
         <SearchList
           renderData={data}
           storeData={dataStore}
@@ -31,7 +31,7 @@ export default function App({ initialData }: Props) {
           className="md:hidden"
         />
         <List data={data} />
-      </div>
-    </main>
+      </article>
+    </div>
   );
 }

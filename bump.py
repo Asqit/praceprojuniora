@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import subprocess
 import datetime
-import json
 import sys
 import os
 

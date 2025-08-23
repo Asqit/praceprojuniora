@@ -7,29 +7,37 @@ export function Footer() {
         <div className="bg-gruvbox-blue" />
       </div>
 
-      <div className="flex flex-col items-center justify-center p-8">
-        <p>
-          <span className={"text-gruvbox-purple"}>{"{"}</span>
-          <span className={"text-gruvbox-blue"}>url</span>
-          <span className={"text-gruvbox-gray"}>:</span>{" "}
-          <span className={"underline text-gruvbox-green"}>
-            "praceprojuniora.cz"
-          </span>
-          <span className={"text-gruvbox-purple"}>{"}"}</span>
-        </p>
-        <p>A passion project</p>
-        <p>
-          Made with{" "}
+      <div className="flex flex-col items-center justify-center p-8 space-y-4">
+        <nav className="flex gap-4">
           <a
-            className="text-gruvbox-aqua"
-            href="https://fresh.deno.dev/"
-            target="_blank"
-            rel="noopener noreferrer"
+            className="text-gruvbox-aqua underline"
+            href="/"
           >
-            Fresh.js
+            Domů
           </a>
-        </p>
-        <p>&copy; 2025</p>
+          <a
+            className="text-gruvbox-aqua underline"
+            href="/legal"
+          >
+            Právní informace
+          </a>
+        </nav>
+
+        <div className="text-center">
+          <p>A passion project</p>
+          <p>
+            Made with{" "}
+            <a
+              className="text-gruvbox-aqua"
+              href="https://fresh.deno.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Fresh.js
+            </a>
+          </p>
+          <p>&copy; 2025</p>
+        </div>
       </div>
     </footer>
   );

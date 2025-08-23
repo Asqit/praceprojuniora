@@ -25,7 +25,6 @@ export function ListItem(props: Props) {
     source,
     statusMeta,
     company,
-    status,
     ...rest
   } = props;
   const [clicks, setClicks] = useState<number>(rest?.clicks);
@@ -40,7 +39,7 @@ export function ListItem(props: Props) {
 
     if (diffDays === 0) return "Dnes";
     if (diffDays === 1) return "Zítra";
-    return `${diffDays} dní`;
+    return `${diffDays} dny(ů)`;
   };
 
   const timeTo = (dateStr: string) => {
@@ -67,47 +66,53 @@ export function ListItem(props: Props) {
       target="_blank"
       onClick={handleClick}
       className={clsx(
-        "relative block w-full h-full p-2 border bg-gruvbox-bg",
+        "relative block w-full h-full p-4 border bg-gruvbox-bg transition-all",
         "before:content-[''] before:transition-all before:border before:absolute before:top-0 before:left-0 before:-z-10 before:w-full before:h-full",
         `before:border-gruvbox-${color}`,
-        "hover:before:h-[105%] hover:before:w-[105%] hover:before:-top-[2.5%] hover:before:-left-[2.5%]",
+        "hover:before:h-full hover:before:w-full hover:before:top-2 hover:before:left-2",
         `border-gruvbox-${color}`,
       )}
+      aria-label={`Pracovní nabídka: ${title} u ${company}`}
     >
-      <div className="absolute -top-6 -left-4 flex items-center gap-2">
+      <div className="absolute -top-4 -left-2 md:-top-6 md:-left-4 flex items-center gap-2">
         <div
-          className="bg-gruvbox-bg1 p-1"
-          title={`${clicks} people have clicked here`}
+          className="bg-gruvbox-bg1 px-2 py-1 text-sm"
+          title={`${clicks} lidí zde kliklo`}
         >
-          {clicks}x
+          {clicks}×
         </div>
         {new Date(createdAt) > new Date(Date.now() - 1000 * 60 * 60 * 48) && (
-          <span className="text-gruvbox-fg font-black bg-gruvbox-bg1 p-1">
-            !!NOVÝ!!
+          <span className="text-gruvbox-fg font-black bg-gruvbox-bg1 px-2 py-1 text-sm">
+            NOVÉ
           </span>
         )}
       </div>
-      <ul>
-        <li className="text-xl font-black">
+      <div className="space-y-1">
+        <h3 className="text-xl font-black">
           ┌ <span className={`text-gruvbox-${color}`}>{title}</span>
-        </li>
-        <li>
-          ├ <span className="font-bold text-lg">{company}</span>
-        </li>
-        <li>├ {location}</li>
-        <li>├ expiruje: {timeTo(expiredAt)}</li>
-        <li>└ {source === "jobs.cz" ? source : "Recruiter"}</li>
-        <li className="my-2">
-          <hr className="bg-gruvbox-fg" />
-        </li>
-        <li>┌ OUR Data</li>
-        <li>├ Dostupné od: {timeAgo(createdAt)}</li>
-        <li>├ kliků: {clicks}x</li>
-        <li>└ meta-state: {statusMeta}</li>
-      </ul>
-      <p className="text-xs italic text-gruvbox-gray text-right">
-        {id}
-      </p>
+        </h3>
+        <div className="text-lg font-bold">
+          ├ {company}
+        </div>
+        <div>├ {location}</div>
+        <div>├ Expiruje: {timeTo(expiredAt)}</div>
+        <div>└ {source === "jobs.cz" ? "Jobs.cz" : "Recruiter"}</div>
+
+        <details
+          className="mt-4 text-sm text-gruvbox-gray"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <summary className="cursor-pointer hover:text-gruvbox-fg">
+            Technické info
+          </summary>
+          <div className="mt-2 space-y-1 pl-4">
+            <div>Dostupné od: {timeAgo(createdAt)}</div>
+            <div>Kliknutí: {clicks}×</div>
+            <div>Stav: {statusMeta}</div>
+            <div className="text-xs break-all">{id}</div>
+          </div>
+        </details>
+      </div>
     </a>
   );
 }
