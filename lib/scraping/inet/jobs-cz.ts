@@ -73,7 +73,7 @@ async function crawlJobsCZ(): Promise<Listing[]> {
       const http = await createHttpClient();
       const res = await fetch(url, {
         client: http,
-        headers: { "user-agent": agent },
+        headers: { "User-Agent": agent },
       });
       const html = await res.text();
       const MAX_PAGES = 100;

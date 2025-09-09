@@ -1,4 +1,5 @@
 import { jobscz } from "./inet/jobs-cz.ts";
+import { pracecz } from "./inet/prace-cz.ts";
 
 const KEYWORDS = ["junior", "entry", "graduate", "fresher", "trainee"];
 
@@ -8,7 +9,7 @@ function isJuniorJob(title: string): boolean {
 }
 
 export async function fetchListings() {
-  const listings = (await Promise.all([jobscz()])).flat();
+  const listings = (await Promise.all([pracecz(), jobscz()])).flat();
 
   const seen = new Set<string>();
   const juniorListings = listings.filter((job) => {

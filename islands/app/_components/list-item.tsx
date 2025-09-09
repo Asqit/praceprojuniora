@@ -96,7 +96,7 @@ export function ListItem(props: Props) {
         </div>
         <div>├ {location}</div>
         <div>├ Expiruje: {timeTo(expiredAt)}</div>
-        <div>└ {source === "jobs.cz" ? "Jobs.cz" : "Recruiter"}</div>
+        <div>└ {source}</div>
 
         <details
           className="mt-4 text-sm text-gruvbox-gray"

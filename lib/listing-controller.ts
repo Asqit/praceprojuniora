@@ -15,7 +15,7 @@ export class ListingController {
   ): Promise<Listing> {
     const now = new Date().toISOString();
     const manuallyAdded = listingData.manuallyAdded ?? false;
-    const source = manuallyAdded ? "manual" : "jobs.cz";
+    const source = manuallyAdded ? "manual" : listingData?.source ?? "Unknown";
 
     // Check for existing listing via link or title
     for await (const entry of this.kv.list<Listing>({ prefix: ["listings"] })) {

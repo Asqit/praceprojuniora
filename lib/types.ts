@@ -10,7 +10,7 @@ export type Listing = {
   updatedAt?: string;
   clicks: number;
   manuallyAdded?: boolean;
-  source: "jobs.cz" | "manual";
+  source: "manual" | string;
   statusMeta?: "new" | "stale" | "expiring" | "expired";
   description?: string;
 };
