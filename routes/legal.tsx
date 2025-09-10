@@ -68,6 +68,17 @@ export default function LegalPage() {
               23.8.2025), kde jsme nezaznamenali explicitní zákaz webového
               scrapingu veřejně dostupných informací.
             </p>
+            <p>
+              Naše stránka funguje výhradně jako agregátor a kurátor obsahu.
+              Nenabízíme vlastní pracovní pozice a neneseme odpovědnost za
+              obsah, dostupnost ani aktuálnost externích odkazů vedoucích na
+              jiné weby.
+            </p>
+            <p>
+              Pokud si některý z původních poskytovatelů pracovních nabídek
+              nepřeje, abychom jeho obsah zobrazovali, zavazujeme se takový
+              zdroj na základě žádosti neprodleně odstranit.
+            </p>
             <h3 className="text-xl font-medium mt-6 mb-3">
               Příspěvky třetích stran
             </h3>
