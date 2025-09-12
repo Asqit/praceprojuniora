@@ -4,9 +4,12 @@
 
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
+import * as $about from "./routes/about.tsx";
+import * as $api_listings_bulk from "./routes/api/listings/bulk.ts";
 import * as $api_listings_click from "./routes/api/listings/click.ts";
 import * as $api_listings_index from "./routes/api/listings/index.ts";
 import * as $api_listings_new from "./routes/api/listings/new.ts";
+import * as $favorites from "./routes/favorites.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $legal from "./routes/legal.tsx";
 import * as $sitemap_xml from "./routes/sitemap.xml.ts";
@@ -15,15 +18,20 @@ import * as $app_components_list_item from "./islands/app/_components/list-item.
 import * as $app_components_list from "./islands/app/_components/list.tsx";
 import * as $app_components_search_list from "./islands/app/_components/search-list.tsx";
 import * as $app_index from "./islands/app/index.tsx";
+import * as $favorites_1 from "./islands/favorites.tsx";
+import * as $mobile_nav from "./islands/mobile-nav.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
   routes: {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
+    "./routes/about.tsx": $about,
+    "./routes/api/listings/bulk.ts": $api_listings_bulk,
     "./routes/api/listings/click.ts": $api_listings_click,
     "./routes/api/listings/index.ts": $api_listings_index,
     "./routes/api/listings/new.ts": $api_listings_new,
+    "./routes/favorites.tsx": $favorites,
     "./routes/index.tsx": $index,
     "./routes/legal.tsx": $legal,
     "./routes/sitemap.xml.ts": $sitemap_xml,
@@ -34,6 +42,8 @@ const manifest = {
     "./islands/app/_components/list.tsx": $app_components_list,
     "./islands/app/_components/search-list.tsx": $app_components_search_list,
     "./islands/app/index.tsx": $app_index,
+    "./islands/favorites.tsx": $favorites_1,
+    "./islands/mobile-nav.tsx": $mobile_nav,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;

@@ -1,3 +1,37 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik+80s+Fade&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.rubik {
+  font-family: "Rubik 80s Fade", monospace, system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.crt-frame {
+  position: relative;
+  border-radius: 50px; /* víc zaoblené než obvykle */
+  border: 6px solid #222; /* rámeček monitoru */
+}
+
+/* "zakřivení skla" pomocí gradient overlay */
+.crt-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  mix-blend-mode: overlay;
+}
+
+.crt-warp {
+  filter: url(#crtWarp);
+  border-radius: 40px;
+  border: 6px solid #111;
+}

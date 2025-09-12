@@ -33,9 +33,32 @@ export default {
           "87.5%": { color: "#928374" }, // gray
           "100%": { color: "#fb4934" }, // loop
         },
+        skew: {
+          "0%, 30%": { transform: "none" },
+          "30.2%": { transform: "skewX(50deg)" },
+          "30.4%": { transform: "skewX(-50deg)" },
+          "31%": { transform: "none" },
+        },
+        move: {
+          "0%, 30%, 33%, 98%": { transform: "none" },
+          "31%": { transform: "translateX(-6px)" },
+          "100%": { transform: "translateX(6px)" },
+        },
+        flash: {
+          "0%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
+        lines: {
+          "0%": { opacity: "0.1" },
+          "50%": { opacity: "1" },
+        },
       },
       animation: {
         "text-color-cycle": "text-color-cycle 80s steps(8, end) infinite",
+        skew: "skew 2s infinite",
+        move: "move 1.5s infinite",
+        flash: "flash 0.04s infinite",
+        lines: "lines 1s infinite",
       },
     },
   },

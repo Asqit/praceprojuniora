@@ -73,7 +73,7 @@ export default function App({ Component }: PageProps) {
           />
         )}
       </head>
-      <body className="font-mono bg-gruvbox-bg text-gruvbox-fg">
+      <body className="bg-gruvbox-bg text-gruvbox-fg font-mono">
         <Component />
       </body>
     </html>

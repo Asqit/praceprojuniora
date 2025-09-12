@@ -1,8 +1,9 @@
 import type { Listing } from "../../lib/types.ts";
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import { List } from "./_components/list.tsx";
 import { SearchList } from "./_components/search-list.tsx";
 import { About } from "./_components/about.tsx";
+import { cleanupFavorites } from "../../lib/favorites.ts";
 
 type Props = {
   initialData: Listing[];
@@ -11,6 +12,10 @@ type Props = {
 export default function App({ initialData }: Props) {
   const [dataStore, _setDataStore] = useState(initialData);
   const [data, setData] = useState(initialData);
+
+  useEffect(() => {
+    cleanupFavorites(initialData);
+  }, [initialData]);
 
   return (
     <div className="p-4 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-4">

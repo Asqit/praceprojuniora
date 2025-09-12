@@ -1,5 +1,6 @@
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import { Listing } from "../../../lib/types.ts";
+import { addFavorite, removeFavorite, isFavorite } from "../../../lib/favorites.ts";
 import ky from "ky";
 import clsx from "clsx";
 
@@ -28,6 +29,11 @@ export function ListItem(props: Props) {
     ...rest
   } = props;
   const [clicks, setClicks] = useState<number>(rest?.clicks);
+  const [bookmarked, setBookmarked] = useState<boolean>(false);
+
+  useEffect(() => {
+    setBookmarked(isFavorite(id));
+  }, [id]);
   const hash = [...id].reduce((acc, char) => acc + char.charCodeAt(0), 0);
   const color = colors[hash % colors.length];
 
@@ -52,11 +58,39 @@ export function ListItem(props: Props) {
     return `${diffDays} dní`;
   };
 
-  const handleClick = async () => {
+  const handleClick = async (e: MouseEvent) => {
+    // Prevent middle-click and right-click from bypassing tracking
+    if (e.button !== 0) {
+      e.preventDefault();
+      return;
+    }
+    
     await ky.put(`/api/listings/click`, {
       json: { id },
     });
     setClicks(clicks + 1);
+  };
+
+  const handleContextMenu = (e: Event) => {
+    e.preventDefault(); // Disable right-click context menu
+  };
+
+  const handleMouseDown = (e: MouseEvent) => {
+    // Prevent middle-click from opening in new tab
+    if (e.button === 1) {
+      e.preventDefault();
+    }
+  };
+
+  const toggleBookmark = (e: Event) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (bookmarked) {
+      removeFavorite(id);
+    } else {
+      addFavorite(id);
+    }
+    setBookmarked(!bookmarked);
   };
 
   return (
@@ -65,6 +99,8 @@ export function ListItem(props: Props) {
       rel="noopener noreferrer"
       target="_blank"
       onClick={handleClick}
+      onContextMenu={handleContextMenu}
+      onMouseDown={handleMouseDown}
       className={clsx(
         "relative block w-full h-full p-4 border bg-gruvbox-bg transition-all",
         "before:content-[''] before:transition-all before:border before:absolute before:top-0 before:left-0 before:-z-10 before:w-full before:h-full",
@@ -81,6 +117,13 @@ export function ListItem(props: Props) {
         >
           {clicks}×
         </div>
+        <button
+          onClick={toggleBookmark}
+          className="bg-gruvbox-bg1 px-2 py-1 text-sm hover:text-gruvbox-yellow transition-colors"
+          title={bookmarked ? "Odebrat z oblíbených" : "Přidat do oblíbených"}
+        >
+          {bookmarked ? "[x]" : "[ ]"}
+        </button>
         {new Date(createdAt) > new Date(Date.now() - 1000 * 60 * 60 * 48) && (
           <span className="text-gruvbox-fg font-black bg-gruvbox-bg1 px-2 py-1 text-sm">
             NOVÉ

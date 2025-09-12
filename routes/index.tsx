@@ -76,11 +76,13 @@ export default function RootPage({ data }: PageProps<Listing[]>) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingsData) }}
       />
       <Navbar />
+
       <main>
         <section aria-label="Junior IT job listings">
           <h1 className="sr-only">
             Práce Pro Juniora - Aktuální nabídky práce pro juniory v IT
           </h1>
+
           <App initialData={data} />
         </section>
       </main>

@@ -11,12 +11,6 @@ export function Footer() {
         <nav className="flex gap-4">
           <a
             className="text-gruvbox-aqua underline"
-            href="/"
-          >
-            Domů
-          </a>
-          <a
-            className="text-gruvbox-aqua underline"
             href="/legal"
           >
             Právní informace
