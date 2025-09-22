@@ -10,3 +10,6 @@ export function isValidJson(data: string) {
     return false;
   }
 }
+
+export const USER_AGENT =
+  "praceprojuniora-bot/1.0 (contact: ondrejtucek9@gmail.com)";

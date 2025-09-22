@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import type { Listing } from "../../types.ts";
-import { randomDelay, userAgents } from "./misc.ts";
-import { createHttpClient } from "./http.ts";
+import { randomDelay } from "./misc.ts";
+import { USER_AGENT } from "../../misc.ts";
 
 const DOMAIN = "https://www.prace.cz";
 const BASE_URL = `${DOMAIN}/nabidky/informatika/`;
@@ -101,7 +101,6 @@ async function crawlPraceCz(): Promise<Listing[]> {
   const results: Listing[] = [];
   const queue = new Set<string>([BASE_URL]);
   const visited = new Set<string>();
-  const agent = userAgents[Math.floor(Math.random() * userAgents.length)];
 
   while (queue.size > 0) {
     const url = queue.values().next().value;
@@ -112,10 +111,8 @@ async function crawlPraceCz(): Promise<Listing[]> {
     try {
       await randomDelay(1000, 5000);
       console.log(`crawling: ${url}`);
-      const http = await createHttpClient();
       const res = await fetch(url, {
-        client: http,
-        headers: { "User-Agent": agent },
+        headers: { "User-Agent": USER_AGENT },
       });
       const html = await res.text();
       const newUrl = getNextPageUrl(html);

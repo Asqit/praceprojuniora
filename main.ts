@@ -60,6 +60,15 @@ Deno.cron("update listing status meta", "0 6,18 * * *", async () => {
   console.log(`- Updated statusMeta for ${updatedCount} listings`);
 });
 
+Deno.cron("validate listings", "0 4 * * *", async () => {
+  console.log('- starting CRON job "validate listings"');
+  const db = await initDb();
+  const controller = new ListingController(db);
+
+  const expiredCount = await controller.validateAll();
+  console.log(`- Marked ${expiredCount} listings as expired`);
+});
+
 const fetchInitials = async () => {
   const db = await initDb();
   const controller = new ListingController(db);

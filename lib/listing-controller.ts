@@ -1,3 +1,4 @@
+import { USER_AGENT } from "./misc.ts";
 import { type Listing } from "./types.ts";
 
 export class ListingController {
@@ -91,6 +92,68 @@ export class ListingController {
     listing.clicks += 1;
     listing.updatedAt = new Date().toISOString();
     await this.kv.set(["listings", id], listing);
+  }
+
+  // v ListingController.ts
+
+  async validateListing(listing: Listing): Promise<boolean> {
+    try {
+      const res = await fetch(listing.link, {
+        method: "GET",
+        headers: {
+          "User-Agent": USER_AGENT,
+        },
+      });
+
+      // 404 nebo 410 → rovnou expired
+      if (res.status === 404 || res.status === 410) {
+        return false;
+      }
+
+      // fallback check textu
+      const text = await res.text();
+      if (
+        text.includes("inzerát již není aktivní") ||
+        text.includes("pozice již není dostupná") ||
+        text.includes("job closed")
+      ) {
+        return false;
+      }
+
+      return true; // pořád živý
+    } catch (_err) {
+      // když server failne, radši necháme aktivní (aby nebylo false-positive)
+      return true;
+    }
+  }
+
+  async validateAll(): Promise<number> {
+    const listings = await this.list();
+    let expiredCount = 0;
+
+    // listings just older than 7 days
+    const now = Date.now();
+    const oldListings = listings.filter((l) => {
+      const ageDays = (now - new Date(l.createdAt).getTime()) /
+        (1000 * 60 * 60 * 24);
+      return ageDays > 7;
+    });
+
+    for (const listing of oldListings) {
+      const alive = await this.validateListing(listing);
+      if (!alive) {
+        listing.statusMeta = "expired";
+        listing.expiredAt = new Date().toISOString();
+        listing.updatedAt = new Date().toISOString();
+        await this.kv.set(["listings", listing.id], listing);
+        expiredCount++;
+      }
+
+      // rate limit – 200ms delay mezi requesty
+      await new Promise((r) => setTimeout(r, 200));
+    }
+
+    return expiredCount;
   }
 
   async deleteOldListings(): Promise<number> {
