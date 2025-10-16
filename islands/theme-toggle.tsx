@@ -1,11 +1,15 @@
 import { Moon, Sun } from "lucide-preact";
 import { useEffect, useState } from "preact/hooks";
+import { localStorageKeys } from "../lib/misc.ts";
 
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
+    const savedTheme = localStorage.getItem(localStorageKeys.theme) as
+      | "light"
+      | "dark"
+      | null;
     const prefersDark =
       globalThis.matchMedia("(prefers-color-scheme: dark)").matches;
     const initialTheme = savedTheme || (prefersDark ? "dark" : "light");
@@ -17,7 +21,7 @@ export default function ThemeToggle() {
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
+    localStorage.setItem(localStorageKeys.theme, newTheme);
     document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
 

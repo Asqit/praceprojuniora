@@ -17,7 +17,6 @@ import * as $app_components_list from "./islands/app/_components/list.tsx";
 import * as $app_index from "./islands/app/index.tsx";
 import * as $celebration_effect from "./islands/celebration-effect.tsx";
 import * as $cursor_glow from "./islands/cursor-glow.tsx";
-import * as $favorites from "./islands/favorites.tsx";
 import * as $gamification_stats from "./islands/gamification-stats.tsx";
 import * as $mobile_nav from "./islands/mobile-nav.tsx";
 import * as $theme_toggle from "./islands/theme-toggle.tsx";
@@ -42,7 +41,6 @@ const manifest = {
     "./islands/app/index.tsx": $app_index,
     "./islands/celebration-effect.tsx": $celebration_effect,
     "./islands/cursor-glow.tsx": $cursor_glow,
-    "./islands/favorites.tsx": $favorites,
     "./islands/gamification-stats.tsx": $gamification_stats,
     "./islands/mobile-nav.tsx": $mobile_nav,
     "./islands/theme-toggle.tsx": $theme_toggle,

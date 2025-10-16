@@ -1,7 +1,6 @@
 import type { Listing } from "../../lib/types.ts";
-import { useEffect, useState } from "preact/hooks";
+import { useState } from "preact/hooks";
 import { List } from "./_components/list.tsx";
-import { cleanupFavorites } from "../../lib/favorites.ts";
 
 type Props = {
   initialData: Listing[];
@@ -12,11 +11,6 @@ export default function App({ initialData }: Props) {
   const [locationFilter, setLocationFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
-  useEffect(() => {
-    cleanupFavorites(initialData);
-  }, [initialData]);
-
-  // Filtering and sorting logic
   const filteredData = initialData
     .filter((job) => {
       const matchesSearch =
@@ -34,7 +28,9 @@ export default function App({ initialData }: Props) {
           new Date(b.expiredAt).getTime()
         );
       }
-      return 0;
+      return (
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      );
     });
 
   return (
@@ -64,8 +60,19 @@ export default function App({ initialData }: Props) {
             <option value="Praha">Praha</option>
             <option value="Brno">Brno</option>
             <option value="Ostrava">Ostrava</option>
+            <option value="Plzeň">Plzeň</option>
+            <option value="Liberec">Liberec</option>
+            <option value="Olomouc">Olomouc</option>
+            <option value="České Budějovice">České Budějovice</option>
+            <option value="Hradec Králové">Hradec Králové</option>
+            <option value="Pardubice">Pardubice</option>
+            <option value="Zlín">Zlín</option>
+            <option value="Ústí nad Labem">Ústí nad Labem</option>
+            <option value="Karlovy Vary">Karlovy Vary</option>
+            <option value="Jihlava">Jihlava</option>
             <option value="Remote">Remote</option>
           </select>
+
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.currentTarget.value)}

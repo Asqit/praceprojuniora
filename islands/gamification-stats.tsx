@@ -1,10 +1,12 @@
 import { useEffect, useState } from "preact/hooks";
 import { ChevronDown, ChevronUp, Flame, Target, Trophy } from "lucide-preact";
+import { localStorageKeys } from "../lib/misc.ts";
 
-interface GamificationStats {
+export interface GamificationStats {
   jobsViewed: number;
   jobsBookmarked: number;
   streak: number;
+  lastActiveDate?: string; // yyyy-mm-dd
 }
 
 export default function GamificationTracker() {
@@ -16,30 +18,64 @@ export default function GamificationTracker() {
   });
 
   useEffect(() => {
-    const savedStats = localStorage.getItem("gamification-stats");
+    const savedStats = localStorage.getItem(localStorageKeys.stats);
     if (savedStats) {
-      setStats(JSON.parse(savedStats));
+      const parsed = JSON.parse(savedStats);
+      setStats(parsed);
     }
 
-    const savedMinimized = localStorage.getItem("tracker-minimized");
+    const savedMinimized = localStorage.getItem(localStorageKeys.trackerState);
     if (savedMinimized) {
       setIsMinimized(JSON.parse(savedMinimized));
     }
 
+    const updateActivity = () => {
+      setStats((prev) => {
+        const today = new Date().toISOString().slice(0, 10);
+        const lastActive = prev.lastActiveDate;
+        let newStreak = prev.streak;
+
+        if (lastActive) {
+          const lastDate = new Date(lastActive);
+          const diffDays = Math.floor(
+            (new Date(today).getTime() - lastDate.getTime()) /
+              (1000 * 60 * 60 * 24),
+          );
+
+          if (diffDays === 1) newStreak += 1; // consecutive day
+          else if (diffDays > 1) newStreak = 1; // streak broken
+        }
+
+        return {
+          ...prev,
+          streak: newStreak,
+          lastActiveDate: today,
+        };
+      });
+    };
+
     const handleJobViewed = () => {
       setStats((prev) => {
-        const newStats = { ...prev, jobsViewed: prev.jobsViewed + 1 };
-        localStorage.setItem("gamification-stats", JSON.stringify(newStats));
+        const newStats = {
+          ...prev,
+          jobsViewed: prev.jobsViewed + 1,
+        };
+        localStorage.setItem(localStorageKeys.stats, JSON.stringify(newStats));
         return newStats;
       });
+      updateActivity();
     };
 
     const handleJobBookmarked = () => {
       setStats((prev) => {
-        const newStats = { ...prev, jobsBookmarked: prev.jobsBookmarked + 1 };
-        localStorage.setItem("gamification-stats", JSON.stringify(newStats));
+        const newStats = {
+          ...prev,
+          jobsBookmarked: prev.jobsBookmarked + 1,
+        };
+        localStorage.setItem(localStorageKeys.stats, JSON.stringify(newStats));
         return newStats;
       });
+      updateActivity();
     };
 
     globalThis.addEventListener("job-viewed", handleJobViewed);
@@ -51,10 +87,17 @@ export default function GamificationTracker() {
     };
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem(localStorageKeys.stats, JSON.stringify(stats));
+  }, [stats]);
+
   const toggleMinimize = () => {
     const newState = !isMinimized;
     setIsMinimized(newState);
-    localStorage.setItem("tracker-minimized", JSON.stringify(newState));
+    localStorage.setItem(
+      localStorageKeys.trackerState,
+      JSON.stringify(newState),
+    );
   };
 
   return (

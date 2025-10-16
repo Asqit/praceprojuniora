@@ -28,7 +28,7 @@ export default function About() {
 
           <section className="space-y-4">
             <h2 className="text-xl font-bold text-green-500">Co děláme</h2>
-            <div className="bg-card border border-border p-6 space-y-3">
+            <div className="bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 space-y-3">
               <p className="text-foreground">
                 • Propojujeme juniory s jejich prvními pracovními příležitostmi
               </p>
@@ -65,7 +65,7 @@ export default function About() {
             <h2 className="text-xl font-bold text-green-500">
               Kontaktujte nás
             </h2>
-            <div className="bg-card border border-border p-6">
+            <div className="bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 space-y-3">
               <p className="text-foreground mb-2">
                 Email: kontakt@praceprojuniora.cz
               </p>
