@@ -1,6 +1,3 @@
-import { Footer } from "../components/footer/footer.tsx";
-import { Navbar } from "../components/navbar/navbar.tsx";
-
 export default function LegalPage() {
   return (
     <>
@@ -11,7 +8,6 @@ export default function LegalPage() {
           content="Ochrana osobních údajů, podmínky použití a právní informace pro Práce Pro Juniora - agregátor juniorních IT pozic."
         />
       </head>
-      <Navbar />
       <main className="max-w-4xl mx-auto p-4 md:p-8">
         <h1 className="text-3xl font-bold mb-8">Právní informace</h1>
 
@@ -116,7 +112,6 @@ export default function LegalPage() {
           </div>
         </section>
       </main>
-      <Footer />
     </>
   );
 }

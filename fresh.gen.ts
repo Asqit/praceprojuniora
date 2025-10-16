@@ -9,17 +9,18 @@ import * as $api_listings_bulk from "./routes/api/listings/bulk.ts";
 import * as $api_listings_click from "./routes/api/listings/click.ts";
 import * as $api_listings_index from "./routes/api/listings/index.ts";
 import * as $api_listings_new from "./routes/api/listings/new.ts";
-import * as $favorites from "./routes/favorites.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $legal from "./routes/legal.tsx";
 import * as $sitemap_xml from "./routes/sitemap.xml.ts";
-import * as $app_components_about from "./islands/app/_components/about.tsx";
 import * as $app_components_list_item from "./islands/app/_components/list-item.tsx";
 import * as $app_components_list from "./islands/app/_components/list.tsx";
-import * as $app_components_search_list from "./islands/app/_components/search-list.tsx";
 import * as $app_index from "./islands/app/index.tsx";
-import * as $favorites_1 from "./islands/favorites.tsx";
+import * as $celebration_effect from "./islands/celebration-effect.tsx";
+import * as $cursor_glow from "./islands/cursor-glow.tsx";
+import * as $favorites from "./islands/favorites.tsx";
+import * as $gamification_stats from "./islands/gamification-stats.tsx";
 import * as $mobile_nav from "./islands/mobile-nav.tsx";
+import * as $theme_toggle from "./islands/theme-toggle.tsx";
 import type { Manifest } from "$fresh/server.ts";
 
 const manifest = {
@@ -31,19 +32,20 @@ const manifest = {
     "./routes/api/listings/click.ts": $api_listings_click,
     "./routes/api/listings/index.ts": $api_listings_index,
     "./routes/api/listings/new.ts": $api_listings_new,
-    "./routes/favorites.tsx": $favorites,
     "./routes/index.tsx": $index,
     "./routes/legal.tsx": $legal,
     "./routes/sitemap.xml.ts": $sitemap_xml,
   },
   islands: {
-    "./islands/app/_components/about.tsx": $app_components_about,
     "./islands/app/_components/list-item.tsx": $app_components_list_item,
     "./islands/app/_components/list.tsx": $app_components_list,
-    "./islands/app/_components/search-list.tsx": $app_components_search_list,
     "./islands/app/index.tsx": $app_index,
-    "./islands/favorites.tsx": $favorites_1,
+    "./islands/celebration-effect.tsx": $celebration_effect,
+    "./islands/cursor-glow.tsx": $cursor_glow,
+    "./islands/favorites.tsx": $favorites,
+    "./islands/gamification-stats.tsx": $gamification_stats,
     "./islands/mobile-nav.tsx": $mobile_nav,
+    "./islands/theme-toggle.tsx": $theme_toggle,
   },
   baseUrl: import.meta.url,
 } satisfies Manifest;
