@@ -12,8 +12,10 @@ import * as $api_listings_new from "./routes/api/listings/new.ts";
 import * as $index from "./routes/index.tsx";
 import * as $legal from "./routes/legal.tsx";
 import * as $sitemap_xml from "./routes/sitemap.xml.ts";
+import * as $app_components_bookmarks from "./islands/app/_components/bookmarks.tsx";
 import * as $app_components_list_item from "./islands/app/_components/list-item.tsx";
 import * as $app_components_list from "./islands/app/_components/list.tsx";
+import * as $app_components_regular from "./islands/app/_components/regular.tsx";
 import * as $app_index from "./islands/app/index.tsx";
 import * as $celebration_effect from "./islands/celebration-effect.tsx";
 import * as $cursor_glow from "./islands/cursor-glow.tsx";
@@ -36,8 +38,10 @@ const manifest = {
     "./routes/sitemap.xml.ts": $sitemap_xml,
   },
   islands: {
+    "./islands/app/_components/bookmarks.tsx": $app_components_bookmarks,
     "./islands/app/_components/list-item.tsx": $app_components_list_item,
     "./islands/app/_components/list.tsx": $app_components_list,
+    "./islands/app/_components/regular.tsx": $app_components_regular,
     "./islands/app/index.tsx": $app_index,
     "./islands/celebration-effect.tsx": $celebration_effect,
     "./islands/cursor-glow.tsx": $cursor_glow,

@@ -21,24 +21,52 @@ export default function LegalPage() {
               pracovní nabídky za účelem měření popularity jednotlivých pozic.
               Nesbíráme ani neukládáme žádné osobní údaje uživatelů.
             </p>
+
             <h3 className="text-xl font-medium mt-6 mb-3">Co sbíráme:</h3>
             <ul>
               <li>Počet kliknutí na jednotlivé pracovní nabídky</li>
               <li>Čas posledního kliknutí na nabídku</li>
               <li>Anonymní statistiky návštěvnosti (Umami Analytics)</li>
             </ul>
+
             <h3 className="text-xl font-medium mt-6 mb-3">Webová analytika:</h3>
             <p>
               Používáme vlastní instanci Umami Analytics pro sběr anonymních
-              statistik návštěvnosti. Umami nesbirá osobní údaje, nepoužívá
+              statistik návštěvnosti. Umami nesbírá osobní údaje, nepoužívá
               cookies a je v souladu s GDPR.
             </p>
+
             <h3 className="text-xl font-medium mt-6 mb-3">Lokální úložiště:</h3>
             <p>
-              Umožňujeme uživatelům ukládat si pracovní nabídky do localStorage
-              jejich prohlížeče pro osobní použití. Tato data zůstávají pouze ve
-              vašem zařízení a nejsou nám přístupná.
+              Web využívá <strong>localStorage</strong>{" "}
+              vašeho prohlížeče pro ukládání dat, která slouží výhradně ke
+              zlepšení uživatelského zážitku. Tato data zůstávají pouze ve vašem
+              zařízení a nejsou přístupná provozovateli webu ani třetím stranám.
             </p>
+
+            <h4 className="text-lg font-medium mt-4 mb-2">
+              Ukládané položky:
+            </h4>
+            <ul>
+              <li>
+                <code>praceprojuniora/stats</code>{" "}
+                – anonymní statistiky (denní série, zobrazené nabídky, počet
+                uložených pozic)
+              </li>
+              <li>
+                <code>praceprojuniora/tracker-state</code>{" "}
+                – stav minimalizace sledovače (true/false)
+              </li>
+              <li>
+                <code>praceprojuniora/bookmarks</code>{" "}
+                – seznam uložených pracovních nabídek
+              </li>
+              <li>
+                <code>praceprojuniora/theme</code>{" "}
+                – preferované barevné schéma („light“ nebo „dark“)
+              </li>
+            </ul>
+
             <h3 className="text-xl font-medium mt-6 mb-3">Co nesbíráme:</h3>
             <ul>
               <li>IP adresy uživatelů</li>
@@ -74,19 +102,6 @@ export default function LegalPage() {
               Pokud si některý z původních poskytovatelů pracovních nabídek
               nepřeje, abychom jeho obsah zobrazovali, zavazujeme se takový
               zdroj na základě žádosti neprodleně odstranit.
-            </p>
-            <h3 className="text-xl font-medium mt-6 mb-3">
-              Příspěvky třetích stran
-            </h3>
-            <p>
-              Umožňujeme recruitérům a zaměstnavatelům přidávat vlastní pracovní
-              nabídky. Za obsah těchto příspěvků neseme odpovědnost pouze v
-              rozsahu stanoveném zákonem. Vyhrazujeme si právo odstranit
-              nevhodný obsah.
-            </p>
-            <p>
-              Přidáváním nabídky potvrzujete, že máte právo ji zveřejnit a že
-              neobsahuje nepravdivé nebo zavádějící informace.
             </p>
             <p>
               Služba je poskytována "jak je" bez jakýchkoliv záruk. Neneseme

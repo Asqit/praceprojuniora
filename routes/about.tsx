@@ -4,25 +4,24 @@ export default function About() {
       <main className="container mx-auto px-4 py-12 max-w-4xl">
         <div className="space-y-8">
           <div>
-            <h1 className="text-3xl font-bold mb-4 text-balance">
-              O nás
-            </h1>
+            <h1 className="text-3xl font-bold mb-4 text-balance">O nás</h1>
             <div className="h-1 w-20 bg-green-500 mb-6"></div>
           </div>
 
           <section className="space-y-4">
             <h2 className="text-xl font-bold text-green-500">Naše mise</h2>
             <p className="text-foreground leading-relaxed">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
+              Věříme, že začátky v IT nemusí být těžké. Cílem projektu{" "}
+              <strong>Práce pro Juniora</strong>{" "}
+              je usnadnit vstup do světa technologií všem, kteří právě dokončili
+              studium, mění kariéru nebo se prostě chtějí posunout dál.
             </p>
             <p className="text-foreground leading-relaxed">
-              Duis aute irure dolor in reprehenderit in voluptate velit esse
-              cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-              cupidatat non proident, sunt in culpa qui officia deserunt mollit
-              anim id est laborum.
+              Naše platforma pomáhá juniorním vývojářům, testerům, designérům a
+              dalším IT talentům najít první pracovní příležitost. Agregujeme
+              veřejně dostupné nabídky z ověřených zdrojů a přehledně je
+              zobrazujeme na jednom místě – bez reklam, registrace nebo
+              zbytečných cookies.
             </p>
           </section>
 
@@ -33,15 +32,43 @@ export default function About() {
                 • Propojujeme juniory s jejich prvními pracovními příležitostmi
               </p>
               <p className="text-foreground">
-                • Sbíráme kvalitní pracovní nabídky z ověřených zdrojů
+                • Sbíráme kvalitní pracovní nabídky z ověřených zdrojů (např.
+                jobs.cz)
               </p>
               <p className="text-foreground">
-                • Poskytujeme zdroje a rady pro rozvoj kariéry
+                • Zobrazujeme nabídky přehledně a bez sledování uživatelů
               </p>
               <p className="text-foreground">
-                • Budujeme podporující komunitu pro začínající profesionály
+                • Nabízíme jednoduché nástroje pro ukládání oblíbených nabídek a
+                sledování pokroku
               </p>
             </div>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-green-500">Na čem stavíme</h2>
+            <p className="text-foreground leading-relaxed">
+              Projekt běží kompletně na{" "}
+              <strong>Deno suite</strong>, což nám umožňuje psát čistý, bezpečný
+              a výkonný kód bez závislosti na externích build nástrojích.
+              Frontend i API jsou postavené na{" "}
+              <strong>Fresh.js</strong>, což zaručuje rychlé načítání a moderní
+              vývojový přístup založený na ostrovní architektuře.
+            </p>
+            <p className="text-foreground leading-relaxed">
+              O plánované úlohy se stará <strong>Deno.cron</strong>{" "}
+              a ukládání dat řešíme pomocí{" "}
+              <strong>Deno.KV</strong>, které nám poskytuje spolehlivý a
+              jednoduchý key–value storage. Pro scraping pracovních nabídek
+              využíváme kombinaci knihoven <strong>KY</strong> a{" "}
+              <strong>Cheerio</strong>, které nám pomáhají efektivně a šetrně
+              zpracovávat veřejně dostupné informace.
+            </p>
+            <p className="text-foreground leading-relaxed">
+              Celý ekosystém běží bez tradičního backend serveru – plně využívá
+              sílu Deno runtime a jeho nativní bezpečnostní sandbox, což znamená
+              minimální údržbu a maximální stabilitu.
+            </p>
           </section>
 
           <section className="space-y-4">
@@ -49,15 +76,17 @@ export default function About() {
               Proč si vybrat nás
             </h2>
             <p className="text-foreground leading-relaxed">
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-              accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-              quae ab illo inventore veritatis et quasi architecto beatae vitae
-              dicta sunt explicabo.
+              Na rozdíl od velkých pracovních portálů jsme zaměření čistě na
+              {" "}
+              <strong>juniorní IT pozice</strong>. Nepotřebujeme vaše osobní
+              údaje, neukládáme cookies a všechna data zůstávají pouze ve vašem
+              prohlížeči. Váš komfort a soukromí jsou pro nás prioritou.
             </p>
             <p className="text-foreground leading-relaxed">
-              Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit
-              aut fugit, sed quia consequuntur magni dolores eos qui ratione
-              voluptatem sequi nesciunt.
+              Platforma je tvořena nezávislým vývojářem a postupně se vyvíjí s
+              cílem přinášet přehledné, rychlé a přístupné prostředí pro všechny
+              začínající profesionály. Jsme otevření zpětné vazbě a návrhům na
+              vylepšení.
             </p>
           </section>
 
@@ -67,11 +96,13 @@ export default function About() {
             </h2>
             <div className="bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 space-y-3">
               <p className="text-foreground mb-2">
-                Email: kontakt@praceprojuniora.cz
-              </p>
-              <p className="text-foreground mb-2">Twitter: @praceprojuniora</p>
-              <p className="text-foreground">
-                LinkedIn: linkedin.com/company/praceprojuniora
+                Email:{" "}
+                <a
+                  href="mailto:ondrejtucek9@gmail.com"
+                  className="underline text-green-500"
+                >
+                  ondrejtucek9@gmail.com
+                </a>
               </p>
             </div>
           </section>

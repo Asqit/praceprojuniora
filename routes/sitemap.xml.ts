@@ -15,6 +15,12 @@ export const handler = (_req: Request, _ctx: FreshContext): Response => {
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
+  <url>
+    <loc>https://praceprojuniora.cz/about</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
 </urlset>`;
   return new Response(xml, {
     headers: {

@@ -101,7 +101,7 @@ export function ListItem(props: Props) {
       aria-label={`Pracovní nabídka: ${title} u ${company}`}
       class="p-8 h-full bg-white dark:bg-zinc-950 dark:text-zinc-100 rounded-lg border border-zinc-200 dark:border-zinc-800 transition-all hover:!border-green-500 hover:shadow-lg hover:-translate-y-1 flex flex-col"
     >
-      <div class="flex justify-between items-start">
+      <div class="flex justify-between items-start gap-4">
         <div>
           <h1 class="font-bold text-lg my-2">{title}</h1>
           <h2 class="font-bold text-zinc-400 my-2">{company}</h2>
