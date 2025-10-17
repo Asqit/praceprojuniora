@@ -1,108 +1,123 @@
-import { asset } from "$fresh/runtime.ts";
-import { Footer } from "../components/footer/footer.tsx";
-import { Navbar } from "../components/navbar/navbar.tsx";
-
-export default function AboutPage() {
+export default function About() {
   return (
-    <>
-      <Navbar />
-      <main className="min-h-screen p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <img src={asset("banner.webp")} className="mx-auto mb-6" />
-            <div className="text-gruvbox-gray text-sm font-mono">
-              [ SYSTEM READY ]
+    <div className="min-h-screen">
+      <main className="container mx-auto px-4 py-12 max-w-4xl">
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold mb-4 text-balance">O nás</h1>
+            <div className="h-1 w-20 bg-green-500 mb-6"></div>
+          </div>
+
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-green-500">Naše mise</h2>
+            <p className="text-foreground leading-relaxed">
+              Věříme, že začátky v IT nemusí být těžké. Cílem projektu{" "}
+              <strong>Práce pro Juniora</strong>{" "}
+              je usnadnit vstup do světa technologií všem, kteří právě dokončili
+              studium, mění kariéru nebo se prostě chtějí posunout dál.
+            </p>
+            <p className="text-foreground leading-relaxed">
+              Naše platforma pomáhá juniorním vývojářům, testerům, designérům a
+              dalším IT talentům najít první pracovní příležitost. Agregujeme
+              veřejně dostupné nabídky z ověřených zdrojů a přehledně je
+              zobrazujeme na jednom místě – bez reklam, registrace nebo
+              zbytečných cookies.
+            </p>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-green-500">Co děláme</h2>
+            <div className="bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 space-y-3">
+              <p className="text-foreground">
+                • Propojujeme juniory s jejich prvními pracovními příležitostmi
+              </p>
+              <p className="text-foreground">
+                • Sbíráme kvalitní pracovní nabídky z ověřených zdrojů (např.
+                jobs.cz)
+              </p>
+              <p className="text-foreground">
+                • Zobrazujeme nabídky přehledně a bez sledování uživatelů
+              </p>
+              <p className="text-foreground">
+                • Nabízíme jednoduché nástroje pro ukládání oblíbených nabídek a
+                sledování pokroku
+              </p>
             </div>
-          </div>
+          </section>
 
-          <div className="space-y-8 text-gruvbox-fg font-mono">
-            <section className="border-2 border-gruvbox-yellow bg-gruvbox-bg0 p-8">
-              <h2 className="text-2xl font-bold text-gruvbox-yellow mb-6 uppercase tracking-wider">
-                {"> CO DĚLÁME_"}
-              </h2>
-              <div className="space-y-3 text-gruvbox-fg">
-                <p>
-                  <span className="text-gruvbox-gray">10 PRINT</span>{" "}
-                  "Automaticky sbíráme juniorní IT pozice"
-                </p>
-                <p>
-                  <span className="text-gruvbox-gray">20 PRINT</span>{" "}
-                  "Filtrujeme duplicity a neaktuální nabídky"
-                </p>
-                <p>
-                  <span className="text-gruvbox-gray">30 PRINT</span>{" "}
-                  "Poskytujeme přehled pro začátečníky"
-                </p>
-                <p className="text-gruvbox-gray">40 RUN</p>
-              </div>
-            </section>
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-green-500">Na čem stavíme</h2>
+            <p className="text-foreground leading-relaxed">
+              Projekt běží kompletně na{" "}
+              <strong>Deno suite</strong>, což nám umožňuje psát čistý, bezpečný
+              a výkonný kód bez závislosti na externích build nástrojích.
+              Frontend i API jsou postavené na{" "}
+              <strong>Fresh.js</strong>, což zaručuje rychlé načítání a moderní
+              vývojový přístup založený na ostrovní architektuře.
+            </p>
+            <p className="text-foreground leading-relaxed">
+              O plánované úlohy se stará <strong>Deno.cron</strong>{" "}
+              a ukládání dat řešíme pomocí{" "}
+              <strong>Deno.KV</strong>, které nám poskytuje spolehlivý a
+              jednoduchý key–value storage. Pro scraping pracovních nabídek
+              využíváme kombinaci knihoven <strong>KY</strong> a{" "}
+              <strong>Cheerio</strong>, které nám pomáhají efektivně a šetrně
+              zpracovávat veřejně dostupné informace.
+            </p>
+            <p className="text-foreground leading-relaxed">
+              Celý ekosystém běží bez tradičního backend serveru – plně využívá
+              sílu Deno runtime a jeho nativní bezpečnostní sandbox, což znamená
+              minimální údržbu a maximální stabilitu.
+            </p>
+          </section>
 
-            <section className="border-2 border-gruvbox-blue bg-gruvbox-bg0 p-8">
-              <h2 className="text-2xl font-bold text-gruvbox-blue mb-6 uppercase tracking-wider">
-                {"> PROČ VZNIKL PROJEKT_"}
-              </h2>
-              <div className="space-y-3 text-gruvbox-fg">
-                <p>
-                  <span className="text-gruvbox-gray">LOAD</span> "PROBLEM",8,1
-                </p>
-                <p>- Hledání juniorních pozic = frustrující</p>
-                <p>- Nabídky rozptýlené po stránkách</p>
-                <p>- Začátečníci potřebují pomoc</p>
-                <p className="text-gruvbox-gray">READY.</p>
-              </div>
-            </section>
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-green-500">
+              Proč si vybrat nás
+            </h2>
+            <p className="text-foreground leading-relaxed">
+              Na rozdíl od velkých pracovních portálů jsme zaměření čistě na
+              {" "}
+              <strong>juniorní IT pozice</strong>. Nepotřebujeme vaše osobní
+              údaje, neukládáme cookies a všechna data zůstávají pouze ve vašem
+              prohlížeči. Váš komfort a soukromí jsou pro nás prioritou.
+            </p>
+            <p className="text-foreground leading-relaxed">
+              Platforma je tvořena nezávislým vývojářem a postupně se vyvíjí s
+              cílem přinášet přehledné, rychlé a přístupné prostředí pro všechny
+              začínající profesionály. Jsme otevření zpětné vazbě a návrhům na
+              vylepšení.
+            </p>
+          </section>
 
-            <section className="border-2 border-gruvbox-green bg-gruvbox-bg0 p-8">
-              <h2 className="text-2xl font-bold text-gruvbox-green mb-6 uppercase tracking-wider">
-                {"> TECH STACK_"}
-              </h2>
-              <div className="space-y-3 text-gruvbox-fg">
-                <p>
-                  <span className="text-gruvbox-gray">SYS 64738:</span>{" "}
-                  Fresh (Deno) framework
-                </p>
-                <p>
-                  <span className="text-gruvbox-gray">SYS 49152:</span>{" "}
-                  Deno KV database
-                </p>
-                <p>
-                  <span className="text-gruvbox-gray">SYS 53248:</span>{" "}
-                  Tailwind CSS styling
-                </p>
-                <p>
-                  <span className="text-gruvbox-gray">SYS 40960:</span>{" "}
-                  Automated daily updates
-                </p>
-                <p className="text-gruvbox-gray">SYSTEM OPERATIONAL</p>
-              </div>
-            </section>
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-green-500">
+              Kontaktujte nás
+            </h2>
+            <div className="bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 p-6 space-y-3">
+              <p className="text-foreground mb-2">
+                Email:{" "}
+                <a
+                  href="mailto:ondrejtucek9@gmail.com"
+                  className="underline text-green-500"
+                >
+                  ondrejtucek9@gmail.com
+                </a>
+              </p>
+            </div>
+          </section>
 
-            <section className="border-2 border-gruvbox-red bg-gruvbox-bg0 p-8">
-              <h2 className="text-2xl font-bold text-gruvbox-red mb-6 uppercase tracking-wider">
-                {"> PRIVACY & CONTACT_"}
-              </h2>
-              <div className="space-y-3 text-gruvbox-fg">
-                <p>
-                  <span className="text-gruvbox-gray">POKE 53280,0:</span>{" "}
-                  Proprietární projekt
-                </p>
-                <p>
-                  <span className="text-gruvbox-gray">POKE 53281,0:</span>{" "}
-                  Anonymní statistiky pouze
-                </p>
-                <p>
-                  <span className="text-gruvbox-gray">POKE 646,1:</span>{" "}
-                  Oblíbené v localStorage
-                </p>
-                <p className="text-gruvbox-gray">
-                  *** COMMODORE 64 BASIC V2 ***
-                </p>
-              </div>
-            </section>
-          </div>
+          {
+            /*
+            <div className="pt-8">
+              <p className="text-sm text-muted-foreground">
+                Poslední aktualizace: 8. ledna 2025
+              </p>
+            </div>
+            */
+          }
         </div>
       </main>
-      <Footer />
-    </>
+    </div>
   );
 }

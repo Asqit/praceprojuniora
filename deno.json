@@ -18,6 +18,7 @@
     "clsx": "npm:clsx@^2.1.1",
     "https-proxy-agent": "npm:https-proxy-agent@^7.0.6",
     "ky": "npm:ky@^1.8.2",
+    "lucide-preact": "npm:lucide-preact@^0.546.0",
     "preact": "https://esm.sh/preact@10.22.0",
     "preact/": "https://esm.sh/preact@10.22.0/",
     "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
