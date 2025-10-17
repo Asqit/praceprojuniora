@@ -4,34 +4,27 @@
 @tailwind utilities;
 
 .rubik {
-  font-family: "Rubik 80s Fade", monospace, system-ui;
-  font-weight: 400;
-  font-style: normal;
+    font-family: "Rubik 80s Fade", monospace, system-ui;
+    font-weight: 400;
+    font-style: normal;
 }
 
-.crt-frame {
-  position: relative;
-  border-radius: 50px; /* víc zaoblené než obvykle */
-  border: 6px solid #222; /* rámeček monitoru */
+:root {
+    --velocity-x: 0;
+    --velocity-y: 0;
 }
 
-/* "zakřivení skla" pomocí gradient overlay */
-.crt-frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(0, 0, 0, 0.6) 100%
-  );
-  mix-blend-mode: overlay;
+@keyframes particle-float {
+    0% {
+        transform: translate(0, 0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--velocity-x), var(--velocity-y));
+        opacity: 0;
+    }
 }
 
-.crt-warp {
-  filter: url(#crtWarp);
-  border-radius: 40px;
-  border: 6px solid #111;
+.animate-particle-float {
+    animation: particle-float 1s ease-out forwards;
 }

@@ -1,9 +1,8 @@
 import type { Listing } from "../lib/types.ts";
-import { Footer } from "../components/footer/footer.tsx";
-import { Navbar } from "../components/navbar/navbar.tsx";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import ky from "ky";
 import App from "../islands/app/index.tsx";
+import GamificationTracker from "../islands/gamification-stats.tsx";
 
 export const handler: Handlers = {
   async GET(req, ctx) {
@@ -75,18 +74,16 @@ export default function RootPage({ data }: PageProps<Listing[]>) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingsData) }}
       />
-      <Navbar />
 
       <main>
         <section aria-label="Junior IT job listings">
           <h1 className="sr-only">
             Práce Pro Juniora - Aktuální nabídky práce pro juniory v IT
           </h1>
-
           <App initialData={data} />
+          <GamificationTracker />
         </section>
       </main>
-      <Footer />
     </>
   );
 }

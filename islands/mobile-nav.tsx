@@ -1,4 +1,11 @@
 import { useState } from "preact/hooks";
+import { Menu, X } from "lucide-preact";
+
+const links = [
+  { href: "/", label: "Nabídky" },
+  { href: "/about", label: "O nás" },
+  { href: "/legal", label: "Právní informace" },
+];
 
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,42 +19,33 @@ export default function MobileNav() {
         className="md:hidden text-gruvbox-fg hover:text-gruvbox-yellow transition-colors"
         aria-label="Toggle menu"
       >
-        [ menu ]
+        <Menu />
       </button>
 
       {/* Desktop navigation */}
       <div className="hidden md:flex gap-6">
-        <a
-          href="/"
-          className="text-gruvbox-fg hover:text-gruvbox-yellow transition-colors"
-        >
-          [ práce ]
-        </a>
-        <a
-          href="/favorites"
-          className="text-gruvbox-fg hover:text-gruvbox-yellow transition-colors"
-        >
-          [ oblíbené ]
-        </a>
-        <a
-          href="/about"
-          className="text-gruvbox-fg hover:text-gruvbox-yellow transition-colors"
-        >
-          [ o nás ]
-        </a>
+        {links.map((link) => (
+          <a
+            key={link.href}
+            class="hover:text-green-500 transition-colors font-medium"
+            href={link.href}
+          >
+            {link.label}
+          </a>
+        ))}
       </div>
 
       {/* Mobile sheet overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur z-40 md:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Mobile navigation sheet */}
       <div
-        className={`fixed top-0 right-0 h-full w-64 bg-gruvbox-bg border-l border-gruvbox-bg1 z-50 transform transition-transform duration-300 md:hidden ${
+        className={`fixed top-0 right-0 h-full w-64 bg-white dark:bg-black border-l border-zinc-200 dark:border-zinc-800 z-50 transform transition-transform duration-300 md:hidden ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -59,32 +57,21 @@ export default function MobileNav() {
               onClick={() => setIsOpen(false)}
               className="text-gruvbox-fg hover:text-gruvbox-red transition-colors"
             >
-              [x]
+              <X />
             </button>
           </div>
 
           <nav className="space-y-4">
-            <a
-              href="/"
-              className="block text-gruvbox-fg hover:text-gruvbox-yellow transition-colors font-mono"
-              onClick={() => setIsOpen(false)}
-            >
-              [ práce ]
-            </a>
-            <a
-              href="/favorites"
-              className="block text-gruvbox-fg hover:text-gruvbox-yellow transition-colors font-mono"
-              onClick={() => setIsOpen(false)}
-            >
-              [ oblíbené ]
-            </a>
-            <a
-              href="/about"
-              className="block text-gruvbox-fg hover:text-gruvbox-yellow transition-colors font-mono"
-              onClick={() => setIsOpen(false)}
-            >
-              [ o nás ]
-            </a>
+            {links.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="block hover:text-green-500 transition-colors font-medium"
+                onClick={() => setIsOpen(false)}
+              >
+                {link.label}
+              </a>
+            ))}
           </nav>
         </div>
       </div>

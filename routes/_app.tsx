@@ -1,5 +1,9 @@
 import { type PageProps } from "$fresh/server.ts";
 import { asset } from "$fresh/runtime.ts";
+import { Navbar } from "../components/navbar/navbar.tsx";
+import CursorGlow from "../islands/cursor-glow.tsx";
+import CelebrationEffect from "../islands/celebration-effect.tsx";
+import { Footer } from "../components/footer/footer.tsx";
 
 export default function App({ Component }: PageProps) {
   const title = "Práce Pro Juniora – Práce pro juniory v IT";
@@ -73,8 +77,12 @@ export default function App({ Component }: PageProps) {
           />
         )}
       </head>
-      <body className="bg-gruvbox-bg text-gruvbox-fg font-mono">
+      <body class="bg-white text-black dark:bg-black dark:text-white">
+        <Navbar />
+        <CursorGlow />
+        <CelebrationEffect />
         <Component />
+        <Footer />
       </body>
     </html>
   );
