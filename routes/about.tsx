@@ -107,11 +107,15 @@ export default function About() {
             </div>
           </section>
 
-          <div className="pt-8">
-            <p className="text-sm text-muted-foreground">
-              Poslední aktualizace: 8. ledna 2025
-            </p>
-          </div>
+          {
+            /*
+            <div className="pt-8">
+              <p className="text-sm text-muted-foreground">
+                Poslední aktualizace: 8. ledna 2025
+              </p>
+            </div>
+            */
+          }
         </div>
       </main>
     </div>
