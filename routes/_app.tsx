@@ -52,17 +52,16 @@ export default function App({ Component }: PageProps) {
         />
         <link
           rel="icon"
-          type="image/png"
           sizes="32x32"
-          href={asset("/favicon-32x32.png")}
+          href={asset("/favicon.ico")}
         />
         <link
           rel="icon"
           type="image/png"
-          sizes="16x16"
-          href={asset("/favicon-16x16.png")}
+          sizes="96x96"
+          href={asset("/favicon-96x96.png")}
         />
-        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="manifest" href="/manifest.manifest" />
         <meta name="theme-color" content="#282828" />
 
         {/* Stylesheet */}

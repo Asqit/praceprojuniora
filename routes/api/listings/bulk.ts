@@ -1,6 +1,11 @@
 import { FreshContext } from "$fresh/server.ts";
 import { initDb } from "../../../lib/db/index.ts";
 import { ListingController } from "../../../lib/listing-controller.ts";
+import { z } from "zod";
+
+const schema = z.object({
+  ids: z.array(z.string()).min(1),
+});
 
 export async function handler(req: Request, _: FreshContext) {
   if (req.method !== "POST") {
@@ -11,19 +16,10 @@ export async function handler(req: Request, _: FreshContext) {
   }
 
   try {
-    const { ids } = await req.json();
-
-    if (!Array.isArray(ids)) {
-      return new Response(
-        JSON.stringify({ error: "ids must be an array" }),
-        { status: 400, headers: { "Content-Type": "application/json" } },
-      );
-    }
-
+    const { ids } = await schema.parseAsync(await req.json());
     const db = await initDb();
     const controller = new ListingController(db);
     const allListings = await controller.list();
-
     const filteredListings = allListings.filter((listing) =>
       ids.includes(listing.id)
     );
