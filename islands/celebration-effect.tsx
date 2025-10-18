@@ -60,7 +60,7 @@ export default function CelebrationEffect() {
       {particles.map((particle) => (
         <div
           key={particle.id}
-          className="absolute rounded-full animate-particle-float"
+          className="absolute animate-particle-float"
           style={{
             left: particle.x,
             top: particle.y,

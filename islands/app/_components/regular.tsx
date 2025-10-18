@@ -23,16 +23,17 @@ export function RegularStep({ data, toggleStep }: Props) {
       return matchesSearch && matchesLocation;
     })
     .sort((a, b) => {
-      if (sortBy === "popular") return b.clicks - a.clicks;
-      if (sortBy === "expiring") {
-        return (
-          new Date(a.expiredAt).getTime() -
-          new Date(b.expiredAt).getTime()
-        );
+      if (sortBy === "newest") {
+        return new Date(b.createdAt).getTime() -
+          new Date(a.createdAt).getTime();
       }
-      return (
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      );
+
+      if (sortBy === "expiring") {
+        return new Date(a.expiredAt).getTime() -
+          new Date(b.expiredAt).getTime();
+      }
+
+      return b.clicks - a.clicks;
     });
 
   return (
