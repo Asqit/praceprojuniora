@@ -59,12 +59,17 @@ export function BookmarksStep({ toggleStep }: Props) {
       return matchesSearch && matchesLocation;
     })
     .sort((a, b) => {
-      if (sortBy === "popular") return b.clicks - a.clicks;
+      if (sortBy === "newest") {
+        return new Date(b.createdAt).getTime() -
+          new Date(a.createdAt).getTime();
+      }
+
       if (sortBy === "expiring") {
         return new Date(a.expiredAt).getTime() -
           new Date(b.expiredAt).getTime();
       }
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+
+      return b.clicks - a.clicks;
     });
 
   return (
@@ -121,7 +126,7 @@ export function BookmarksStep({ toggleStep }: Props) {
             className="border border-zinc-200 dark:border-zinc-700 px-3 py-2 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition flex items-center gap-4"
           >
             <Bookmark className="h-5 w-5 fill-current" />
-            Záložky
+            Zpět na nabídky
           </button>
         </div>
       </div>

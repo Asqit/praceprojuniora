@@ -4,7 +4,6 @@ import { Menu, X } from "lucide-preact";
 const links = [
   { href: "/", label: "Nabídky" },
   { href: "/about", label: "O nás" },
-  { href: "/legal", label: "Právní informace" },
 ];
 
 export default function MobileNav() {
