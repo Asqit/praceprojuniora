@@ -1,7 +1,7 @@
 import { Listing } from "../../../lib/types.ts";
 import { useState } from "preact/hooks";
 import { List } from "./list.tsx";
-import { Bookmark } from "lucide-preact";
+import { Bookmark, Search } from "lucide-preact";
 
 interface Props {
   toggleStep(): void;
@@ -102,7 +102,20 @@ export function RegularStep({ data, toggleStep }: Props) {
         </p>
       </div>
 
-      {filteredData.length === 0 ? <>no data</> : <List data={filteredData} />}
+      {filteredData.length === 0
+        ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+            <Search className="h-10 w-10 mb-4 text-zinc-400" />
+            <h2 className="text-lg font-semibold mb-2">
+              Žádné nabídky nenalezeny
+            </h2>
+            <p className="mb-2 max-w-md mx-auto">
+              Zkuste upravit filtr, hledat jinou pozici nebo se vraťte později –
+              nabídky se pravidelně aktualizují.
+            </p>
+          </div>
+        )
+        : <List data={filteredData} />}
     </main>
   );
 }

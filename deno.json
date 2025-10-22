@@ -13,6 +13,7 @@
   "exclude": ["**/_fresh/*"],
   "imports": {
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
     "axios": "npm:axios@^1.11.0",
     "cheerio": "npm:cheerio@^1.1.2",
     "clsx": "npm:clsx@^2.1.1",
