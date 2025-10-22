@@ -6,7 +6,7 @@ export interface GamificationStats {
   jobsViewed: number;
   jobsBookmarked: number;
   streak: number;
-  lastActiveDate?: string; // yyyy-mm-dd
+  lastActiveDate?: string;
 }
 
 export default function GamificationTracker() {

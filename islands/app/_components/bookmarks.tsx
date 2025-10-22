@@ -164,7 +164,7 @@ export function BookmarksStep({ toggleStep }: Props) {
           {filteredData.length === 0
             ? (
               <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground">
-                <p>Nemáš uložené žádné nabídky 😅</p>
+                <p>Nemáš uložené žádné nabídky</p>
                 <p className="text-sm">Zkus si nějakou přidat a vrať se sem!</p>
               </div>
             )

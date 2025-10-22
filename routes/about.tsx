@@ -1,4 +1,16 @@
-export default function About() {
+import { Handlers, PageProps } from "$fresh/server.ts";
+import { CONTACT_EMAIL } from "../lib/server-variables.ts";
+
+export const handler: Handlers = {
+  GET(_req, ctx) {
+    return ctx.render({ contactEmail: CONTACT_EMAIL });
+  },
+};
+
+export default function About({ data }: PageProps<{ contactEmail: string }>) {
+  const email = data.contactEmail && data.contactEmail !== "contact@example.com"
+    ? data.contactEmail
+    : "BADVAR";
   return (
     <div className="min-h-screen">
       <main className="container mx-auto px-4 py-12 max-w-4xl">
@@ -98,10 +110,10 @@ export default function About() {
               <p className="text-foreground mb-2">
                 Email:{" "}
                 <a
-                  href="mailto:ondrejtucek9@gmail.com"
+                  href={`mailto:${email}`}
                   className="underline text-green-500"
                 >
-                  ondrejtucek9@gmail.com
+                  {email}
                 </a>
               </p>
             </div>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "preact/hooks";
 import { Listing } from "../../../lib/types.ts";
 import { Bookmark, Eye, SquareArrowOutUpRight } from "lucide-preact";
-import ky from "ky";
 import { JSX } from "preact";
 import { localStorageKeys } from "../../../lib/misc.ts";
+import ky from "ky";
 
 type Props = Listing;
 
@@ -15,6 +15,7 @@ export function ListItem(props: Props) {
     expiredAt,
     location,
     company,
+    createdAt,
     ...rest
   } = props;
   const [clicks, setClicks] = useState<number>(rest?.clicks);
@@ -28,6 +29,17 @@ export function ListItem(props: Props) {
     if (diffDays === 0) return "Dnes";
     if (diffDays === 1) return "Zítra";
     return `${diffDays} dní`;
+  };
+
+  const timeAgo = (dateStr: string) => {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const diffMs = now.getTime() - date.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "Dnes";
+    if (diffDays === 1) return "Zítra";
+    return `${diffDays} dny(ů)`;
   };
 
   const handleClick = async (e: JSX.TargetedMouseEvent<HTMLAnchorElement>) => {
@@ -117,7 +129,14 @@ export function ListItem(props: Props) {
         <li class="flex items-center gap-2">
           <Eye size={16} /> {clicks} zobrazení
         </li>
-        <li>Platnost do {timeTo(expiredAt)}</li>
+        <li class="group h-5 overflow-hidden">
+          <div class="transition-all group-hover:-translate-y-4">
+            Platnost do {timeTo(expiredAt)}
+          </div>
+          <div class="transition-all group-hover:-translate-y-5">
+            Přidáno před {timeAgo(createdAt)}
+          </div>
+        </li>
       </ul>
       <p class="text-green-500 hover:underline flex items-center gap-2 text-sm">
         <span>Zobrazit původní inzerát</span>{" "}

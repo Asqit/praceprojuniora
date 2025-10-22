@@ -1,4 +1,18 @@
-export default function LegalPage() {
+import { Handlers, PageProps } from "$fresh/server.ts";
+import { CONTACT_EMAIL } from "../lib/server-variables.ts";
+
+export const handler: Handlers = {
+  GET(_req, ctx) {
+    return ctx.render({ contactEmail: CONTACT_EMAIL });
+  },
+};
+
+export default function LegalPage(
+  { data }: PageProps<{ contactEmail: string }>,
+) {
+  const email = data.contactEmail && data.contactEmail !== "contact@example.com"
+    ? data.contactEmail
+    : "BADVAR";
   return (
     <>
       <head>
@@ -118,10 +132,10 @@ export default function LegalPage() {
             </p>
             <p>
               <a
-                href="mailto:ondrejtucek9@gmail.com"
-                className="text-gruvbox-aqua underline"
+                href={`mailto:${email}`}
+                className="text-green-500 underline"
               >
-                ondrejtucek9@gmail.com
+                {email}
               </a>
             </p>
           </div>

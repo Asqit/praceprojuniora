@@ -1,4 +1,4 @@
-import { USER_AGENT } from "./misc.ts";
+import { USER_AGENT } from "./server-variables.ts";
 import { type Listing } from "./types.ts";
 
 export class ListingController {
