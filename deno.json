@@ -1,0 +1,36 @@
+{
+  "lock": false,
+  "tasks": {
+    "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
+    "cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
+    "manifest": "deno task cli manifest $(pwd)",
+    "start": "ENV=development deno run -A --unstable-cron --unstable-kv --watch=static/,routes/ dev.ts",
+    "build": "deno run -A --unstable-cron --unstable-kv dev.ts build",
+    "preview": "ENV=development deno run --unstable-cron --unstable-kv -A main.ts",
+    "update": "deno run -A -r https://fresh.deno.dev/update ."
+  },
+  "lint": { "rules": { "tags": ["fresh", "recommended"] } },
+  "exclude": ["**/_fresh/*"],
+  "imports": {
+    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
+    "cheerio": "npm:cheerio@^1.1.2",
+    "clsx": "npm:clsx@^2.1.1",
+    "https-proxy-agent": "npm:https-proxy-agent@^7.0.6",
+    "ky": "npm:ky@^1.8.2",
+    "lucide-preact": "npm:lucide-preact@^0.546.0",
+    "preact": "https://esm.sh/preact@10.22.0",
+    "preact/": "https://esm.sh/preact@10.22.0/",
+    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
+    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
+    "proxifly": "npm:proxifly@^2.0.2",
+    "tailwindcss": "npm:tailwindcss@3.4.1",
+    "tailwindcss/": "npm:/tailwindcss@3.4.1/",
+    "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
+    "$std/": "https://deno.land/std@0.216.0/",
+    "ts-pattern": "npm:ts-pattern@^5.8.0",
+    "zod": "npm:zod@^4.0.17"
+  },
+  "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "preact" },
+  "nodeModulesDir": "auto"
+}
