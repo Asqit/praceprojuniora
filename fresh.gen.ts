@@ -5,6 +5,7 @@
 import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $about from "./routes/about.tsx";
+import * as $api_middleware from "./routes/api/_middleware.ts";
 import * as $api_listings_bulk from "./routes/api/listings/bulk.ts";
 import * as $api_listings_click from "./routes/api/listings/click.ts";
 import * as $api_listings_index from "./routes/api/listings/index.ts";
@@ -29,6 +30,7 @@ const manifest = {
     "./routes/_404.tsx": $_404,
     "./routes/_app.tsx": $_app,
     "./routes/about.tsx": $about,
+    "./routes/api/_middleware.ts": $api_middleware,
     "./routes/api/listings/bulk.ts": $api_listings_bulk,
     "./routes/api/listings/click.ts": $api_listings_click,
     "./routes/api/listings/index.ts": $api_listings_index,

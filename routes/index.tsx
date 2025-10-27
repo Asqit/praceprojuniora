@@ -12,7 +12,10 @@ export const handler: Handlers = {
         "/api/listings",
         `${baseUrl.protocol}//${baseUrl.host}`,
       );
-      const res = await ky.get(url, { timeout: 1000 });
+      const res = await ky.get(url, {
+        timeout: 1000,
+        headers: { Origin: "https://praceprojuniora.cz" },
+      });
       const { data } = await res.json<{ data: Listing[] }>();
       return ctx.render(data);
     } catch (error) {
