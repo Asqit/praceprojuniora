@@ -10,20 +10,31 @@ export async function handler(req: Request, _: FreshContext) {
     });
   }
 
+  const url = new URL(req.url);
+  const limit = Math.min(parseInt(url.searchParams.get("limit") || "20"), 100);
+  const offset = parseInt(url.searchParams.get("offset") || "0");
+
   const db = await initDb();
   const controller = new ListingController(db);
-  const listings = await controller.list();
+  const allListings = await controller.list();
 
-  if (listings.length === 0) {
+  const total = allListings.length;
+  const paginatedListings = allListings.slice(offset, offset + limit);
+
+  if (total === 0) {
     return new Response(
-      JSON.stringify({ data: [], message: "No listings available." }),
+      JSON.stringify({ data: [], total: 0, hasMore: false, message: "No listings available." }),
       {
         headers: { "Content-Type": "application/json" },
       },
     );
   }
 
-  return new Response(JSON.stringify({ data: listings }), {
+  return new Response(JSON.stringify({ 
+    data: paginatedListings, 
+    total,
+    hasMore: offset + limit < total 
+  }), {
     headers: {
       "Content-Type": "application/json",
     },

@@ -1,10 +1,33 @@
 import { jobscz } from "./inet/jobs-cz.ts";
 import { pracecz } from "./inet/prace-cz.ts";
 
-const KEYWORDS = ["junior", "entry", "graduate", "fresher", "trainee"];
+const KEYWORDS = [
+  "junior",
+  "entry",
+  "graduate",
+  "fresher",
+  "trainee",
+  "začátečník",
+  "absolvent",
+  "bez praxe",
+  "nástup",
+];
+
+const EXCLUSION_KEYWORDS = [
+  "senior",
+  "lead",
+  "principal",
+  "architect",
+  "manager",
+  "vedoucí",
+  "hlavní",
+  "zkušený",
+];
 
 function isJuniorJob(title: string): boolean {
   const lower = title.toLowerCase();
+  if (EXCLUSION_KEYWORDS.some((kw) => lower.includes(kw))) return false;
+
   return KEYWORDS.some((kw) => lower.includes(kw));
 }
 
@@ -20,7 +43,7 @@ export async function fetchListings() {
   });
 
   console.log(
-    `Fetched ${listings.length}, returning ${juniorListings.length} junior jobs`,
+    `Fetched ${listings.length}, returning ${juniorListings.length} junior jobs`
   );
   return juniorListings;
 }

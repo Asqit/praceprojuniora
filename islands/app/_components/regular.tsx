@@ -6,9 +6,13 @@ import { Bookmark, Search } from "lucide-preact";
 interface Props {
   toggleStep(): void;
   data: Listing[];
+  total: number;
+  hasMore: boolean;
+  isLoading: boolean;
+  onLoadMore(): void;
 }
 
-export function RegularStep({ data, toggleStep }: Props) {
+export function RegularStep({ data, toggleStep, total, hasMore, isLoading, onLoadMore }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
@@ -18,19 +22,22 @@ export function RegularStep({ data, toggleStep }: Props) {
       const matchesSearch =
         job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         job.company.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesLocation = locationFilter === "all" ||
+      const matchesLocation =
+        locationFilter === "all" ||
         job.location.toLowerCase().includes(locationFilter.toLowerCase());
       return matchesSearch && matchesLocation;
     })
     .sort((a, b) => {
       if (sortBy === "newest") {
-        return new Date(b.createdAt).getTime() -
-          new Date(a.createdAt).getTime();
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
       }
 
       if (sortBy === "expiring") {
-        return new Date(a.expiredAt).getTime() -
-          new Date(b.expiredAt).getTime();
+        return (
+          new Date(a.expiredAt).getTime() - new Date(b.expiredAt).getTime()
+        );
       }
 
       return b.clicks - a.clicks;
@@ -98,24 +105,37 @@ export function RegularStep({ data, toggleStep }: Props) {
 
       <div className="mb-6">
         <p className="text-sm text-muted-foreground">
-          Nalezeno {filteredData.length} pozic
+          Nalezeno {filteredData.length} pozic z celkem {total}
         </p>
       </div>
 
-      {filteredData.length === 0
-        ? (
-          <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
-            <Search className="h-10 w-10 mb-4 text-zinc-400" />
-            <h2 className="text-lg font-semibold mb-2">
-              Žádné nabídky nenalezeny
-            </h2>
-            <p className="mb-2 max-w-md mx-auto">
-              Zkuste upravit filtr, hledat jinou pozici nebo se vraťte později –
-              nabídky se pravidelně aktualizují.
-            </p>
-          </div>
-        )
-        : <List data={filteredData} />}
+      {filteredData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+          <Search className="h-10 w-10 mb-4 text-zinc-400" />
+          <h2 className="text-lg font-semibold mb-2">
+            Žádné nabídky nenalezeny
+          </h2>
+          <p className="mb-2 max-w-md mx-auto">
+            Zkuste upravit filtr, hledat jinou pozici nebo se vraťte později –
+            nabídky se pravidelně aktualizují.
+          </p>
+        </div>
+      ) : (
+        <>
+          <List data={filteredData} />
+          {hasMore && (
+            <div className="mt-8 text-center">
+              <button
+                onClick={onLoadMore}
+                disabled={isLoading}
+                className="bg-green-600 hover:bg-green-700 disabled:bg-zinc-400 text-white px-6 py-3 rounded-lg transition-colors disabled:opacity-50"
+              >
+                {isLoading ? "Načítám..." : `Zobrazit další (${total - data.length})`}
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </main>
   );
 }

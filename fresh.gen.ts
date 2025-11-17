@@ -6,10 +6,13 @@ import * as $_404 from "./routes/_404.tsx";
 import * as $_app from "./routes/_app.tsx";
 import * as $about from "./routes/about.tsx";
 import * as $api_middleware from "./routes/api/_middleware.ts";
+import * as $api_cv_pdf from "./routes/api/cv-pdf.ts";
+import * as $api_guestbook from "./routes/api/guestbook.ts";
 import * as $api_listings_bulk from "./routes/api/listings/bulk.ts";
 import * as $api_listings_click from "./routes/api/listings/click.ts";
 import * as $api_listings_index from "./routes/api/listings/index.ts";
 import * as $api_listings_new from "./routes/api/listings/new.ts";
+import * as $cv_builder from "./routes/cv-builder.tsx";
 import * as $index from "./routes/index.tsx";
 import * as $legal from "./routes/legal.tsx";
 import * as $sitemap_xml from "./routes/sitemap.xml.ts";
@@ -20,7 +23,17 @@ import * as $app_components_regular from "./islands/app/_components/regular.tsx"
 import * as $app_index from "./islands/app/index.tsx";
 import * as $celebration_effect from "./islands/celebration-effect.tsx";
 import * as $cursor_glow from "./islands/cursor-glow.tsx";
+import * as $cv_builder_components_EducationForm from "./islands/cv-builder/components/EducationForm.tsx";
+import * as $cv_builder_components_ExperienceForm from "./islands/cv-builder/components/ExperienceForm.tsx";
+import * as $cv_builder_components_ExperimentalWarning from "./islands/cv-builder/components/ExperimentalWarning.tsx";
+import * as $cv_builder_components_PersonalInfoForm from "./islands/cv-builder/components/PersonalInfoForm.tsx";
+import * as $cv_builder_components_PreviewMode from "./islands/cv-builder/components/PreviewMode.tsx";
+import * as $cv_builder_components_ProEditor from "./islands/cv-builder/components/ProEditor.tsx";
+import * as $cv_builder_components_SkillsForm from "./islands/cv-builder/components/SkillsForm.tsx";
+import * as $cv_builder_components_Toolbar from "./islands/cv-builder/components/Toolbar.tsx";
+import * as $cv_builder_index from "./islands/cv-builder/index.tsx";
 import * as $gamification_stats from "./islands/gamification-stats.tsx";
+import * as $guestbook from "./islands/guestbook.tsx";
 import * as $mobile_nav from "./islands/mobile-nav.tsx";
 import * as $theme_toggle from "./islands/theme-toggle.tsx";
 import type { Manifest } from "$fresh/server.ts";
@@ -31,10 +44,13 @@ const manifest = {
     "./routes/_app.tsx": $_app,
     "./routes/about.tsx": $about,
     "./routes/api/_middleware.ts": $api_middleware,
+    "./routes/api/cv-pdf.ts": $api_cv_pdf,
+    "./routes/api/guestbook.ts": $api_guestbook,
     "./routes/api/listings/bulk.ts": $api_listings_bulk,
     "./routes/api/listings/click.ts": $api_listings_click,
     "./routes/api/listings/index.ts": $api_listings_index,
     "./routes/api/listings/new.ts": $api_listings_new,
+    "./routes/cv-builder.tsx": $cv_builder,
     "./routes/index.tsx": $index,
     "./routes/legal.tsx": $legal,
     "./routes/sitemap.xml.ts": $sitemap_xml,
@@ -47,7 +63,25 @@ const manifest = {
     "./islands/app/index.tsx": $app_index,
     "./islands/celebration-effect.tsx": $celebration_effect,
     "./islands/cursor-glow.tsx": $cursor_glow,
+    "./islands/cv-builder/components/EducationForm.tsx":
+      $cv_builder_components_EducationForm,
+    "./islands/cv-builder/components/ExperienceForm.tsx":
+      $cv_builder_components_ExperienceForm,
+    "./islands/cv-builder/components/ExperimentalWarning.tsx":
+      $cv_builder_components_ExperimentalWarning,
+    "./islands/cv-builder/components/PersonalInfoForm.tsx":
+      $cv_builder_components_PersonalInfoForm,
+    "./islands/cv-builder/components/PreviewMode.tsx":
+      $cv_builder_components_PreviewMode,
+    "./islands/cv-builder/components/ProEditor.tsx":
+      $cv_builder_components_ProEditor,
+    "./islands/cv-builder/components/SkillsForm.tsx":
+      $cv_builder_components_SkillsForm,
+    "./islands/cv-builder/components/Toolbar.tsx":
+      $cv_builder_components_Toolbar,
+    "./islands/cv-builder/index.tsx": $cv_builder_index,
     "./islands/gamification-stats.tsx": $gamification_stats,
+    "./islands/guestbook.tsx": $guestbook,
     "./islands/mobile-nav.tsx": $mobile_nav,
     "./islands/theme-toggle.tsx": $theme_toggle,
   },

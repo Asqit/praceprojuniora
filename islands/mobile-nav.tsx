@@ -3,6 +3,7 @@ import { Menu, X } from "lucide-preact";
 
 const links = [
   { href: "/", label: "Nabídky" },
+  { href: "/cv-builder", label: "CV Builder" },
   { href: "/about", label: "O nás" },
 ];
 

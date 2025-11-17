@@ -101,7 +101,7 @@ export default function GamificationTracker() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg min-w-[200px] transition-all">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-lg min-w-[200px] transition-all">
       <div
         className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50 transition-colors"
         onClick={toggleMinimize}

@@ -13,6 +13,7 @@
   "exclude": ["**/_fresh/*"],
   "imports": {
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "@deno/gfm": "jsr:@deno/gfm@^0.11.0",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
     "cheerio": "npm:cheerio@^1.1.2",
     "clsx": "npm:clsx@^2.1.1",
@@ -24,6 +25,7 @@
     "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
     "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
     "proxifly": "npm:proxifly@^2.0.2",
+    "puppeteer": "npm:puppeteer@^24.30.0",
     "tailwindcss": "npm:tailwindcss@3.4.1",
     "tailwindcss/": "npm:/tailwindcss@3.4.1/",
     "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",

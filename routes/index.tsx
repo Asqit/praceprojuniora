@@ -3,6 +3,7 @@ import { Handlers, PageProps } from "$fresh/server.ts";
 import ky from "ky";
 import App from "../islands/app/index.tsx";
 import GamificationTracker from "../islands/gamification-stats.tsx";
+import Guestbook from "../islands/guestbook.tsx";
 
 export const handler: Handlers = {
   async GET(req, ctx) {
@@ -10,13 +11,13 @@ export const handler: Handlers = {
       const baseUrl = new URL(req.url);
       const url = new URL(
         "/api/listings",
-        `${baseUrl.protocol}//${baseUrl.host}`,
+        `${baseUrl.protocol}//${baseUrl.host}`
       );
       const res = await ky.get(url, {
         timeout: 1000,
         headers: { Origin: "https://praceprojuniora.cz" },
       });
-      const { data } = await res.json<{ data: Listing[] }>();
+      const { data } = await res.json<{ data: Listing[]; total: number; hasMore: boolean }>();
       return ctx.render(data);
     } catch (error) {
       console.error("Failed to fetch listings:", {
@@ -34,13 +35,13 @@ export default function RootPage({ data }: PageProps<Listing[]>) {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Práce Pro Juniora",
-    "description":
+    name: "Práce Pro Juniora",
+    description:
       "Najděte si práci vhodnou pro juniory v IT oboru – aktuální nabídky juniorních pozic, frontend, backend a další vývojářské role.",
-    "url": "https://praceprojuniora.cz",
-    "potentialAction": {
+    url: "https://praceprojuniora.cz",
+    potentialAction: {
       "@type": "SearchAction",
-      "target": "https://praceprojuniora.cz/?q={search_term_string}",
+      target: "https://praceprojuniora.cz/?q={search_term_string}",
       "query-input": "required name=search_term_string",
     },
   };
@@ -48,22 +49,22 @@ export default function RootPage({ data }: PageProps<Listing[]>) {
   const jobPostingsData = {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "name": "Junior IT Job Listings",
-    "numberOfItems": data.length,
-    "itemListElement": data.slice(0, 10).map((job, index) => ({
+    name: "Junior IT Job Listings",
+    numberOfItems: data.length,
+    itemListElement: data.slice(0, 10).map((job, index) => ({
       "@type": "JobPosting",
-      "position": index + 1,
-      "title": job.title,
-      "hiringOrganization": {
+      position: index + 1,
+      title: job.title,
+      hiringOrganization: {
         "@type": "Organization",
-        "name": job.company,
+        name: job.company,
       },
-      "jobLocation": {
+      jobLocation: {
         "@type": "Place",
-        "address": job.location,
+        address: job.location,
       },
-      "url": job.link,
-      "datePosted": job.createdAt,
+      url: job.link,
+      datePosted: job.createdAt,
     })),
   };
 
@@ -85,6 +86,7 @@ export default function RootPage({ data }: PageProps<Listing[]>) {
           </h1>
           <App initialData={data} />
           <GamificationTracker />
+          <Guestbook />
         </section>
       </main>
     </>
