@@ -10,38 +10,19 @@ interface Props {
   hasMore: boolean;
   isLoading: boolean;
   onLoadMore(): void;
+  location: string;
+  setLocation(location: string): void;
+  sortBy: string;
+  setSortBy(sortBy: string): void;
 }
 
-export function RegularStep({ data, toggleStep, total, hasMore, isLoading, onLoadMore }: Props) {
+export function RegularStep({ data, toggleStep, total, hasMore, isLoading, onLoadMore, location, setLocation, sortBy, setSortBy }: Props) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [locationFilter, setLocationFilter] = useState("all");
-  const [sortBy, setSortBy] = useState("newest");
 
-  const filteredData = data
-    .filter((job) => {
-      const matchesSearch =
-        job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        job.company.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesLocation =
-        locationFilter === "all" ||
-        job.location.toLowerCase().includes(locationFilter.toLowerCase());
-      return matchesSearch && matchesLocation;
-    })
-    .sort((a, b) => {
-      if (sortBy === "newest") {
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      }
-
-      if (sortBy === "expiring") {
-        return (
-          new Date(a.expiredAt).getTime() - new Date(b.expiredAt).getTime()
-        );
-      }
-
-      return b.clicks - a.clicks;
-    });
+  const filteredData = data.filter((job) =>
+    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    job.company.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -62,8 +43,8 @@ export function RegularStep({ data, toggleStep, total, hasMore, isLoading, onLoa
             className="flex-grow border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 dark:text-zinc-100 px-3 py-2 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition"
           />
           <select
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.currentTarget.value)}
+            value={location}
+            onChange={(e) => setLocation(e.currentTarget.value)}
             className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 dark:text-zinc-100 px-3 py-2 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 transition"
           >
             <option value="all">Všechny lokace</option>

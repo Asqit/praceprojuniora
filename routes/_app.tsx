@@ -3,7 +3,6 @@ import { ANALYTICS_LINK, ANALYTICS_UUID } from "../lib/server-variables.ts";
 import { asset } from "$fresh/runtime.ts";
 import { Navbar } from "../components/navbar/navbar.tsx";
 import { Footer } from "../components/footer/footer.tsx";
-import CursorGlow from "../islands/cursor-glow.tsx";
 import CelebrationEffect from "../islands/celebration-effect.tsx";
 
 export default function App({ Component }: PageProps) {
@@ -79,7 +78,6 @@ export default function App({ Component }: PageProps) {
       </head>
       <body class="bg-white text-black dark:bg-black dark:text-white">
         <Navbar />
-        <CursorGlow />
         <CelebrationEffect />
         <Component />
         <Footer />
