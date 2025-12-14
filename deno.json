@@ -14,9 +14,11 @@
   "imports": {
     "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "@deno/gfm": "jsr:@deno/gfm@^0.11.0",
+    "@hono/zod-validator": "npm:@hono/zod-validator@^0.7.5",
     "@std/dotenv": "jsr:@std/dotenv@^0.225.5",
     "cheerio": "npm:cheerio@^1.1.2",
     "clsx": "npm:clsx@^2.1.1",
+    "hono": "npm:hono@^4.10.7",
     "https-proxy-agent": "npm:https-proxy-agent@^7.0.6",
     "ky": "npm:ky@^1.8.2",
     "lucide-preact": "npm:lucide-preact@^0.546.0",

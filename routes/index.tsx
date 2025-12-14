@@ -2,7 +2,6 @@ import type { Listing } from "../lib/types.ts";
 import { Handlers, PageProps } from "$fresh/server.ts";
 import ky from "ky";
 import App from "../islands/app/index.tsx";
-import GamificationTracker from "../islands/gamification-stats.tsx";
 import Guestbook from "../islands/guestbook.tsx";
 
 export const handler: Handlers = {
@@ -11,13 +10,15 @@ export const handler: Handlers = {
       const baseUrl = new URL(req.url);
       const url = new URL(
         "/api/listings",
-        `${baseUrl.protocol}//${baseUrl.host}`
+        `${baseUrl.protocol}//${baseUrl.host}`,
       );
       const res = await ky.get(url, {
         timeout: 1000,
         headers: { Origin: "https://praceprojuniora.cz" },
       });
-      const { data } = await res.json<{ data: Listing[]; total: number; hasMore: boolean }>();
+      const { data } = await res.json<
+        { data: Listing[]; total: number; hasMore: boolean }
+      >();
       return ctx.render(data);
     } catch (error) {
       console.error("Failed to fetch listings:", {
@@ -85,7 +86,6 @@ export default function RootPage({ data }: PageProps<Listing[]>) {
             Práce Pro Juniora - Aktuální nabídky práce pro juniory v IT
           </h1>
           <App initialData={data} />
-          <GamificationTracker />
           <Guestbook />
         </section>
       </main>

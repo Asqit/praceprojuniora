@@ -1,12 +1,12 @@
 import { useState } from "preact/hooks";
-import ExperimentalWarning from "./components/ExperimentalWarning.tsx";
-import Toolbar from "./components/Toolbar.tsx";
-import PersonalInfoForm from "./components/PersonalInfoForm.tsx";
-import ExperienceForm from "./components/ExperienceForm.tsx";
-import EducationForm from "./components/EducationForm.tsx";
-import SkillsForm from "./components/SkillsForm.tsx";
-import ProEditor from "./components/ProEditor.tsx";
-import PreviewMode from "./components/PreviewMode.tsx";
+import EducationForm from "./components/education-form.tsx";
+import ExperienceForm from "./components/experience-form.tsx";
+import ExperimentalWarning from "./components/experimental-warning.tsx";
+import PersonalInfoForm from "./components/personal-info-form.tsx";
+import PreviewMode from "./components/preview-mode.tsx";
+import ProEditor from "./components/pro-editor.tsx";
+import SkillsForm from "./components/skills-form.tsx";
+import Toolbar from "./components/toolbar.tsx";
 
 interface PersonalInfo {
   name: string;
@@ -64,8 +64,9 @@ export default function CVBuilder() {
       markdown += `**Kontakt:**\n`;
       if (personalInfo.email) markdown += `- Email: ${personalInfo.email}\n`;
       if (personalInfo.phone) markdown += `- Telefon: ${personalInfo.phone}\n`;
-      if (personalInfo.location)
+      if (personalInfo.location) {
         markdown += `- Lokace: ${personalInfo.location}\n`;
+      }
       markdown += `\n`;
     }
 
@@ -129,24 +130,24 @@ export default function CVBuilder() {
   const downloadPDF = async () => {
     try {
       const markdown = mode === "pro" ? markdownContent : generateMarkdown();
-      const response = await fetch('/api/cv-pdf', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markdown })
+      const response = await fetch("/api/cv-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ markdown }),
       });
-      
-      if (!response.ok) throw new Error('PDF generation failed');
-      
+
+      if (!response.ok) throw new Error("PDF generation failed");
+
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = `${personalInfo.name || 'cv'}.pdf`;
+      a.download = `${personalInfo.name || "cv"}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('PDF download failed:', error);
-      alert('PDF generation failed. Please try again.');
+      console.error("PDF download failed:", error);
+      alert("PDF generation failed. Please try again.");
     }
   };
 
