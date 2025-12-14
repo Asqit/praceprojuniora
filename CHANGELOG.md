@@ -1,6 +1,11 @@
-## 0.4.2 – 22-10-2025
+## 0.5.0 – 14-12-2025
 
-- adding createdAt to card items
-- adding .env email entry for dynamic email redenring
-- split misc.ts between client-side and server-side misc. things
-- fixed bad imports
+### Added
+
+- rewriting backend logic with hono
+- rewriting sorting & filtering logic to utilize backend
+
+### Fixed
+
+- updated sitemap handler
+
