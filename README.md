@@ -1,3 +1,6 @@
+# !!!!! Website is down and I do not plan to revive it... once domain name lease ends I will free it !!!!!
+
+
 # Junior Job Listings
 
 A Fresh-based web application that automatically scrapes and displays junior developer job listings from Czech job boards.
