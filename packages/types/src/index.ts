@@ -1,5 +1,5 @@
 export type Listing = {
-  id: string;
+  id: number;
   title: string;
   company: string;
   link: string;

@@ -1,3 +1,4 @@
+import type { HTypes } from "./types";
 import { Hono } from "hono";
 import { applicationOnListen } from "./utils/misc";
 import { v1 } from "./api/v1/router";
@@ -8,7 +9,9 @@ import { trafficLogger } from "./middleware/traffic-logger";
 import { errorHandler } from "./middleware/error-handler";
 import { validateEnvironment } from "./utils/env";
 import { fetchListings } from "@ppj/scraper";
-import type { HTypes } from "./types";
+import { seed } from "./utils/seed";
+import { db } from "./db/connection";
+import { jobs } from "./db/schema";
 
 export class Application {
   private app!: Hono<HTypes>;
@@ -24,6 +27,10 @@ export class Application {
     if (!environment) {
       console.error("failed to parse environmental variables!");
       process.exit(1);
+    }
+
+    if (environment.NODE_ENV !== "PRODUCTION") {
+      await seed();
     }
 
     this.env = environment;
@@ -61,7 +68,11 @@ export class Application {
   }
 
   private async runScraper(): Promise<void> {
-    const _ = await fetchListings();
+    const newListings = await fetchListings();
+    const rows = await db
+      .insert(jobs)
+      .values(newListings)
+      .onConflictDoNothing();
   }
 
   public listen(): void {
