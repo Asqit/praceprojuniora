@@ -2,7 +2,7 @@
 FROM oven/bun:1 AS base
 WORKDIR /app
 
-COPY package.json bun.lockb turbo.json ./
+COPY package.json bun.lock turbo.json ./
 COPY packages/types ./packages/types
 COPY apps/web ./apps/web
 

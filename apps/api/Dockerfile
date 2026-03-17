@@ -3,7 +3,7 @@ FROM oven/bun:1 AS base
 WORKDIR /app
 
 # copy root workspace files
-COPY package.json bun.lockb turbo.json ./
+COPY package.json bun.lock turbo.json ./
 
 # copy packages
 COPY packages/types ./packages/types
