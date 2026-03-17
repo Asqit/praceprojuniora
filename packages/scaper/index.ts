@@ -33,8 +33,8 @@ function isJuniorJob(title: string): boolean {
 
 export async function fetchListings() {
   const listings = (await Promise.all([pracecz(), jobscz()])).flat();
-
   const seen = new Set<string>();
+
   const juniorListings = listings.filter((job) => {
     const key = job.link;
     if (seen.has(key)) return false;

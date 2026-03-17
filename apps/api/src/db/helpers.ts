@@ -9,7 +9,6 @@ export function withPagination<T extends SQLiteSelect>(
 ) {
   return qb.limit(pageSize).offset((page - 1) * pageSize);
 }
-
 export async function withCursorPagination<T extends SQLiteSelect>(
   qb: T,
   cursor: number = 1,
@@ -18,6 +17,5 @@ export async function withCursorPagination<T extends SQLiteSelect>(
   if (cursor) {
     qb = qb.where(gt(jobs.id, cursor)) as T;
   }
-  console.log(cursor);
   return qb.limit(limit + 1);
 }

@@ -1,15 +1,15 @@
 import * as cheerio from "cheerio";
 import { randomDelay } from "../utils/random-sleep";
 import { USER_AGENT } from "../utils/ua";
-import type { Listing } from "@ppj/types";
+import type { NewListing } from "@ppj/types";
 
 const DOMAIN = "https://www.jobs.cz";
 const BASE_URL = `${DOMAIN}/prace/is-it-vyvoj-aplikaci-a-systemu/`;
 
-function parseJobCards(html: string): Listing[] {
+function parseJobCards(html: string): NewListing[] {
   const $ = cheerio.load(html);
   const cards = $("article.SearchResultCard");
-  const jobs: Listing[] = [];
+  const jobs: NewListing[] = [];
 
   cards.each((_, el) => {
     const title = $(el).find(".SearchResultCard__titleLink").text().trim();
@@ -25,7 +25,6 @@ function parseJobCards(html: string): Listing[] {
     if (!title || !link) return;
 
     jobs.push({
-      id: crypto.randomUUID(),
       title,
       status,
       location,
@@ -57,10 +56,10 @@ function getPaginationUrls(html: string): string[] {
   return urls;
 }
 
-async function crawlJobsCZ(): Promise<Listing[]> {
+async function crawlJobsCZ(): Promise<NewListing[]> {
   const queue = new Set<string>([BASE_URL]);
   const visited = new Set<string>();
-  const results: Listing[] = [];
+  const results: NewListing[] = [];
 
   while (queue.size > 0) {
     const url = queue.values().next().value;
@@ -100,6 +99,6 @@ async function crawlJobsCZ(): Promise<Listing[]> {
   return results;
 }
 
-export function jobscz(): Promise<Listing[]> {
+export function jobscz(): Promise<NewListing[]> {
   return crawlJobsCZ();
 }

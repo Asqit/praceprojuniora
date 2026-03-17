@@ -8,10 +8,8 @@ import { secureHeaders } from "hono/secure-headers";
 import { trafficLogger } from "./middleware/traffic-logger";
 import { errorHandler } from "./middleware/error-handler";
 import { validateEnvironment } from "./utils/env";
-import { fetchListings } from "@ppj/scraper";
-import { seed } from "./utils/seed";
-import { db } from "./db/connection";
-import { jobs } from "./db/schema";
+import { listingTasks } from "./utils/tasks";
+import cron from "node-cron";
 
 export class Application {
   private app!: Hono<HTypes>;
@@ -29,28 +27,10 @@ export class Application {
       process.exit(1);
     }
 
-    if (environment.NODE_ENV !== "PRODUCTION") {
-      await seed();
-    }
-
     this.env = environment;
-    this.initScraper();
+    this.initCron();
     this.initMiddleware();
     this.initRoutes();
-  }
-
-  private initScraper(): void {
-    const { env } = this;
-    if (env.NODE_ENV === "PRODUCTION") {
-      this.runScraper();
-    }
-
-    setInterval(
-      () => {
-        this.runScraper();
-      },
-      1_000 * 60 * 60 * 24,
-    );
   }
 
   private initMiddleware(): void {
@@ -67,12 +47,20 @@ export class Application {
     app.route("/api/v1", v1);
   }
 
-  private async runScraper(): Promise<void> {
-    const newListings = await fetchListings();
-    const rows = await db
-      .insert(jobs)
-      .values(newListings)
-      .onConflictDoNothing();
+  private initCron(): void {
+    const { env } = this;
+
+    // every day 6AM
+    cron.schedule("0 6 * * *", async () => {
+      await listingTasks.fetchNew();
+      // TODO: Implement!
+      //await listingTasks.enrichPending();
+    });
+
+    // every hour
+    cron.schedule("0 * * * *", async () => {
+      await listingTasks.deleteExpired();
+    });
   }
 
   public listen(): void {

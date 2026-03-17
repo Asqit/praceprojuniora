@@ -2,34 +2,54 @@ import { Hono } from "hono";
 import { db } from "../../../db/connection";
 import { jobs } from "../../../db/schema";
 import { zValidator } from "@hono/zod-validator";
-import { bulkJson, getAllQuery } from "../validators/listing.validators";
-import { withCursorPagination } from "../../../db/helpers";
+import {
+  bulkJson,
+  clickCounterParam,
+  getAllQuery,
+} from "../validators/listing.validators";
+import { withPagination } from "../../../db/helpers";
 import { match } from "ts-pattern";
-import { inArray } from "drizzle-orm";
+import { and, count, desc, inArray, like, or, eq } from "drizzle-orm";
+import { HTTPException } from "hono/http-exception";
 
 const router = new Hono()
   // ----------------------------------- GET ALL LISTINGS
   .get("/", zValidator("query", getAllQuery), async (c) => {
-    const { cursor, limit, sortBy } = c.req.valid("query");
+    const { page, limit, sortBy, search, location } = c.req.valid("query");
 
-    const query = db
-      .select()
-      .from(jobs)
-      .orderBy(
-        match(sortBy)
-          .with("newest", () => jobs.expiresAt)
-          .with("expiration", () => jobs.expiresAt)
-          .with("popularity", () => jobs.clicks)
-          .with(undefined, () => jobs.createdAt)
-          .exhaustive(),
-      );
-    const rows = await withCursorPagination(query.$dynamic(), cursor, limit);
-    const hasNextPage = rows.length > limit;
-    const data = hasNextPage ? rows.slice(0, -1) : rows;
+    const filters = and(
+      location ? like(jobs.location, `%${location}%`) : undefined,
+      search
+        ? or(
+            like(jobs.title, `%${search}%`),
+            like(jobs.location, `%${search}%`),
+            like(jobs.company, `%${search}%`),
+            like(jobs.description, `%${search}%`),
+          )
+        : undefined,
+    );
+
+    const sortCol = match(sortBy)
+      .with("newest", () => desc(jobs.createdAt))
+      .with("expiration", () => desc(jobs.expiresAt))
+      .with("popularity", () => desc(jobs.clicks))
+      .with(undefined, () => desc(jobs.createdAt))
+      .exhaustive();
+
+    const [rows, [{ count: totalRows }]] = await Promise.all([
+      withPagination(
+        db.select().from(jobs).where(filters).orderBy(sortCol).$dynamic(),
+        page,
+        limit,
+      ),
+      db.select({ count: count() }).from(jobs).where(filters),
+    ]);
 
     return c.json({
-      data,
-      nextCursor: hasNextPage ? data.at(-1)?.id : null,
+      data: rows,
+      totalRows,
+      page,
+      totalPages: Math.ceil(totalRows / limit),
     });
   })
   // ----------------------------------- BULK
@@ -39,5 +59,30 @@ const router = new Hono()
     return c.json({
       data: rows,
     });
-  });
+  })
+  // ----------------------------------- CLICK
+  .post(
+    "/click-counter/:id",
+    zValidator("param", clickCounterParam),
+    async (c) => {
+      const { id } = c.req.valid("param");
+      const entry = await db
+        .select()
+        .from(jobs)
+        .where(eq(jobs.id, id))
+        .limit(1);
+
+      if (entry.length === 0) {
+        throw new HTTPException(404, { message: "not found!" });
+      }
+
+      const [updated] = await db
+        .update(jobs)
+        .set({ clicks: entry[0].clicks + 1 })
+        .where(eq(jobs.id, id))
+        .returning();
+
+      return c.json(updated);
+    },
+  );
 export default router;

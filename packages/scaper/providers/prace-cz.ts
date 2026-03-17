@@ -1,7 +1,7 @@
 import * as cheerio from "cheerio";
 import { randomDelay } from "../utils/random-sleep";
 import { USER_AGENT } from "../utils/ua";
-import type { Listing } from "@ppj/types";
+import type { NewListing } from "@ppj/types";
 
 const DOMAIN = "https://www.prace.cz";
 const BASE_URL = `${DOMAIN}/nabidky/informatika/`;
@@ -25,9 +25,9 @@ function clean(s?: string) {
   return (s || "").replace(/\s+/g, " ").trim();
 }
 
-function parseListingsFromHtml(html: string): Listing[] {
+function parseListingsFromHtml(html: string): NewListing[] {
   const $ = cheerio.load(html);
-  const out: Listing[] = [];
+  const out: NewListing[] = [];
 
   $("li.search-result__advert").each((_, li) => {
     const $li = $(li);
@@ -88,7 +88,6 @@ function parseListingsFromHtml(html: string): Listing[] {
     const description = descCandidate || undefined;
 
     out.push({
-      id: id || crypto.randomUUID(),
       title,
       company,
       link,
@@ -105,8 +104,8 @@ function parseListingsFromHtml(html: string): Listing[] {
   return out;
 }
 
-async function crawlPraceCz(): Promise<Listing[]> {
-  const results: Listing[] = [];
+async function crawlPraceCz(): Promise<NewListing[]> {
+  const results: NewListing[] = [];
   const queue = new Set<string>([BASE_URL]);
   const visited = new Set<string>();
 
@@ -149,6 +148,6 @@ async function crawlPraceCz(): Promise<Listing[]> {
   return results;
 }
 
-export function pracecz(): Promise<Listing[]> {
+export function pracecz(): Promise<NewListing[]> {
   return crawlPraceCz();
 }

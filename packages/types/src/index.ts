@@ -14,3 +14,5 @@ export type Listing = {
   statusMeta?: "new" | "stale" | "expiring" | "expired";
   description?: string;
 };
+
+export type NewListing = Omit<Listing, "id">;
