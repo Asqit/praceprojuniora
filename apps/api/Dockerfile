@@ -16,7 +16,7 @@ RUN bun install
 
 WORKDIR /app/apps/api
 
-ARG DB_FILENAME=/app/data/db.sqlite
+ARG DB_FILENAME=file:/app/data/db.sqlite
 ENV DB_FILENAME=${DB_FILENAME}
 RUN mkdir -p /app/data
 RUN bun run db:migrate
