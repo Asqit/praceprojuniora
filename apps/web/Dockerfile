@@ -6,7 +6,7 @@ COPY package.json bun.lock turbo.json ./
 COPY packages/types ./packages/types
 COPY apps/web ./apps/web
 
-RUN bun install --frozen-lockfile
+RUN bun install
 
 WORKDIR /app/apps/web
 RUN bun run build
