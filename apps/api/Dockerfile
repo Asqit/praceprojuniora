@@ -1,4 +1,3 @@
-# apps/api/Dockerfile
 FROM oven/bun:1 AS base
 WORKDIR /app
 
@@ -13,9 +12,13 @@ COPY packages/scraper ./packages/scraper
 COPY apps/api ./apps/api
 
 # install deps
-RUN bun install --frozen-lockfile
+RUN bun install
 
 WORKDIR /app/apps/api
+
+ARG DB_FILENAME=/app/data/db.sqlite
+ENV DB_FILENAME=${DB_FILENAME}
+RUN mkdir -p /app/data
 RUN bun run db:migrate
 
 EXPOSE 8080

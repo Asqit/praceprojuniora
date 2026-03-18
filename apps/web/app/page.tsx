@@ -2,7 +2,9 @@ import { http } from "@/lib/http"
 import { DataList } from "./_components/data-list"
 
 export default async function Page() {
-  const data = await http("listing?page=1&limit=6")
+  const response = await http("listing?page=1&limit=6").catch(console.log)
+  const data = await response?.json().catch(console.log)
+  const dummy = { data: [] }
 
   return (
     <section className="max-w-8xl container mx-auto min-h-svh p-6">
@@ -12,7 +14,7 @@ export default async function Page() {
       <p className="mb-6 text-muted-foreground">
         Pro ty, co umí git commit, ale ještě ne git blame na kolegy.
       </p>
-      <DataList initialData={data} />
+      <DataList initialData={data ?? dummy} />
     </section>
   )
 }

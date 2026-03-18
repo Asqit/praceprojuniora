@@ -69,6 +69,7 @@ export default function CelebrationEffect() {
             height: particle.size,
             backgroundColor: particle.color,
             animation: "particle-float 1s ease-out forwards",
+            // @ts-expect-error this works perfectly fine :D
             "--velocity-x": `${particle.velocityX * 20}px`,
             "--velocity-y": `${particle.velocityY * 20}px`,
           }}

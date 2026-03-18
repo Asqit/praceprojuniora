@@ -9,5 +9,5 @@ export async function http(path: string, init?: RequestInit) {
   })
 
   if (!response.ok) throw new Error(await response.text())
-  return response.json()
+  return response
 }

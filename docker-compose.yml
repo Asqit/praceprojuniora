@@ -3,11 +3,13 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+      args:
+        - DB_FILENAME=/app/data/db.sqlite
     restart: unless-stopped
     environment:
       - NODE_ENV=PRODUCTION
       - PORT=8080
-      - DB_PATH=/app/data/db.sqlite
+      - DB_FILENAME=/app/data/db.sqlite
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
       - /home/andy/data:/app/data
