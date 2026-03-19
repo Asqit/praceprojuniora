@@ -47,8 +47,12 @@ export class Application {
     app.route("/api/v1", v1);
   }
 
-  private initCron(): void {
+  private async initCron(): Promise<void> {
     const { env } = this;
+
+    if (env.NODE_ENV === "PRODUCTION") {
+      await listingTasks.fetchNew();
+    }
 
     // every day 6AM
     cron.schedule("0 6 * * *", async () => {
