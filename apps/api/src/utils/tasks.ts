@@ -1,11 +1,26 @@
 import { fetchListings } from "@ppj/scraper";
 import { db } from "../db/connection";
 import { jobs } from "../db/schema";
-import { eq, lte, sql } from "drizzle-orm";
+import { eq, lte, sql, desc } from "drizzle-orm";
 import { getExpiresAt } from "./listing-expiry";
 
 async function fetchNew(): Promise<void> {
   console.log("Fetching new listings...");
+  const lastJob = await db
+    .select()
+    .from(jobs)
+    .orderBy(desc(jobs.createdAt))
+    .limit(1);
+  const lastScrape = lastJob[0]?.createdAt;
+
+  if (
+    lastScrape &&
+    Date.now() - new Date(lastScrape).getTime() < 1000 * 60 * 60
+  ) {
+    console.log("Data fresh, skipping scrape");
+    return;
+  }
+
   const listings = await fetchListings();
   const withExpiry = listings.map((listing) => ({
     ...listing,

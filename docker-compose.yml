@@ -17,17 +17,19 @@ services:
       - internal
 
   web:
-  build:
-    context: .
-    dockerfile: apps/web/Dockerfile
-    args:
-      - NEXT_PUBLIC_ANALYTICS_URL=${NEXT_PUBLIC_ANALYTICS_URL}
-      - NEXT_PUBLIC_ANALYTICS_UUID=${NEXT_PUBLIC_ANALYTICS_UUID}
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    ports:
+      - "3001:3000"
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        - NEXT_PUBLIC_ANALYTICS_URL=${NEXT_PUBLIC_ANALYTICS_URL}
+        - NEXT_PUBLIC_ANALYTICS_UUID=${NEXT_PUBLIC_ANALYTICS_UUID}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - INTERNAL_API_URL=http://api:8080 # tohle je runtime — OK
+      - INTERNAL_API_URL=http://api:8080
     depends_on:
       - api
     networks:
