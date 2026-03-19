@@ -17,14 +17,17 @@ services:
       - internal
 
   web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
+  build:
+    context: .
+    dockerfile: apps/web/Dockerfile
+    args:
+      - NEXT_PUBLIC_ANALYTICS_URL=${NEXT_PUBLIC_ANALYTICS_URL}
+      - NEXT_PUBLIC_ANALYTICS_UUID=${NEXT_PUBLIC_ANALYTICS_UUID}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=https://api.praceprojuniora.cz
-      - INTERNAL_API_URL=http://api:8080
+      - INTERNAL_API_URL=http://api:8080 # tohle je runtime — OK
     depends_on:
       - api
     networks:

@@ -6,6 +6,7 @@ import { Navbar } from "@/components/share/navbar"
 import Providers from "@/lib/tanstack-provider"
 import CelebrationEffect from "@/components/share/celebration-effect"
 import { Metadata } from "next"
+import Script from "next/script"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -65,6 +66,13 @@ export default function RootLayout({
     >
       <head>
         <meta name="apple-mobile-web-app-title" content="praceprojuniora" />
+        {process.env.NODE_ENV === "production" && (
+          <Script
+            src={process.env.NEXT_PUBLIC_ANALYTICS_URL}
+            data-website-id={process.env.NEXT_PUBLIC_ANALYTICS_UUID}
+            defer
+          />
+        )}
       </head>
       <body>
         <ThemeProvider>
