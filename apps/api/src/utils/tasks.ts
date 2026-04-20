@@ -24,7 +24,7 @@ async function fetchNew(): Promise<void> {
   const listings = await fetchListings();
   const withExpiry = listings.map((listing) => ({
     ...listing,
-    expiredAt: getExpiresAt(listing.status ?? ""),
+    expiresAt: getExpiresAt(listing.status ?? ""),
   }));
 
   await db
@@ -34,7 +34,7 @@ async function fetchNew(): Promise<void> {
       target: jobs.link,
       set: {
         status: sql`excluded.status`,
-        expiresAt: sql`excluded.expires_at`,
+        expiresAt: sql`excluded."expiresAt"`,
         updatedAt: new Date().toISOString(),
       },
     });
