@@ -7,4 +7,4 @@ COPY apps/api ./apps/api
 RUN bun install
 WORKDIR /app/apps/api
 EXPOSE 8000
-CMD ["sh", "-c", "bun run db:migrate && bun run src/index.ts"]
+CMD ["sh", "-c", "bun run db:push && bun run src/index.ts"]
