@@ -6,7 +6,5 @@ COPY packages/scraper ./packages/scraper
 COPY apps/api ./apps/api
 RUN bun install
 WORKDIR /app/apps/api
-ARG DB_FILENAME=file:/app/data/db.sqlite
-ENV DB_FILENAME=${DB_FILENAME}
-EXPOSE 8080
+EXPOSE 8000
 CMD ["sh", "-c", "bun run db:migrate && bun run src/index.ts"]
