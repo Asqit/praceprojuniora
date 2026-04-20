@@ -1,5 +1,6 @@
 export interface Pagination<T> {
   data: Array<T>
-  nextCursor?: number | null
-  totalRows?: number;
+  page: number
+  totalPages: number
+  totalRows: number
 }

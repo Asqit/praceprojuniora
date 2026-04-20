@@ -17,6 +17,7 @@ import { Menu } from "lucide-react"
 const publicMap = [
   { href: "/", renderName: "Nabídky" },
   { href: "/about", renderName: "O Nás" },
+  { href: "/bookmarks", renderName: "Záložky" },
 ]
 
 export function Navbar() {

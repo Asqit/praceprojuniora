@@ -3,30 +3,24 @@
 import type { MouseEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { localStorageKeys } from "@/lib/storage"
-import { timeTo, timeAgo } from "@/lib/utils"
+import { timeAgo } from "@/lib/utils"
 import { Listing } from "@ppj/types"
 import { Bookmark, Eye, SquareArrowOutUpRight } from "lucide-react"
 import { useCallback, useState } from "react"
 import { useLocalStorage } from "usehooks-ts"
 import { queryClient } from "@/lib/query-client"
-import Link from "next/link"
 import { useMutation } from "@tanstack/react-query"
+import { http } from "@/lib/http"
+import Link from "next/link"
 
-// TODO: Review the click increment logic
 export function ListingCard(props: Listing) {
   const [clicks, setClicks] = useState<number>(props.clicks)
   const { mutateAsync } = useMutation({
     mutationKey: ["listing", "click", props.id],
     mutationFn: async () => {
-      const response = await fetch(
-        `http://localhost:8000/api/v1/listing/click-counter/${props.id}`,
-        {
-          method: "POST",
-        }
-      )
-      if (!response.ok) {
-        throw new Error("bad response")
-      }
+      const response = await http(`listing/click-counter/${props.id}`, {
+        method: "POST",
+      })
       return await response.json()
     },
     onSuccess(data) {
@@ -87,13 +81,13 @@ export function ListingCard(props: Listing) {
           </Button>
         </div>
 
-        <ul className="my-3 flex flex-1 items-center justify-between text-sm text-zinc-400">
+        <ul className="my-3 flex flex-1 flex-wrap items-center justify-between gap-4 text-sm text-zinc-400">
           <li className="flex items-center gap-2">
             <Eye size={16} /> {clicks} zobrazení
           </li>
           <li className="group h-5 overflow-hidden">
-            <div className="transition-all group-hover:-translate-y-4">
-              Platnost do {timeTo(props.expiredAt)}
+            <div className="transition-all group-hover:-translate-y-6">
+              Platnost do: {props.status}
             </div>
             <div className="transition-all group-hover:-translate-y-5">
               Přidáno před {timeAgo(props.createdAt)}

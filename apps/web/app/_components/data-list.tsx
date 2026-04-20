@@ -2,7 +2,7 @@
 
 import { ListingsList } from "@/components/share/listings-list"
 import { Button } from "@/components/ui/button"
-import { BASE_URL } from "@/lib/http"
+import { http } from "@/lib/http"
 import { Pagination } from "@/lib/types"
 import { Listing } from "@ppj/types"
 import { useInfiniteQuery } from "@tanstack/react-query"
@@ -20,13 +20,13 @@ export function DataList({ initialData }: Props) {
   const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery({
     queryKey: ["listings", { limit, sort, search, filter }],
     queryFn: async ({ pageParam = 1 }) => {
-      const url = new URL(`${BASE_URL}listing`)
-      url.searchParams.set("page", String(pageParam))
-      url.searchParams.set("limit", String(limit))
-      if (sort) url.searchParams.set("sortBy", sort)
-      if (search) url.searchParams.set("search", search)
-      if (filter) url.searchParams.set("location", filter)
-      const res = await fetch(url.toString())
+      const params = new URLSearchParams()
+      params.set("page", String(pageParam))
+      params.set("limit", String(limit))
+      if (sort) params.set("sortBy", sort)
+      if (search) params.set("search", search)
+      if (filter) params.set("location", filter)
+      const res = await http(`listing?${params.toString()}`)
       return res.json()
     },
     getNextPageParam: (lastPage) =>
