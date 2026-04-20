@@ -1,10 +1,40 @@
 services:
-  fresh-app:
-    build: .
-    ports:
-      - "8888:8000"
-    volumes:
-      - ./data:/app/data
-    environment:
-      - ENV=production
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      args:
+        - DB_FILENAME=file:/app/data/db.sqlite
     restart: unless-stopped
+    environment:
+      - NODE_ENV=PRODUCTION
+      - PORT=8080
+      - DB_FILENAME=file:/app/data/db.sqlite
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - /home/andy/data:/app/data
+    networks:
+      - internal
+
+  web:
+    ports:
+      - "3001:3000"
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        - NEXT_PUBLIC_ANALYTICS_URL=${NEXT_PUBLIC_ANALYTICS_URL}
+        - NEXT_PUBLIC_ANALYTICS_UUID=${NEXT_PUBLIC_ANALYTICS_UUID}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - INTERNAL_API_URL=http://api:8080
+    depends_on:
+      - api
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
