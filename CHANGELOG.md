@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.1.2](https://github.com/asqit/praceprojuniora/compare/v0.1.1...v0.1.2) (2026-04-24)
+
+### Bug Fixes
+
+* fix on-conflict clause ([#13](https://github.com/asqit/praceprojuniora/issues/13)) ([#14](https://github.com/asqit/praceprojuniora/issues/14)) ([6282fe4](https://github.com/asqit/praceprojuniora/commit/6282fe489201b9e6c28cbc7fbcabdc9deb099fbe))
+
 ## 0.1.1 (2026-04-20)
 
 ### Bug Fixes
