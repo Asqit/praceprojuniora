@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.1.3](https://github.com/asqit/praceprojuniora/compare/v0.1.2...v0.1.3) (2026-04-24)
+
 ## [0.1.2](https://github.com/asqit/praceprojuniora/compare/v0.1.1...v0.1.2) (2026-04-24)
 
 ### Bug Fixes
