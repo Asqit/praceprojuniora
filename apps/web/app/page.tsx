@@ -1,5 +1,6 @@
 import { http } from "@/lib/http"
 import { DataList } from "./_components/data-list"
+import { StatsStrip } from "@/components/share/stats-strip"
 
 export default async function Page() {
   const response = await http("listing?page=1&limit=6").catch(console.log)
@@ -14,6 +15,9 @@ export default async function Page() {
       <p className="mb-6 text-muted-foreground">
         Pro ty, co umí git commit, ale ještě ne git blame na kolegy.
       </p>
+      <div>
+        <StatsStrip />
+      </div>
       <DataList initialData={data ?? dummy} />
     </section>
   )

@@ -3,7 +3,7 @@
 import type { MouseEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { localStorageKeys } from "@/lib/storage"
-import { timeAgo } from "@/lib/utils"
+import { timeAgo, isNew, cn, timeTo } from "@/lib/utils"
 import { Listing } from "@ppj/types"
 import { Bookmark, Eye, SquareArrowOutUpRight } from "lucide-react"
 import { useCallback, useState } from "react"
@@ -71,6 +71,11 @@ export function ListingCard(props: Listing) {
         <div className="flex w-full items-start justify-between">
           <div>
             <h1 className="my-2 text-lg font-bold">{props.title}</h1>
+            {isNew(props.createdAt) && (
+              <span className="mb-2 inline-block rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+                Nové
+              </span>
+            )}
             <h2 className="my-2 font-bold text-zinc-400">{props.company}</h2>
             <h3 className="my-2 text-sm text-zinc-500">{props.location}</h3>
           </div>
@@ -87,10 +92,10 @@ export function ListingCard(props: Listing) {
           </li>
           <li className="group h-5 overflow-hidden">
             <div className="transition-all group-hover:-translate-y-6">
-              Platnost do: {props.status}
+              Vyprší: {props.expiresAt ? timeTo(props.expiresAt) : "—"}
             </div>
             <div className="transition-all group-hover:-translate-y-5">
-              Přidáno před {timeAgo(props.createdAt)}
+              Přidáno {timeAgo(props.createdAt)}
             </div>
           </li>
         </ul>
