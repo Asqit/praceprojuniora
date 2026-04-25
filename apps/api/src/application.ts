@@ -10,6 +10,9 @@ import { errorHandler } from './middleware/error-handler'
 import { validateEnvironment } from './utils/env'
 import { listingTasks } from './utils/tasks'
 import cron from 'node-cron'
+import { db } from './db/connection'
+import { jobs } from './db/schema'
+import { count } from 'drizzle-orm'
 
 export class Application {
   private app!: Hono<HTypes>
@@ -25,7 +28,7 @@ export class Application {
     }
 
     this.env = environment
-    this.initCron()
+    await this.initCron()
     this.initMiddleware()
     this.initRoutes()
   }
@@ -48,7 +51,9 @@ export class Application {
     const { env } = this
 
     if (env.NODE_ENV === 'PRODUCTION') {
-      await listingTasks.fetchNew()
+      // fetch only when no data!
+      const [{ count: rowCount }] = await db.select({ count: count() }).from(jobs)
+      if (rowCount === 0) await listingTasks.fetchNew()
     }
 
     // every day 6AM
