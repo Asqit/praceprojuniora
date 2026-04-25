@@ -7,8 +7,16 @@ import { withPagination } from '../../../db/helpers'
 import { match } from 'ts-pattern'
 import { and, count, desc, inArray, like, or, eq, sql } from 'drizzle-orm'
 import { HTTPException } from 'hono/http-exception'
+import { rateLimiter } from 'hono-rate-limiter'
 
 const router = new Hono()
+  .use(
+    rateLimiter({
+      windowMs: 15 * 60 * 1000,
+      limit: 100,
+      keyGenerator: (c) => c.req.header('x-forwarded-for') ?? '',
+    })
+  )
   // ----------------------------------- GET ALL LISTINGS
   .get('/', zValidator('query', getAllQuery), async (c) => {
     const { page, limit, sortBy, search, location } = c.req.valid('query')

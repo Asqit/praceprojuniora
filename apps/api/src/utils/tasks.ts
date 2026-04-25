@@ -24,7 +24,7 @@ async function fetchNew(): Promise<void> {
     .insert(jobs)
     .values(withExpiry)
     .onConflictDoUpdate({
-      target: [jobs.link, jobs.title],
+      target: jobs.link,
       set: {
         status: sql`excluded.status`,
         expiresAt: sql`excluded."expiresAt"`,

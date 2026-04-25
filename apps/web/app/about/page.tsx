@@ -48,24 +48,28 @@ export default function About() {
           <section className="space-y-4">
             <h2 className="text-xl font-bold text-primary">Na čem stavíme</h2>
             <p className="leading-relaxed text-foreground">
-              Projekt běží kompletně na <strong>Deno suite</strong>, což nám
-              umožňuje psát čistý, bezpečný a výkonný kód bez závislosti na
-              externích build nástrojích. Frontend i API jsou postavené na{" "}
-              <strong>Fresh.js</strong>, což zaručuje rychlé načítání a moderní
-              vývojový přístup založený na ostrovní architektuře.
+              Projekt využívá <strong>Bun</strong> jako runtime pro API i
+              scraper, což nám umožňuje psát výkonný TypeScript kód s nativní
+              podporou bez složité konfigurace. API je postavené na{" "}
+              <strong>Hono</strong> – minimalistickém a rychlém HTTP frameworku
+              s validací přes <strong>Zod</strong>. Frontend využívá{" "}
+              <strong>Next.js</strong> s Turbopackem a <strong>React 19</strong>
+              , přičemž UI komponenty jsou postavené na{" "}
+              <strong>shadcn/ui</strong> a stylované pomocí{" "}
+              <strong>Tailwind CSS v4</strong>.
             </p>
             <p className="leading-relaxed text-foreground">
-              O plánované úlohy se stará <strong>Deno.cron</strong> a ukládání
-              dat řešíme pomocí <strong>Deno.KV</strong>, které nám poskytuje
-              spolehlivý a jednoduchý key–value storage. Pro scraping pracovních
-              nabídek využíváme kombinaci knihoven <strong>KY</strong> a{" "}
-              <strong>Cheerio</strong>, které nám pomáhají efektivně a šetrně
-              zpracovávat veřejně dostupné informace.
+              O plánované úlohy se stará <strong>node-cron</strong> a ukládání
+              dat řešíme pomocí <strong>DrizzleORM</strong> s{" "}
+              <strong>libsql</strong> (Turso), které nám poskytuje spolehlivý
+              SQLite-compatible storage. Pro scraping pracovních nabídek
+              využíváme <strong>Cheerio</strong>, která nám pomáhá efektivně a
+              šetrně zpracovávat veřejně dostupné informace.
             </p>
             <p className="leading-relaxed text-foreground">
-              Celý ekosystém běží bez tradičního backend serveru – plně využívá
-              sílu Deno runtime a jeho nativní bezpečnostní sandbox, což znamená
-              minimální údržbu a maximální stabilitu. Zdrojový kód:{" "}
+              Na frontendu spravujeme stav a cachování dat pomocí{" "}
+              <strong>TanStack Query</strong>, což zajišťuje plynulé načítání a
+              aktualizaci dat. Zdrojový kód:{" "}
               <a
                 href="https://github.com/asqit/praceprojuniora"
                 className="text-primary hover:underline"
@@ -101,10 +105,10 @@ export default function About() {
               <p className="mb-2 text-foreground">
                 Email:{" "}
                 <a
-                  href={`mailto:${"badvar"}`}
+                  href={`mailto:${process.env.NEXT_PUBLIC_EMAIL}`}
                   className="text-primary underline"
                 >
-                  {"badvar"}
+                  {process.env.NEXT_PUBLIC_EMAIL ?? "N/A - Chyba"}
                 </a>
               </p>
             </div>
