@@ -21,7 +21,12 @@ export const timeAgo = (dateStr: string) => {
   const diffMs = now.getTime() - date.getTime()
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
-  if (diffDays === 0) return "Dnes"
-  if (diffDays === 1) return "Zítra"
-  return `${diffDays} dny(ů)`
+  if (diffDays === 0) return "dnes"
+  if (diffDays === 1) return "včera"
+  return `${diffDays} dny(ů) zpět`
+}
+
+export const isNew = (dateStr: string): boolean => {
+  const diffMs = Date.now() - new Date(dateStr).getTime()
+  return diffMs < 1000 * 60 * 60 * 24
 }
