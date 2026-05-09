@@ -1,3 +1,4 @@
+import React from "react"
 import { Listing } from "@ppj/types"
 import { ListingCard } from "../listing-card"
 import { Bookmark } from "lucide-react"
@@ -39,7 +40,7 @@ export function ListingsList({
 
   return (
     <div>
-      <div className="sticky top-20 z-20 mb-4 flex flex-wrap gap-4 bg-background px-1 py-4 md:flex-nowrap">
+      <div className="sticky top-20 z-20 mb-4 flex animate-in flex-wrap gap-4 bg-background px-1 py-4 fill-mode-both fade-in slide-in-from-bottom-4 md:flex-nowrap">
         <Input
           onInput={(e) => dOnSearch(e.currentTarget.value)}
           type="text"
@@ -116,8 +117,16 @@ export function ListingsList({
             </p>
           </li>
         ) : (
-          data.map((listing) => (
-            <li key={listing.id}>
+          data.map((listing, i) => (
+            <li
+              key={listing.id}
+              className="animate-in fill-mode-both fade-in slide-in-from-bottom-4"
+              style={
+                {
+                  "--tw-animation-delay": `${Math.min(i, 5) * 75}ms`,
+                } as React.CSSProperties
+              }
+            >
               <ListingCard {...listing} />
             </li>
           ))

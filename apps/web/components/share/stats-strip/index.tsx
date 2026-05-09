@@ -1,3 +1,4 @@
+import React from "react"
 import { http } from "@/lib/http"
 import { Briefcase, TrendingUp, Database } from "lucide-react"
 
@@ -41,10 +42,13 @@ export async function StatsStrip() {
 
   return (
     <div className="mb-8 grid grid-cols-3 gap-4">
-      {items.map((item) => (
+      {items.map((item, i) => (
         <div
           key={item.label}
-          className="flex min-w-32 flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card px-5 py-4"
+          className="flex min-w-32 animate-in flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card px-5 py-4 fill-mode-both fade-in slide-in-from-bottom-4"
+          style={
+            { "--tw-animation-delay": `${i * 100}ms` } as React.CSSProperties
+          }
         >
           <span className="text-3xl leading-none font-black tabular-nums">
             {item.value}
