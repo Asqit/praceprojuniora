@@ -1,7 +1,7 @@
 export default function About() {
   return (
     <div className="min-h-screen">
-      <main className="container mx-auto max-w-4xl px-4 py-12">
+      <main className="container mx-auto max-w-4xl animate-in px-4 py-12 duration-300 slide-in-from-bottom-10 fade-in">
         <div className="space-y-8">
           <div>
             <h1 className="mb-4 text-3xl font-bold text-balance">O nás</h1>

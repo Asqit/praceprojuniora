@@ -1,14 +1,13 @@
 import { fetchListings } from '@ppj/scraper'
 import { db } from '../db/connection'
 import { jobs } from '../db/schema'
-import { eq, lte, sql, desc } from 'drizzle-orm'
+import { eq, lte, sql, desc, inArray } from 'drizzle-orm'
 import { getExpiresAt } from './listing-expiry'
 
 async function fetchNew(): Promise<void> {
   console.log('Fetching new listings...')
   const lastJob = await db.select().from(jobs).orderBy(desc(jobs.createdAt)).limit(1)
   const lastScrape = lastJob[0]?.createdAt
-
   if (lastScrape && Date.now() - new Date(lastScrape).getTime() < 1000 * 60 * 60) {
     console.log('Data fresh, skipping scrape')
     return
@@ -20,9 +19,27 @@ async function fetchNew(): Promise<void> {
     expiresAt: getExpiresAt(listing.status ?? ''),
   }))
 
+  const existingTitles = await db
+    .select({ title: jobs.title })
+    .from(jobs)
+    .where(
+      inArray(
+        jobs.title,
+        withExpiry.map((j) => j.title)
+      )
+    )
+
+  const existingTitleSet = new Set(existingTitles.map((j) => j.title))
+  const toInsert = withExpiry.filter((j) => !existingTitleSet.has(j.title))
+
+  if (toInsert.length === 0) {
+    console.log('No new listings to insert')
+    return
+  }
+
   await db
     .insert(jobs)
-    .values(withExpiry)
+    .values(toInsert)
     .onConflictDoUpdate({
       target: jobs.link,
       set: {
@@ -32,7 +49,7 @@ async function fetchNew(): Promise<void> {
       },
     })
 
-  console.log(`Fetched and upserted ${listings.length} listings`)
+  console.log(`Fetched and upserted ${toInsert.length}/${listings.length} listings`)
 }
 
 async function enrichPending(): Promise<void> {
