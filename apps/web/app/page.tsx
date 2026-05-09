@@ -9,10 +9,10 @@ export default async function Page() {
 
   return (
     <section className="max-w-8xl container mx-auto min-h-svh p-6">
-      <h1 className="mb-2 text-3xl font-bold text-balance">
+      <h1 className="mb-2 animate-in text-3xl font-bold text-balance fill-mode-both fade-in slide-in-from-bottom-4">
         Pracovní nabídky pro juniory v IT{" "}
       </h1>
-      <p className="mb-6 text-muted-foreground">
+      <p className="mb-6 animate-in text-muted-foreground fill-mode-both [--tw-animation-delay:100ms] fade-in slide-in-from-bottom-4">
         Pro ty, co umí git commit, ale ještě ne git blame na kolegy.
       </p>
       <div>
