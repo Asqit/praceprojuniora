@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/asqit/praceprojuniora/compare/v0.1.4...v0.2.0) (2026-05-09)
+
+### Features
+
+* frontend improvements ([d21f547](https://github.com/asqit/praceprojuniora/commit/d21f5471fba9d8a4ea5ac138ac65a0caf328e5c1))
+
+### Bug Fixes
+
+* add unique constraint for jobs.title ([#15](https://github.com/asqit/praceprojuniora/issues/15)) ([e0db6a7](https://github.com/asqit/praceprojuniora/commit/e0db6a7914125985f9f690e0089c64cf44c9327f))
+* fix on-conflict clause ([#13](https://github.com/asqit/praceprojuniora/issues/13)) ([6cab3bd](https://github.com/asqit/praceprojuniora/commit/6cab3bd641eb8d36a6e4f9b4300d53abae59589f))
+
 ## [0.1.4](https://github.com/asqit/praceprojuniora/compare/v0.1.3...v0.1.4) (2026-04-25)
 
 ## [0.1.3](https://github.com/asqit/praceprojuniora/compare/v0.1.2...v0.1.3) (2026-04-24)
