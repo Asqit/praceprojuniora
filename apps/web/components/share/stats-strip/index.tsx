@@ -24,40 +24,46 @@ export async function StatsStrip() {
 
   const items = [
     {
-      icon: <Briefcase className="size-4" />,
+      icon: <Briefcase className="size-3.5" />,
       label: "aktivních nabídek",
       value: stats.total.toLocaleString("cs-CZ"),
     },
     {
-      icon: <TrendingUp className="size-4" />,
+      icon: <TrendingUp className="size-3.5" />,
       label: "přidáno dnes",
       value: `+${stats.addedToday}`,
     },
     {
-      icon: <Database className="size-4" />,
+      icon: <Database className="size-3.5" />,
       label: "zdrojů",
       value: stats.sources.length,
     },
   ]
 
   return (
-    <div className="mb-8 grid grid-cols-3 gap-4">
+    <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 md:justify-start">
       {items.map((item, i) => (
-        <div
-          key={item.label}
-          className="flex min-w-32 animate-in flex-col items-center justify-center gap-1 rounded-xl border border-border bg-card px-5 py-4 fill-mode-both fade-in slide-in-from-bottom-4"
-          style={
-            { "--tw-animation-delay": `${i * 100}ms` } as React.CSSProperties
-          }
-        >
-          <span className="text-3xl leading-none font-black tabular-nums">
-            {item.value}
-          </span>
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <React.Fragment key={item.label}>
+          {i > 0 && (
+            <span className="text-border select-none" aria-hidden>
+              ·
+            </span>
+          )}
+          <div
+            className="flex animate-in items-center gap-1.5 fill-mode-both fade-in slide-in-from-bottom-2"
+            style={
+              {
+                "--tw-animation-delay": `${(i + 2) * 100}ms`,
+              } as React.CSSProperties
+            }
+          >
             <span className="text-primary">{item.icon}</span>
-            {item.label}
+            <span className="text-sm font-semibold tabular-nums">
+              {item.value}
+            </span>
+            <span className="text-xs text-muted-foreground">{item.label}</span>
           </div>
-        </div>
+        </React.Fragment>
       ))}
     </div>
   )
