@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0](https://github.com/asqit/praceprojuniora/compare/v0.2.0...v0.3.0) (2026-05-23)
+
+### Features
+
+* add hero redesign & gamification ([a3e9f83](https://github.com/asqit/praceprojuniora/commit/a3e9f83579c4bfbf2409d471d01487dcad150396))
+
 ## [0.2.0](https://github.com/asqit/praceprojuniora/compare/v0.1.4...v0.2.0) (2026-05-09)
 
 ### Features
