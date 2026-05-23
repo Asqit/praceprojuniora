@@ -13,6 +13,7 @@ import cron from 'node-cron'
 import { db } from './db/connection'
 import { jobs } from './db/schema'
 import { count } from 'drizzle-orm'
+import { seed } from './utils/seed'
 
 export class Application {
   private app!: Hono<HTypes>
@@ -28,6 +29,11 @@ export class Application {
     }
 
     this.env = environment
+
+    if (this.env.NODE_ENV === 'DEVELOPMENT') {
+      await seed()
+    }
+
     await this.initCron()
     this.initMiddleware()
     this.initRoutes()

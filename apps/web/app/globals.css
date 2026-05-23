@@ -215,6 +215,25 @@
   }
 }
 
+.dot-grid-bg {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in oklch, var(--primary) 35%, transparent) 1.5px,
+    transparent 1.5px
+  );
+  background-size: 20px 20px;
+  mask-image: radial-gradient(
+    ellipse 85% 85% at 60% 50%,
+    black 15%,
+    transparent 75%
+  );
+  -webkit-mask-image: radial-gradient(
+    ellipse 85% 85% at 60% 50%,
+    black 15%,
+    transparent 75%
+  );
+}
+
 @keyframes particle-float {
   0% {
     transform: translate(0, 0);

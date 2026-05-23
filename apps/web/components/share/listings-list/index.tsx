@@ -1,20 +1,13 @@
+"use client"
 import React from "react"
 import { Listing } from "@ppj/types"
 import { ListingCard } from "../listing-card"
 import { Bookmark } from "lucide-react"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useDebounceCallback } from "usehooks-ts"
 import { ListingCardSkeleton } from "../list-card-skeleton"
+import { ListFilters } from "./components/list-filters"
 import Link from "next/link"
 
 interface Props {
@@ -41,50 +34,11 @@ export function ListingsList({
   return (
     <div>
       <div className="sticky top-20 z-20 mb-4 flex animate-in flex-wrap gap-4 bg-background px-1 py-4 fill-mode-both fade-in slide-in-from-bottom-4 md:flex-nowrap">
-        <Input
-          onInput={(e) => dOnSearch(e.currentTarget.value)}
-          type="text"
-          placeholder="Hledat pozici nebo firmu..."
+        <ListFilters
+          onLocationChange={onLocationFilter}
+          onSearch={dOnSearch}
+          onSort={onSort}
         />
-        <Select
-          defaultValue="all"
-          onValueChange={(value) => onLocationFilter(value)}
-        >
-          <SelectTrigger className="w-full max-w-48">
-            <SelectValue placeholder="Všechny lokace" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="all">Všechny lokace</SelectItem>
-              <SelectItem value="Praha">Praha</SelectItem>
-              <SelectItem value="Brno">Brno</SelectItem>
-              <SelectItem value="Ostrava">Ostrava</SelectItem>
-              <SelectItem value="Plzeň">Plzeň</SelectItem>
-              <SelectItem value="Liberec">Liberec</SelectItem>
-              <SelectItem value="Olomouc">Olomouc</SelectItem>
-              <SelectItem value="České Budějovice">České Budějovice</SelectItem>
-              <SelectItem value="Hradec Králové">Hradec Králové</SelectItem>
-              <SelectItem value="Pardubice">Pardubice</SelectItem>
-              <SelectItem value="Zlín">Zlín</SelectItem>
-              <SelectItem value="Ústí nad Labem">Ústí nad Labem</SelectItem>
-              <SelectItem value="Karlovy Vary">Karlovy Vary</SelectItem>
-              <SelectItem value="Jihlava">Jihlava</SelectItem>
-              <SelectItem value="Remote">Remote</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Select defaultValue="newest" onValueChange={(value) => onSort(value)}>
-          <SelectTrigger className="w-full max-w-48">
-            <SelectValue placeholder="Nejnovější" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="newest">Nejnovější</SelectItem>
-              <SelectItem value="popularity">Nejpopulárnější</SelectItem>
-              <SelectItem value="expiration">Brzy končící</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
         <Link href={isBookmarks ? "/" : "/bookmarks"}>
           <Button>
             <Bookmark

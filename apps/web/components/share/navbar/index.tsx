@@ -18,7 +18,7 @@ const publicMap = [
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 left-0 z-40 w-full border-b bg-background/50 backdrop-blur-lg">
+    <header className="sticky top-0 left-0 z-40 w-full bg-background/50 backdrop-blur-lg before:absolute before:right-0 before:bottom-px before:left-0 before:h-px before:bg-border/40 before:content-[''] after:absolute after:right-0 after:bottom-0 after:left-0 after:h-px after:bg-border after:content-['']">
       <BubbleMenu>
         <nav className="max-w-8xl container mx-auto flex justify-between p-4 py-6">
           <Brand />

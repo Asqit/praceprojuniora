@@ -45,10 +45,16 @@ export default function CelebrationEffect() {
       }, 1000)
     }
 
-    globalThis.addEventListener("celebrate", handleCelebration)
+    globalThis.addEventListener(
+      "praceprojuniora.cz::celebrate",
+      handleCelebration
+    )
 
     return () => {
-      globalThis.removeEventListener("celebrate", handleCelebration)
+      globalThis.removeEventListener(
+        "praceprojuniora.cz::celebrate",
+        handleCelebration
+      )
     }
   }, [])
 
