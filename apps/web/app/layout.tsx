@@ -7,6 +7,7 @@ import Providers from "@/lib/tanstack-provider"
 import CelebrationEffect from "@/components/share/celebration-effect"
 import { Metadata } from "next"
 import Script from "next/script"
+import { Footer } from "@/components/share/footer"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
@@ -74,12 +75,13 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <ThemeProvider>
           <Providers>
             <Navbar />
             {children}
             <CelebrationEffect />
+            <Footer />
           </Providers>
         </ThemeProvider>
       </body>

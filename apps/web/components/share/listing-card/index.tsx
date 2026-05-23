@@ -3,7 +3,7 @@
 import type { MouseEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { localStorageKeys } from "@/lib/storage"
-import { timeAgo, isNew, cn, timeTo } from "@/lib/utils"
+import { timeAgo, isNew, timeTo } from "@/lib/utils"
 import { Listing } from "@ppj/types"
 import { Bookmark, Eye, SquareArrowOutUpRight } from "lucide-react"
 import { useCallback, useState } from "react"
@@ -12,6 +12,7 @@ import { queryClient } from "@/lib/query-client"
 import { useMutation } from "@tanstack/react-query"
 import { http } from "@/lib/http"
 import Link from "next/link"
+import { dispatch } from "@/lib/events"
 
 export function ListingCard(props: Listing) {
   const [clicks, setClicks] = useState<number>(props.clicks)
@@ -25,6 +26,10 @@ export function ListingCard(props: Listing) {
     },
     onSuccess(data) {
       setClicks(data?.clicks)
+      dispatch("praceprojuniora.cz::gamification", {
+        type: "click",
+        amount: 1,
+      })
     },
   })
   const [bookmarks, setBookmarks] = useLocalStorage<Listing[]>(
@@ -45,14 +50,14 @@ export function ListingCard(props: Listing) {
 
       const rect = event.currentTarget.getBoundingClientRect()
       setBookmarks([...bookmarks, props])
-      globalThis.dispatchEvent(
-        new CustomEvent("celebrate", {
-          detail: {
-            x: rect.left + rect.width / 2,
-            y: rect.top + rect.height / 2,
-          },
-        })
-      )
+      dispatch("praceprojuniora.cz::celebrate", {
+        x: rect.left + rect.width / 2,
+        y: rect.top + rect.height / 2,
+      })
+      dispatch("praceprojuniora.cz::gamification", {
+        type: "bookmark",
+        amount: 1,
+      })
     },
     [bookmarks, isBookmarked, props, setBookmarks]
   )

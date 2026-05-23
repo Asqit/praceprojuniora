@@ -79,4 +79,62 @@ const router = new Hono()
 
     return c.json(updated)
   })
+  // ----------------------------------- GET RSS FEED
+  .get('/rss', async (c) => {
+    const rows = await db
+      .select()
+      .from(jobs)
+      .orderBy(desc(jobs.createdAt)) // most recent first
+      .limit(10)
+
+    const esc = (s = '') =>
+      String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;')
+
+    const rfc2822 = (d: string) => new Date(d).toUTCString()
+
+    const itemsXml = rows
+      .map((r) => {
+        const title = esc(r.title)
+        const link = esc(r.link)
+        const desc = esc(r.description || `${r.company} — ${r.location || ''}`)
+        const guid = esc(String(r.id))
+        const pubDate = r.createdAt ? `<pubDate>${rfc2822(r.createdAt)}</pubDate>` : ''
+
+        return `
+        <item>
+          <title>${title}</title>
+          <link>${link}</link>
+          <description>${desc}</description>
+          <guid isPermaLink="false">${guid}</guid>
+          ${pubDate}
+        </item>`
+      })
+      .join('')
+
+    const channelTitle = esc('Jobs feed')
+    const channelLink = esc('https://yourdomain.example/')
+    const channelDesc = esc('Latest job listings')
+
+    const rss = `<?xml version="1.0" encoding="UTF-8"?>
+  <rss version="2.0">
+    <channel>
+      <title>${channelTitle}</title>
+      <link>${channelLink}</link>
+      <description>${channelDesc}</description>
+      ${itemsXml}
+    </channel>
+  </rss>`
+
+    c.res.headers.set('Content-Type', 'application/rss+xml; charset=utf-8')
+    if (rows.length) c.res.headers.set('Last-Modified', rfc2822(rows[0].createdAt))
+    c.res.headers.set('Cache-Control', 'public, max-age=300') // adjust as needed
+
+    return c.text(rss, 200)
+  })
+
 export default router
