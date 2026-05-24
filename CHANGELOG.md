@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.1](https://github.com/asqit/praceprojuniora/compare/v0.4.0...v0.4.1) (2026-05-24)
+
+### Bug Fixes
+
+* revert to build-time email & added docker arg ([14cb726](https://github.com/asqit/praceprojuniora/commit/14cb72690ebdee19738d724a0be4d05be00110ea))
+
 ## [0.4.0](https://github.com/asqit/praceprojuniora/compare/v0.3.0...v0.4.0) (2026-05-24)
 
 ### Features
