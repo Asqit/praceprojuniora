@@ -9,11 +9,11 @@ import { trafficLogger } from './middleware/traffic-logger'
 import { errorHandler } from './middleware/error-handler'
 import { validateEnvironment } from './utils/env'
 import { listingTasks } from './utils/tasks'
-import cron from 'node-cron'
 import { db } from './db/connection'
 import { jobs } from './db/schema'
 import { count } from 'drizzle-orm'
 import { seed } from './utils/seed'
+import cron from 'node-cron'
 
 export class Application {
   private app!: Hono<HTypes>

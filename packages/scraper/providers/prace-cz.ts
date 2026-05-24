@@ -1,10 +1,11 @@
-import * as cheerio from 'cheerio'
-import { randomDelay } from '../utils/random-sleep'
-import { USER_AGENT } from '../utils/ua'
 import type { NewListing } from '@ppj/types'
+import { fetchWithTimeout } from '../utils/fetch'
+import { randomDelay } from '../utils/random-sleep'
+import * as cheerio from 'cheerio'
 
 const DOMAIN = 'https://www.prace.cz'
 const BASE_URL = `${DOMAIN}/nabidky/informatika/`
+const MAX_PAGES = 50
 
 function getNextPageUrl(html: string): string | null {
   const $ = cheerio.load(html)
@@ -25,9 +26,10 @@ function clean(s?: string) {
   return (s || '').replace(/\s+/g, ' ').trim()
 }
 
-function parseListingsFromHtml(html: string): NewListing[] {
+function parseListingsFromHtml(html: string, sourceUrl: string): NewListing[] {
   const $ = cheerio.load(html)
   const out: NewListing[] = []
+  let skipped = 0
 
   $('li.search-result__advert').each((_, li) => {
     const $li = $(li)
@@ -73,6 +75,14 @@ function parseListingsFromHtml(html: string): NewListing[] {
     )
     const description = descCandidate || undefined
 
+    if (!title || !link) {
+      skipped++
+      console.warn(
+        `[prace.cz] Skipping listing with missing fields — title: "${title}", link: "${link}" (from ${sourceUrl})`
+      )
+      return
+    }
+
     out.push({
       title,
       company,
@@ -87,6 +97,14 @@ function parseListingsFromHtml(html: string): NewListing[] {
     })
   })
 
+  if (out.length === 0 && skipped === 0) {
+    console.warn(`[prace.cz] No listings found on page — selectors may have drifted (${sourceUrl})`)
+  } else {
+    console.log(
+      `[prace.cz] Parsed ${out.length} listing(s)${skipped > 0 ? `, skipped ${skipped} invalid` : ''} from ${sourceUrl}`
+    )
+  }
+
   return out
 }
 
@@ -94,41 +112,67 @@ async function crawlPraceCz(): Promise<NewListing[]> {
   const results: NewListing[] = []
   const queue = new Set<string>([BASE_URL])
   const visited = new Set<string>()
+  let pageCount = 0
 
   while (queue.size > 0) {
     const url = queue.values().next().value
     if (!url) continue
     queue.delete(url)
 
-    if (!url || visited.has(url)) continue
-    try {
-      await randomDelay(1000, 5000)
-      console.log(`crawling: ${url}`)
-      const res = await fetch(url, {
-        headers: { 'User-Agent': USER_AGENT },
-      })
-      const html = await res.text()
-      const newUrl = getNextPageUrl(html)
-      const jobs = parseListingsFromHtml(html)
+    if (visited.has(url)) continue
 
+    if (pageCount >= MAX_PAGES) {
+      console.warn(`[prace.cz] Reached page limit (${MAX_PAGES}), stopping crawl early`)
+      break
+    }
+
+    try {
+      console.log(`[prace.cz] Fetching page ${pageCount + 1}: ${url}`)
+      await randomDelay(1_000, 5_000)
+      const res = await fetchWithTimeout(url)
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status} ${res.statusText}`)
+      }
+
+      const html = await res.text()
+      const nextUrl = getNextPageUrl(html)
+      const jobs = parseListingsFromHtml(html, url)
+
+      let added = 0
       for (const job of jobs) {
         const isDuplicate = results.some(
           (j) => j.link === job.link || j.title.toLowerCase() === job.title.toLowerCase()
         )
-
-        if (!isDuplicate) results.push(job)
+        if (!isDuplicate) {
+          results.push(job)
+          added++
+        }
       }
 
-      if (newUrl) {
-        queue.add(newUrl)
+      if (jobs.length > added) {
+        console.log(`[prace.cz] Skipped ${jobs.length - added} duplicate(s) on this page`)
+      }
+
+      if (nextUrl) {
+        queue.add(nextUrl)
       }
 
       visited.add(url)
+      pageCount++
     } catch (error) {
-      console.error(`❌ Failed to fetch ${url}:`, error)
+      const message = error instanceof Error ? error.message : String(error)
+      const isTimeout = error instanceof Error && error.name === 'AbortError'
+      console.error(
+        `[prace.cz] ❌ Failed to fetch ${url}: ${isTimeout ? 'request timed out' : message}`
+      )
+      visited.add(url) // prevent retrying the same failed URL
     }
   }
 
+  console.log(
+    `[prace.cz] Crawl complete — ${results.length} total listing(s) across ${pageCount} page(s)`
+  )
   return results
 }
 
