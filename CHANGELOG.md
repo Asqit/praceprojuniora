@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0](https://github.com/asqit/praceprojuniora/compare/v0.3.0...v0.4.0) (2026-05-24)
+
+### Features
+
+* tweak scraper, add new data-source ([3e52b9b](https://github.com/asqit/praceprojuniora/commit/3e52b9b89208462b0d5eb47844a07e074406b567))
+
 ## [0.3.0](https://github.com/asqit/praceprojuniora/compare/v0.2.0...v0.3.0) (2026-05-23)
 
 ### Features
