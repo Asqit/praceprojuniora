@@ -100,15 +100,34 @@ export default function About() {
           </section>
 
           <section className="space-y-4">
+            <h2 className="text-xl font-bold text-primary">
+              Pro provozovatele zdrojů
+            </h2>
+            <p className="leading-relaxed text-foreground">
+              Před zpracováním každého zdroje ověřujeme podmínky použití a
+              soubor{" "}
+              <code className="rounded bg-muted px-1 py-0.5 text-sm">
+                robots.txt
+              </code>
+              . Agregujeme výhradně veřejně dostupné informace.
+            </p>
+            <p className="leading-relaxed text-foreground">
+              Pokud si nepřejete, aby byly nabídky z vašeho webu zobrazovány na
+              této platformě, napište nám prosím na níže uvedený e-mail. Váš
+              zdroj bez zbytečného odkladu odstraníme.
+            </p>
+          </section>
+
+          <section className="space-y-4">
             <h2 className="text-xl font-bold text-primary">Kontaktujte nás</h2>
             <div className="space-y-3 bg-card p-6">
               <p className="mb-2 text-foreground">
                 Email:{" "}
                 <a
-                  href={`mailto:${process.env.NEXT_PUBLIC_EMAIL}`}
+                  href={`mailto:${process.env.EMAIL}`}
                   className="text-primary underline"
                 >
-                  {process.env.NEXT_PUBLIC_EMAIL ?? "N/A - Chyba"}
+                  {process.env.EMAIL ?? "N/A - Chyba"}
                 </a>
               </p>
             </div>
