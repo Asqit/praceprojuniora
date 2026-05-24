@@ -127,7 +127,7 @@ export default function About() {
                   href={`mailto:${process.env.EMAIL}`}
                   className="text-primary underline"
                 >
-                  {process.env.EMAIL ?? "N/A - Chyba"}
+                  {process.env.NEXT_PUBLIC_EMAIL ?? "N/A - Chyba"}
                 </a>
               </p>
             </div>
