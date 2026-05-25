@@ -34,6 +34,7 @@ const STRONG_IT = [
   // explicit IT
   'application-developer',
   'software-developer',
+  'software-engineer',
 ]
 
 const WEAK_IT = [
@@ -66,6 +67,10 @@ const WEAK_IT = [
   'dotnet',
   'kotlin',
   'swift',
+  'go',
+  'c',
+  'c++',
+  'c#',
   // misc
   'aplikaci',
   'aplikacii',
@@ -123,6 +128,8 @@ const QUALIFIER_BAD = [
   'delnik',
   // construction/electro
   'stavby',
+  'stavebni',
+  'stavar',
   'projektant',
   'silnoproud',
   'slaboproud',
@@ -178,6 +185,7 @@ export function scoreJob(input: string): number {
   const hasProgramator = words.some((w) => w === 'programator')
   const hasItContext = words.some((w) =>
     [
+      ...WEAK_IT,
       'web',
       'software',
       'frontend',
@@ -203,4 +211,4 @@ export function scoreJob(input: string): number {
   return score
 }
 
-export const isItRelevant = (input: string): boolean => scoreJob(input) >= 2
+export const isItRelevant = (input: string): boolean => scoreJob(input) >= 3
