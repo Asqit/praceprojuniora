@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.1](https://github.com/asqit/praceprojuniora/compare/v0.5.0...v0.5.1) (2026-05-25)
+
+### Bug Fixes
+
+* move type into shared pacakge for both client and server ([fd435fe](https://github.com/asqit/praceprojuniora/commit/fd435fea161293370103112ab7edb401429e9de6))
+
 ## [0.5.0](https://github.com/asqit/praceprojuniora/compare/v0.4.1...v0.5.0) (2026-05-25)
 
 ### Features
