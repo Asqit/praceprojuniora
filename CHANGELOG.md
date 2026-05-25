@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.2](https://github.com/asqit/praceprojuniora/compare/v0.5.1...v0.5.2) (2026-05-25)
+
+### Bug Fixes
+
+* harder scoring ([05d639d](https://github.com/asqit/praceprojuniora/commit/05d639d0b26609579a4e9faff9de78755e28afe9))
+
 ## [0.5.1](https://github.com/asqit/praceprojuniora/compare/v0.5.0...v0.5.1) (2026-05-25)
 
 ### Bug Fixes
