@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.5.0](https://github.com/asqit/praceprojuniora/compare/v0.4.1...v0.5.0) (2026-05-25)
+
+### Features
+
+* add users & security tokens ([a473065](https://github.com/asqit/praceprojuniora/commit/a473065ffaed6acdf312f0492c6873abaaa01129))
+
 ## [0.4.1](https://github.com/asqit/praceprojuniora/compare/v0.4.0...v0.4.1) (2026-05-24)
 
 ### Bug Fixes
