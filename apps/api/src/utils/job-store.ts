@@ -1,14 +1,4 @@
-export type JobStatus = 'running' | 'done' | 'failed'
-
-export interface ScrapeJob {
-  id: string
-  status: JobStatus
-  providers: string
-  startedAt: string
-  finishedAt?: string
-  result?: { inserted: number; total: number }
-  error?: string
-}
+import type { ScrapeJob } from '@ppj/types'
 
 const store = new Map<string, ScrapeJob>()
 

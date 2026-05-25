@@ -25,3 +25,15 @@ export type Listing = {
 }
 
 export type NewListing = Omit<Listing, 'id'>
+
+export type JobStatus = 'running' | 'done' | 'failed'
+
+export interface ScrapeJob {
+  id: string
+  status: JobStatus
+  providers: string
+  startedAt: string
+  finishedAt?: string
+  result?: { inserted: number; total: number }
+  error?: string
+}

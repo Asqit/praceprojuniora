@@ -1,8 +1,8 @@
+import type { ScrapeJob } from "@ppj/types"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { BASE_URL } from "@/lib/http"
 import { signOut, triggerScrape } from "./actions"
-import type { ScrapeJob } from "../../../../apps/api/src/utils/job-store"
 
 interface Stats {
   total: number
