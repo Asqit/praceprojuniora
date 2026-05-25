@@ -9,11 +9,7 @@ const MAX_PAGES = 50
 
 function getNextPageUrl(html: string): string | null {
   const $ = cheerio.load(html)
-  const nextLink = $(
-    ".pager .pager__next a, .pager a[title*='Další'], .pager a:contains('>')"
-  ).first()
-  if (!nextLink || !nextLink.attr) return null
-  const href = (nextLink.attr('href') || '').trim()
+  const href = ($('a[rel="next"]').first().attr('href') || '').trim()
   if (!href) return null
   try {
     return new URL(href, BASE_URL).toString()
@@ -31,49 +27,25 @@ function parseListingsFromHtml(html: string, sourceUrl: string): NewListing[] {
   const out: NewListing[] = []
   let skipped = 0
 
-  $('li.search-result__advert').each((_, li) => {
-    const $li = $(li)
+  $('article[id^="advert-"]').each((_, article) => {
+    const $article = $(article)
 
-    const $linkEl = $li.find('h3 a.link, a[data-jd]').first()
+    const $linkEl = $article.find('a[data-testid="advert-link"]').first()
     const href = clean($linkEl.attr('href') || '')
     const link = href
       ? (() => {
           try {
-            return new URL(href, BASE_URL).toString()
+            return new URL(href, BASE_URL).toString().split('?')[0]
           } catch {
             return href
           }
         })()
       : ''
 
-    let id = clean($linkEl.attr('id') || $linkEl.attr('data-jd') || '')
-    if (!id && link) {
-      try {
-        const u = new URL(link)
-        const parts = u.pathname.split('/').filter(Boolean)
-        id = parts[parts.length - 1] || ''
-      } catch {
-        id = ''
-      }
-    }
-
-    const title = clean($linkEl.find('strong').first().text() || $linkEl.text())
-    const company = clean(
-      $li.find('.search-result__advert__box__item--company').first().text().replace('•', '')
-    )
-    const location = clean(
-      $li.find('.search-result__advert__box__item--location strong').first().text()
-    )
-    const status = clean(
-      $li.find('.text-label--important, .search-result__advert__supermax').first().text()
-    )
-    const descCandidate = clean(
-      $li
-        .find('.search-result__advert__box__item--description, .search-result__advert__desc, p')
-        .first()
-        .text()
-    )
-    const description = descCandidate || undefined
+    const title = clean($linkEl.text())
+    const location = clean($article.find('span.typography-body-medium-semibold').first().text())
+    const company = clean($article.find('span.typography-body-medium-regular').first().text())
+    const description = undefined
 
     if (!title || !link) {
       skipped++
@@ -87,7 +59,7 @@ function parseListingsFromHtml(html: string, sourceUrl: string): NewListing[] {
       title,
       company,
       link,
-      status,
+      status: '',
       location,
       description,
       expiresAt: '',

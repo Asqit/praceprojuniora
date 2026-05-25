@@ -1,11 +1,13 @@
-import { validateEnvironment } from "./utils/env";
+import { validateEnvironment } from './utils/env'
 
 // cloudflare workers ONLY!
-export type HBindings = {};
+export type HBindings = {}
 
-export type HVariables = {};
+export type HVariables = {
+  userId: number
+}
 
 export type HTypes = {
-  Bindings: HBindings;
-  Variables: HVariables;
-};
+  Bindings: HBindings
+  Variables: HVariables
+}

@@ -2,6 +2,14 @@ import { inworkcz } from './providers/inwork-cz'
 import { jobscz } from './providers/jobs-cz'
 import { pracecz } from './providers/prace-cz'
 
+const PROVIDERS = {
+  'inwork.cz': inworkcz,
+  'jobs.cz': jobscz,
+  'prace.cz': pracecz,
+} as const
+
+type ProviderName = keyof typeof PROVIDERS
+
 const KEYWORDS = [
   // EN
   'junior',
@@ -105,8 +113,13 @@ function isJuniorJob(title: string): boolean {
   return KEYWORDS.some((kw) => lower.includes(kw))
 }
 
-export async function fetchListings() {
-  const listings = (await Promise.all([pracecz(), jobscz(), inworkcz()])).flat()
+export async function fetchListings(providers: 'all' | ProviderName[] = 'all') {
+  const selected =
+    providers === 'all' ? Object.values(PROVIDERS) : providers.map((name) => PROVIDERS[name])
+
+  console.log(`[scraper] Running providers: ${providers === 'all' ? 'all' : providers.join(', ')}`)
+
+  const listings = (await Promise.all(selected.map((fn) => fn()))).flat()
   const seen = new Set<string>()
 
   const juniorListings = listings.filter((job) => {

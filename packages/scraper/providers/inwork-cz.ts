@@ -68,35 +68,60 @@ const sitemaps = [
 ]
 
 async function parseSitemap(sitemap: string): Promise<string[]> {
-  const response = await fetchWithTimeout(sitemap)
-  if (!response.ok || !response.body) return []
+  console.log(`[inwork.cz] Fetching sitemap: ${sitemap}`)
+  try {
+    const response = await fetchWithTimeout(sitemap)
 
-  const urls: string[] = []
-  const parser = sax.createStream(true)
-  let currentLoc = ''
-
-  parser.on('opentag', (node) => {
-    if (node.name === 'loc') currentLoc = ''
-  })
-
-  parser.on('text', (text) => {
-    currentLoc += text
-  })
-
-  parser.on('closetag', (name) => {
-    if (name !== 'loc') return
-    if (isItRelevant(currentLoc)) {
-      urls.push(currentLoc)
+    if (!response.ok) {
+      console.error(
+        `[inwork.cz] ❌ Sitemap fetch failed — HTTP ${response.status} ${response.statusText}: ${sitemap}`
+      )
+      return []
     }
-  })
+    if (!response.body) {
+      console.error(`[inwork.cz] ❌ Sitemap response has no body: ${sitemap}`)
+      return []
+    }
 
-  await new Promise((resolve, reject) => {
-    parser.on('end', resolve)
-    parser.on('error', reject)
-    Readable.fromWeb(response.body!).pipe(parser)
-  })
+    const urls: string[] = []
+    let totalLocs = 0
+    const parser = sax.createStream(true)
+    let currentLoc = ''
 
-  return urls
+    parser.on('opentag', (node) => {
+      if (node.name === 'loc') currentLoc = ''
+    })
+
+    parser.on('text', (text) => {
+      currentLoc += text
+    })
+
+    parser.on('closetag', (name) => {
+      if (name !== 'loc') return
+      totalLocs++
+      if (isItRelevant(currentLoc)) {
+        urls.push(currentLoc)
+      }
+    })
+
+    await new Promise((resolve, reject) => {
+      parser.on('end', resolve)
+      parser.on('error', reject)
+      Readable.fromWeb(response.body!).pipe(parser)
+    })
+
+    console.log(
+      `[inwork.cz] Sitemap parsed — ${urls.length} relevant URL(s) out of ${totalLocs} total: ${sitemap}`
+    )
+    return urls
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    const isTimeout = err instanceof Error && err.name === 'AbortError'
+    console.error(
+      `[inwork.cz] ❌ Failed to parse sitemap ${sitemap}: ${isTimeout ? 'request timed out' : message}`
+    )
+    return []
+  }
 }
 
 const CONCURRENCY = 3
@@ -105,10 +130,16 @@ const RATE_LIMIT_MS = 1_000
 export async function inworkcz(): Promise<NewListing[]> {
   const urlArrays = await Promise.all(sitemaps.map(parseSitemap))
   const urls = urlArrays.flat()
+  console.log(
+    `[inwork.cz] ${urls.length} URL(s) queued for scraping across ${sitemaps.length} sitemap(s)`
+  )
 
   const tasks = urls.map((url) => async () => {
     try {
       const listing = await scrapeInworkDetail(url)
+      if (!listing) {
+        console.warn(`[inwork.cz] ⚠️ No listing returned for ${url} (HTTP error or empty page)`)
+      }
       await new Promise((r) => setTimeout(r, RATE_LIMIT_MS))
       return listing
     } catch (err) {
@@ -122,5 +153,9 @@ export async function inworkcz(): Promise<NewListing[]> {
   })
 
   const results = await withBoundedConcurrency(tasks, CONCURRENCY)
-  return results.filter((r): r is NewListing => r !== null)
+  const listings = results.filter((r): r is NewListing => r !== null)
+  console.log(
+    `[inwork.cz] Scrape complete — ${listings.length} listing(s) from ${urls.length} URL(s)`
+  )
+  return listings
 }

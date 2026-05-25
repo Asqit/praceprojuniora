@@ -1,4 +1,6 @@
 import listingRoutes from './endpoints/listing.routes'
+import userRoutes from './endpoints/user.routes'
+import scraperRoutes from './endpoints/scraper.routes'
 import { Hono } from 'hono'
 import { db } from '../../db/connection'
 import { jobs } from '../../db/schema'
@@ -6,6 +8,8 @@ import { count, gte, sql } from 'drizzle-orm'
 
 export const v1 = new Hono()
   .route('/listing', listingRoutes)
+  .route('/auth', userRoutes)
+  .route('/scraper', scraperRoutes)
 
   .get('/stats', async (c) => {
     const todayStart = new Date()

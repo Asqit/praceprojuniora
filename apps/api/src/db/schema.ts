@@ -1,3 +1,4 @@
+import { relations, sql } from 'drizzle-orm'
 import { sqliteTable, int, text, real } from 'drizzle-orm/sqlite-core'
 
 export const jobs = sqliteTable('jobs', {
@@ -36,6 +37,35 @@ export const subscribers = sqliteTable('subscribers', {
   createdAt: text().notNull(),
   confirmed: int({ mode: 'boolean' }).notNull().default(false),
 })
+
+export const users = sqliteTable('users', {
+  id: int().primaryKey({ autoIncrement: true }),
+  email: text().notNull().unique(),
+  password: text().notNull(),
+  createdAt: int({ mode: 'timestamp' }).default(sql`(current_timestamp)`),
+})
+
+export const opaqueTokens = sqliteTable('opaque-tokens', {
+  id: int().primaryKey({ autoIncrement: true }),
+  userId: int()
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  tokenHash: text().notNull().unique(),
+  expiresAt: int({ mode: 'timestamp' }).notNull(),
+  revokedAt: int({ mode: 'timestamp' }),
+  createdAt: int({ mode: 'timestamp' }).default(sql`(current_timestamp)`),
+})
+
+export const opaqueTokensRelations = relations(opaqueTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [opaqueTokens.userId],
+    references: [users.id],
+  }),
+}))
+
+export const usersRelations = relations(users, ({ many }) => ({
+  opaqueTokens: many(opaqueTokens),
+}))
 
 export type Job = typeof jobs.$inferSelect
 export type NewJob = typeof jobs.$inferInsert
