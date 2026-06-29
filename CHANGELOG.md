@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.0](https://github.com/asqit/praceprojuniora/compare/v0.5.2...v0.6.0) (2026-06-29)
+
+### Features
+
+* add more analytics ([7c67069](https://github.com/asqit/praceprojuniora/commit/7c670692520f0e74abee34f68b2a958d7955de5e))
+
 ## [0.5.2](https://github.com/asqit/praceprojuniora/compare/v0.5.1...v0.5.2) (2026-05-25)
 
 ### Bug Fixes
