@@ -58,7 +58,13 @@ export function DataList({ initialData }: Props) {
       />
       <div className="flex items-center justify-center">
         {hasNextPage ? (
-          <Button onClick={() => fetchNextPage()}>Načíst Další</Button>
+          <Button
+            onClick={() => fetchNextPage()}
+            data-umami-event="listing-more-button"
+            data-umami-event-title={data?.pages?.length ?? 1}
+          >
+            Načíst Další
+          </Button>
         ) : null}
       </div>
     </div>

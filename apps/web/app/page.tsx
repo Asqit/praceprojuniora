@@ -1,12 +1,12 @@
 import { http } from "@/lib/http"
 import { DataList } from "./_components/data-list"
-import Image from "next/image"
 import { StatsStrip } from "@/components/share/stats-strip"
 import { Gamification } from "./_components/gamification"
+import Image from "next/image"
 
 export default async function Page() {
-  const response = await http("listing?page=1&limit=6").catch(console.log)
-  const data = await response?.json().catch(console.log)
+  const response = await http("listing?page=1&limit=6").catch(console.error)
+  const data = await response?.json().catch(console.error)
   const dummy = { data: [] }
 
   return (

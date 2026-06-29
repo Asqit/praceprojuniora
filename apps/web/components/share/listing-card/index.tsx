@@ -11,8 +11,15 @@ import { useLocalStorage } from "usehooks-ts"
 import { queryClient } from "@/lib/query-client"
 import { useMutation } from "@tanstack/react-query"
 import { http } from "@/lib/http"
-import Link from "next/link"
 import { dispatch } from "@/lib/events"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu"
+import Link from "next/link"
+import { browser } from "process"
 
 export function ListingCard(props: Listing) {
   const [clicks, setClicks] = useState<number>(props.clicks)
@@ -39,7 +46,7 @@ export function ListingCard(props: Listing) {
   const isBookmarked = bookmarks.some((i) => i.id === props.id)
 
   const handleBookmark = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
+    (event: MouseEvent<HTMLElement>) => {
       event.preventDefault()
       event.stopPropagation()
       if (isBookmarked) {
@@ -63,52 +70,79 @@ export function ListingCard(props: Listing) {
   )
 
   return (
-    <Link
-      href={props.link}
-      rel="noopener noreferrer"
-      onClick={(e) => mutateAsync()}
-      target="_blank"
-      aria-label={`Pracovní nabídka: ${props.title} u ${props.company}`}
-      className="relative z-10! flex h-full animate-in flex-col rounded-lg border p-8 transition-all hover:-translate-y-1 hover:border-primary hover:shadow-lg"
-    >
-      <div className="w-full px-4">
-        {/* Title -- Bookmark */}
-        <div className="flex w-full items-start justify-between">
-          <div>
-            <h1 className="my-2 text-lg font-bold">{props.title}</h1>
-            {isNew(props.createdAt) && (
-              <span className="mb-2 inline-block rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
-                Nové
-              </span>
-            )}
-            <h2 className="my-2 font-bold text-zinc-400">{props.company}</h2>
-            <h3 className="my-2 text-sm text-zinc-500">{props.location}</h3>
-          </div>
-          <Button variant={"outline"} size={"icon-sm"} onClick={handleBookmark}>
-            <Bookmark
-              className={`h-5 w-5 ${isBookmarked ? "fill-current" : ""}`}
-            />
-          </Button>
-        </div>
+    <ContextMenu>
+      <ContextMenuTrigger>
+        {" "}
+        <Link
+          href={props.link}
+          rel="noopener noreferrer"
+          onClick={() => mutateAsync()}
+          target="_blank"
+          aria-label={`Pracovní nabídka: ${props.title} u ${props.company}`}
+          className="relative z-10! flex h-full animate-in flex-col rounded-lg border p-8 transition-all hover:-translate-y-1 hover:border-primary hover:shadow-lg"
+          /* CUSTOM ANALYTICS EVENT */
+          data-umami-event="listing-click"
+          data-umami-event-title={props.title}
+        >
+          <div className="w-full px-4">
+            {/* Title -- Bookmark */}
+            <div className="flex w-full items-start justify-between">
+              <div>
+                <h1 className="my-2 text-lg font-bold">{props.title}</h1>
+                {isNew(props.createdAt) && (
+                  <span className="mb-2 inline-block rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+                    Nové
+                  </span>
+                )}
+                <h2 className="my-2 font-bold text-zinc-400">
+                  {props.company}
+                </h2>
+                <h3 className="my-2 text-sm text-zinc-500">{props.location}</h3>
+              </div>
+              <Button
+                variant={"outline"}
+                size={"icon-sm"}
+                onClick={handleBookmark}
+              >
+                <Bookmark
+                  className={`h-5 w-5 ${isBookmarked ? "fill-current" : ""}`}
+                />
+              </Button>
+            </div>
 
-        <ul className="my-3 flex flex-1 flex-wrap items-center justify-between gap-4 text-sm text-zinc-400">
-          <li className="flex items-center gap-2">
-            <Eye size={16} /> {clicks} zobrazení
-          </li>
-          <li className="group h-5 overflow-hidden">
-            <div className="transition-all group-hover:-translate-y-6">
-              Vyprší: {props.expiresAt ? timeTo(props.expiresAt) : "—"}
-            </div>
-            <div className="transition-all group-hover:-translate-y-5">
-              Přidáno {timeAgo(props.createdAt)}
-            </div>
-          </li>
-        </ul>
-        <p className="flex items-center gap-2 text-sm text-primary hover:underline">
-          <span>Zobrazit původní inzerát</span>{" "}
-          <SquareArrowOutUpRight size={16} />
-        </p>
-      </div>
-    </Link>
+            <ul className="my-3 flex flex-1 flex-wrap items-center justify-between gap-4 text-sm text-zinc-400">
+              <li className="flex items-center gap-2">
+                <Eye size={16} /> {clicks} zobrazení
+              </li>
+              <li className="group h-5 overflow-hidden">
+                <div className="transition-all group-hover:-translate-y-6">
+                  Vyprší: {props.expiresAt ? timeTo(props.expiresAt) : "—"}
+                </div>
+                <div className="transition-all group-hover:-translate-y-5">
+                  Přidáno {timeAgo(props.createdAt)}
+                </div>
+              </li>
+            </ul>
+            <p className="flex items-center gap-2 text-sm text-primary hover:underline">
+              <span>Zobrazit původní inzerát</span>{" "}
+              <SquareArrowOutUpRight size={16} />
+            </p>
+          </div>
+        </Link>
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ContextMenuItem
+          onClick={() => {
+            mutateAsync()
+            window.open(props.link, "_blank")?.focus()
+          }}
+        >
+          Otevřít v nové kartě
+        </ContextMenuItem>
+        <ContextMenuItem onClick={(e) => handleBookmark(e)}>
+          Uložit
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
   )
 }
