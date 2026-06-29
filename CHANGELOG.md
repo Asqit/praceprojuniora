@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.6.1](https://github.com/asqit/praceprojuniora/compare/v0.6.0...v0.6.1) (2026-06-29)
+
+### Bug Fixes
+
+* fix build-step by adding env check ([ceb361c](https://github.com/asqit/praceprojuniora/commit/ceb361c94c3315ed373d2a3f2ed61dcaf5705ce0))
+
 ## [0.6.0](https://github.com/asqit/praceprojuniora/compare/v0.5.2...v0.6.0) (2026-06-29)
 
 ### Features
