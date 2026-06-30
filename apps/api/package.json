@@ -9,14 +9,17 @@
   "dependencies": {
     "@hono/zod-validator": "^0.7.6",
     "@libsql/client": "^0.17.0",
+    "@ppj/cv-auth": "workspace:*",
     "@ppj/scraper": "workspace:*",
     "@ppj/types": "workspace:*",
     "bcrypt": "^6.0.0",
+    "bun-cache": "^2.0.0",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
     "hono": "^4.12.8",
     "hono-rate-limiter": "^0.5.3",
     "node-cron": "^4.2.1",
+    "puppeteer": "^25.2.1",
     "ts-pattern": "^5.9.0",
     "zod": "^4.3.6"
   },

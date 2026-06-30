@@ -1,7 +1,6 @@
 import { ThemeToggle } from "@/components/theme-toggler"
 import { Button } from "@/components/ui/button"
 import { Brand } from "../brand"
-import Link from "next/link"
 import { Menu } from "lucide-react"
 import {
   BubbleMenu,
@@ -9,13 +8,14 @@ import {
   BubblePillItem,
   BubbleTrigger,
 } from "./components/bubble-menu"
+import Link from "next/link"
 
 const publicMap = [
   { href: "/", renderName: "Nabídky", rotate: -2 },
   { href: "/about", renderName: "O Nás", rotate: 1 },
   { href: "/bookmarks", renderName: "Záložky", rotate: -1 },
   {
-    href: "/cv-builder",
+    href: "/cv/builder",
     renderName: "Vytvoř si CVčko",
     rotate: -2,
     action: true,

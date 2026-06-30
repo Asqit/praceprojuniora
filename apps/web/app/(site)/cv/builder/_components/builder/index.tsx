@@ -7,11 +7,13 @@ import { Wizard } from "./wizard"
 import { Exporter } from "../previewer/components/exporter"
 import { Zoomer } from "../previewer/components/zoomer"
 import { TemplateSwitcher } from "../previewer/components/template-switcher"
+import { useExportPdf } from "./use-export-pdf"
 
 export function Builder() {
   const [details, setDetails] = useState<CvDetails>(dummyCvDetails)
   const [zoomLevel, setZoomLevel] = useState<number>(0.5)
-  const [galleryOpen, setGalleryOpen] = useState(false)
+  const [galleryOpen, setGalleryOpen] = useState<boolean>(false)
+  const { exportState, downloadPdf } = useExportPdf()
 
   return (
     <div className="grid-cols-2 md:grid">
@@ -24,7 +26,6 @@ export function Builder() {
           content={details}
           galleryOpen={galleryOpen}
         />
-
         <div className="animate-ou sticky bottom-12 z-50 mx-auto hidden w-fit max-w-2xl animate-in flex-col gap-2 rounded-md bg-background/50 p-2 backdrop-blur-xl slide-in-from-bottom slide-out-to-bottom group-hover:flex">
           <TemplateSwitcher
             open={galleryOpen}
@@ -32,9 +33,7 @@ export function Builder() {
           />
           <Zoomer zoom={zoomLevel} setZoom={setZoomLevel} />
           <Exporter
-            onExportPdf={function (): void {
-              throw new Error("Function not implemented.")
-            }}
+            onExportPdf={() => downloadPdf(details)}
             onExportMarkdown={function (): void {
               throw new Error("Function not implemented.")
             }}

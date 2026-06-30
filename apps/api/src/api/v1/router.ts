@@ -1,6 +1,7 @@
 import listingRoutes from './endpoints/listing.routes'
 import userRoutes from './endpoints/user.routes'
 import scraperRoutes from './endpoints/scraper.routes'
+import cvRoutes from './endpoints/cv.routes'
 import { Hono } from 'hono'
 import { db } from '../../db/connection'
 import { jobs } from '../../db/schema'
@@ -10,6 +11,7 @@ export const v1 = new Hono()
   .route('/listing', listingRoutes)
   .route('/auth', userRoutes)
   .route('/scraper', scraperRoutes)
+  .route('/cv', cvRoutes)
 
   .get('/stats', async (c) => {
     const todayStart = new Date()
