@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "release": "release-it",
-    "build": "turbo run build",
+    "build": "node scripts/stop-release.js && turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

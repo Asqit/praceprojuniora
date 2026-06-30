@@ -14,6 +14,12 @@ const publicMap = [
   { href: "/", renderName: "Nabídky", rotate: -2 },
   { href: "/about", renderName: "O Nás", rotate: 1 },
   { href: "/bookmarks", renderName: "Záložky", rotate: -1 },
+  {
+    href: "/cv-builder",
+    renderName: "Vytvoř si CVčko",
+    rotate: -2,
+    action: true,
+  },
 ]
 
 export function Navbar() {
@@ -32,7 +38,9 @@ export function Navbar() {
               {publicMap.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href}>
-                    <Button variant={"link"}>{link.renderName}</Button>
+                    <Button variant={link.action ? "default" : "link"}>
+                      {link.renderName}
+                    </Button>
                   </Link>
                 </li>
               ))}
