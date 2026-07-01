@@ -20,19 +20,51 @@ export const dummyCvDetails: CvDetails = {
   ],
   education: [
     {
+      title: "SuperIT",
+      degree: "Střední Škola IT s maturitou",
+      startDate: "2015-09",
+      endDate: "2019-06",
+      description: "",
+    },
+    {
       title: "ČVUT",
       degree: "Bc.",
       startDate: "2019-09",
       endDate: "2023-06",
-      description: "Informatika",
+      description: "",
     },
   ],
   skills: {
-    Frontend: ["React", "TypeScript", "Tailwind"],
-    Backend: ["Node.js", "PostgreSQL"],
+    Jazyky: ["Python", "JavaScript", "C++"],
+    Frontend: ["React", "Tailwind"],
+    Backend: [
+      "FastAPI",
+      "Nest.js",
+      "drizzle",
+      "sqlalchemy",
+      "sqlite",
+      "postgres",
+    ],
+    DevOps: ["AWS Cloudshell", "Docker", "GNU/Linux", "cURL"],
+    AI: ["llama.cpp", "Claude Code"],
   },
   languages: {
     Čeština: "Rodilý mluvčí",
     Angličtina: "B2",
   },
+}
+
+export const emptyCvDetails: CvDetails = {
+  personal: {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    links: [],
+  },
+  experiences: [],
+  education: [],
+  skills: {},
+  languages: {},
 }

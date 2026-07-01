@@ -1,40 +1,121 @@
 import { Button } from "@/components/ui/button"
-import { FileText, FileCode2, Printer } from "lucide-react"
+import {
+  FileText,
+  FileCode2,
+  Printer,
+  Loader2,
+  Download,
+  Sparkles,
+  AlertCircle,
+} from "lucide-react"
+
+export type ExportState =
+  | "idle"
+  | "creating"
+  | "rendering"
+  | "downloading"
+  | "error"
 
 interface Props {
+  exportState: ExportState
+
   onExportPdf: () => void
   onExportMarkdown: () => void
   onPrint: () => void
-  isBusy?: boolean
 }
 
 export function Exporter({
+  exportState,
   onExportPdf,
   onExportMarkdown,
   onPrint,
-  isBusy = false,
 }: Props) {
+  const pdfBusy = exportState !== "idle" && exportState !== "error"
+
   return (
-    <div className="flex items-center gap-3">
-      {/* Label */}
-      <span className="w-14 text-sm text-muted-foreground">Export</span>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-3">
+        <span className="w-14 text-sm text-muted-foreground">Exportovat</span>
 
-      <div className="flex flex-wrap gap-2">
-        <Button variant="outline" disabled={isBusy} onClick={onPrint}>
-          <Printer className="mr-2 size-4" />
-          Print
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={onPrint}>
+            <Printer className="mr-2 size-4" />
+            Tisk
+          </Button>
 
-        <Button variant="outline" disabled={isBusy} onClick={onExportMarkdown}>
-          <FileCode2 className="mr-2 size-4" />
-          Markdown
-        </Button>
+          <Button variant="outline" onClick={onExportMarkdown}>
+            <FileCode2 className="mr-2 size-4" />
+            Markdown
+          </Button>
 
-        <Button disabled={isBusy} onClick={onExportPdf}>
-          <FileText className="mr-2 size-4" />
-          PDF
-        </Button>
+          <Button
+            disabled={pdfBusy}
+            onClick={onExportPdf}
+            className="min-w-[180px]"
+          >
+            <PdfState state={exportState} />
+          </Button>
+        </div>
       </div>
+
+      {pdfBusy && <ExportStatus state={exportState} />}
+
+      {exportState === "error" && (
+        <div className="ml-[68px] flex items-center gap-2 text-sm text-destructive">
+          <AlertCircle className="size-4" />
+          Export selhal. Zkuste to znovu.
+        </div>
+      )}
+    </div>
+  )
+}
+
+function PdfState({ state }: { state: ExportState }) {
+  switch (state) {
+    case "creating":
+      return (
+        <>
+          <Sparkles className="mr-2 size-4 animate-pulse" />
+          Připravuji…
+        </>
+      )
+
+    case "rendering":
+      return (
+        <>
+          <Loader2 className="mr-2 size-4 animate-spin" />
+          Generuji PDF…
+        </>
+      )
+
+    case "downloading":
+      return (
+        <>
+          <Download className="mr-2 size-4 animate-bounce" />
+          Stahování…
+        </>
+      )
+
+    default:
+      return (
+        <>
+          <FileText className="mr-2 size-4" />
+          Exportovat PDF
+        </>
+      )
+  }
+}
+
+function ExportStatus({ state }: { state: ExportState }) {
+  const messages = {
+    creating: "Připravuji dokument…",
+    rendering: "Generuji PDF… obvykle to trvá několik sekund",
+    downloading: "Stahování by mělo začít automaticky",
+  }
+
+  return (
+    <div className="ml-[68px] text-sm text-muted-foreground">
+      {messages[state]}
     </div>
   )
 }

@@ -58,6 +58,7 @@ async function createPdf(token: string): Promise<void> {
   const page = await browser.newPage()
 
   try {
+    if (process.env.NODE_ENV === 'PRODUCTION') throw new Error('INVALID FRONTEND URL!')
     const response = await page.goto(`http://localhost:3000/cv/preview?token=${token}`, {
       waitUntil: 'networkidle0',
     })

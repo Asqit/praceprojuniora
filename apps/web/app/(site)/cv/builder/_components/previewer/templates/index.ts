@@ -1,9 +1,9 @@
 import { DefaultCvTemplate } from "./default"
-import { ModernCvTemplate } from "./modern"
+import { AuroraCvTemplate } from "./aurora"
 import { NebulaCvTemplate } from "./nebula"
 
 export const templates = {
   default: DefaultCvTemplate,
-  modern: ModernCvTemplate,
+  aurora: AuroraCvTemplate,
   nebula: NebulaCvTemplate,
 }

@@ -33,7 +33,7 @@ export function NebulaCvTemplate({ cv }: Props) {
           <h1 className="font-serif text-6xl leading-[0.9]">{fullName}</h1>
 
           <div className="mt-4 text-lg tracking-[0.35em] text-orange-500 uppercase">
-            {cv.experiences[0]?.role ?? "Software Engineer"}
+            {cv.experiences[0]?.role ?? "Softwarový inženýr"}
           </div>
 
           {/* compact contacts */}
@@ -63,14 +63,14 @@ export function NebulaCvTemplate({ cv }: Props) {
           {/* LEFT */}
           <div className="space-y-12">
             {!!cv.personal.summary && (
-              <Section title="About">
+              <Section title="O mně">
                 <p className="leading-8 text-neutral-700">
                   {cv.personal.summary}
                 </p>
               </Section>
             )}
 
-            <Section title="Experience">
+            <Section title="Zkušenosti">
               <div className="space-y-8">
                 {cv.experiences.map((exp, i) => (
                   <article
@@ -98,7 +98,7 @@ export function NebulaCvTemplate({ cv }: Props) {
 
           {/* RIGHT */}
           <aside className="space-y-12">
-            <Section title="Skills">
+            <Section title="Dovednosti">
               <div className="space-y-5">
                 {allSkills.map(([group, skills]) => (
                   <div key={group}>
@@ -121,7 +121,7 @@ export function NebulaCvTemplate({ cv }: Props) {
               </div>
             </Section>
 
-            <Section title="Education">
+            <Section title="Vzdělání">
               <div className="space-y-5">
                 {cv.education.map((edu, i) => (
                   <div key={i}>
@@ -143,7 +143,7 @@ export function NebulaCvTemplate({ cv }: Props) {
               </div>
             </Section>
 
-            <Section title="Languages">
+            <Section title="Jazyky">
               <div className="space-y-2">
                 {Object.entries(cv.languages).map(([lang, level]) => (
                   <div

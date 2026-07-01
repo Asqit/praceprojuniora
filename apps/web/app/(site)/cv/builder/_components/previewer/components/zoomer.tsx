@@ -19,7 +19,7 @@ export function Zoomer({ zoom, setZoom }: Props) {
   return (
     <div className="flex items-center gap-3">
       {/* Label */}
-      <span className="w-14 text-sm text-muted-foreground">Zoom</span>
+      <span className="w-14 text-sm text-muted-foreground">Měřítko</span>
 
       <Button
         size="icon"

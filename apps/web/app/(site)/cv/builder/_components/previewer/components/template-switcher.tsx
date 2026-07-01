@@ -10,7 +10,7 @@ export function TemplateSwitcher({ open, onToggle }: Props) {
   return (
     <Button variant="outline" onClick={onToggle} className="gap-2">
       <LayoutGrid className="size-4" />
-      Templates
+      Šablony
       <ChevronDown
         className={["size-4 transition-transform", open && "rotate-180"]
           .filter(Boolean)

@@ -15,6 +15,7 @@ export function Previewer({ content, zoom, galleryOpen }: Props) {
   const [Template, setTemplate] = useState<
     React.ComponentType<{ cv: CvDetails }>
   >(() => DefaultCvTemplate)
+  const isEmpty = !content.personal?.firstName && !content.personal?.lastName
 
   return (
     <div className="sticky top-32 h-fit overflow-y-auto py-8">
@@ -61,7 +62,7 @@ export function Previewer({ content, zoom, galleryOpen }: Props) {
                       <span className="font-medium capitalize">{name}</span>
 
                       {selected && (
-                        <span className="text-sm text-primary">Selected</span>
+                        <span className="text-sm text-primary">Vybráno</span>
                       )}
                     </div>
                   </button>
@@ -72,10 +73,22 @@ export function Previewer({ content, zoom, galleryOpen }: Props) {
         </nav>
 
         <div
-          className="mx-auto min-h-[1123px] w-[794px] overflow-hidden bg-white shadow-xl"
+          className="relative mx-auto min-h-[1123px] w-[794px] overflow-hidden bg-white shadow-xl"
           style={{ zoom }}
         >
           <Template cv={content} />
+          {isEmpty && (
+            <div className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-[2px]">
+              <div className="max-w-xs text-center">
+                <p className="text-lg font-medium text-neutral-800">
+                  Sem se to bude propisovat živě ✨
+                </p>
+                <p className="mt-1 text-sm text-neutral-500">
+                  Vyplň jméno vlevo a sleduj, jak se CV rovnou skládá.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

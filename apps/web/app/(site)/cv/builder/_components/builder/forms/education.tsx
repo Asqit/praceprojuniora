@@ -87,58 +87,84 @@ export function EducationForm({ submit }: Props) {
                   <ul className="space-y-4">
                     {(field.state.value ?? []).map((item, index) => (
                       <li key={index} className="space-y-2 rounded border p-3">
-                        <div className="flex gap-2">
-                          <Input
-                            value={item.title}
-                            onChange={(e) => {
-                              const next = [...(field.state.value ?? [])]
-                              next[index] = {
-                                ...next[index],
-                                title: e.target.value,
-                              }
-                              field.handleChange(next)
-                            }}
-                            placeholder="Název instituce (např. ČVUT)"
-                          />
-                          <Input
-                            value={item.degree}
-                            onChange={(e) => {
-                              const next = [...(field.state.value ?? [])]
-                              next[index] = {
-                                ...next[index],
-                                degree: e.target.value,
-                              }
-                              field.handleChange(next)
-                            }}
-                            placeholder="Studijní obor / stupeň"
-                          />
+                        <div className="grid gap-2">
+                          <div className="grid gap-1">
+                            <FieldLabel className="text-sm">
+                              Název instituce{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
+                            <Input
+                              value={item.title}
+                              onChange={(e) => {
+                                const next = [...(field.state.value ?? [])]
+                                next[index] = {
+                                  ...next[index],
+                                  title: e.target.value,
+                                }
+                                field.handleChange(next)
+                              }}
+                              placeholder="Název instituce (např. ČVUT)"
+                            />
+                          </div>
+                          <div className="grid gap-1">
+                            <FieldLabel className="text-sm">
+                              Studijní obor / stupeň{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
+                            <Input
+                              value={item.degree}
+                              onChange={(e) => {
+                                const next = [...(field.state.value ?? [])]
+                                next[index] = {
+                                  ...next[index],
+                                  degree: e.target.value,
+                                }
+                                field.handleChange(next)
+                              }}
+                              placeholder="Studijní obor / stupeň"
+                            />
+                          </div>
                         </div>
 
-                        <div className="flex gap-2">
-                          <Input
-                            value={item.startDate}
-                            onChange={(e) => {
-                              const next = [...(field.state.value ?? [])]
-                              next[index] = {
-                                ...next[index],
-                                startDate: e.target.value,
-                              }
-                              field.handleChange(next)
-                            }}
-                            placeholder="Začátek (YYYY-MM)"
-                          />
-                          <Input
-                            value={item.endDate}
-                            onChange={(e) => {
-                              const next = [...(field.state.value ?? [])]
-                              next[index] = {
-                                ...next[index],
-                                endDate: e.target.value,
-                              }
-                              field.handleChange(next)
-                            }}
-                            placeholder="Konec (YYYY-MM) — volitelné"
-                          />
+                        <div className="grid gap-2">
+                          <div className="grid gap-1">
+                            <FieldLabel className="text-sm">
+                              Začátek{" "}
+                              <span className="text-destructive">*</span>
+                            </FieldLabel>
+                            <Input
+                              value={item.startDate}
+                              onChange={(e) => {
+                                const next = [...(field.state.value ?? [])]
+                                next[index] = {
+                                  ...next[index],
+                                  startDate: e.target.value,
+                                }
+                                field.handleChange(next)
+                              }}
+                              placeholder="Začátek (YYYY-MM)"
+                            />
+                          </div>
+                          <div className="grid gap-1">
+                            <FieldLabel className="text-sm">
+                              Konec{" "}
+                              <span className="text-muted-foreground">
+                                (volitelné)
+                              </span>
+                            </FieldLabel>
+                            <Input
+                              value={item.endDate}
+                              onChange={(e) => {
+                                const next = [...(field.state.value ?? [])]
+                                next[index] = {
+                                  ...next[index],
+                                  endDate: e.target.value,
+                                }
+                                field.handleChange(next)
+                              }}
+                              placeholder="Konec (YYYY-MM) — volitelné"
+                            />
+                          </div>
                         </div>
 
                         <Textarea

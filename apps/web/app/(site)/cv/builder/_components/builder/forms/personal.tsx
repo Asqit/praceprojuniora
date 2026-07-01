@@ -81,7 +81,7 @@ export function PersonalForm({ submit }: Props) {
         >
           <FieldGroup className="grid gap-3">
             {/* 1. Celý řádek: Jméno | Prostřední | Příjmení */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid gap-3">
               <form.Field
                 name="firstName"
                 children={(field) => {
@@ -90,7 +90,7 @@ export function PersonalForm({ submit }: Props) {
                   return (
                     <Field className="gap-2" data-invalid={isInvalid}>
                       <FieldLabel htmlFor={field.name} className="text-sm">
-                        Jméno
+                        Jméno <span className="text-destructive">*</span>
                       </FieldLabel>
                       <Input
                         id={field.name}
@@ -136,7 +136,7 @@ export function PersonalForm({ submit }: Props) {
                   return (
                     <Field className="gap-2" data-invalid={isInvalid}>
                       <FieldLabel htmlFor={field.name} className="text-sm">
-                        Příjmení
+                        Příjmení <span className="text-destructive">*</span>
                       </FieldLabel>
                       <Input
                         id={field.name}
@@ -158,7 +158,7 @@ export function PersonalForm({ submit }: Props) {
             </div>
 
             {/* 2. Email + Telefon vedle sebe */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-3">
               <form.Field
                 name="email"
                 children={(field) => {
@@ -167,7 +167,7 @@ export function PersonalForm({ submit }: Props) {
                   return (
                     <Field className="gap-2" data-invalid={isInvalid}>
                       <FieldLabel htmlFor={field.name} className="text-sm">
-                        E-mail
+                        E-mail <span className="text-destructive">*</span>
                       </FieldLabel>
                       <Input
                         id={field.name}
@@ -194,7 +194,7 @@ export function PersonalForm({ submit }: Props) {
                   return (
                     <Field className="gap-2" data-invalid={isInvalid}>
                       <FieldLabel htmlFor={field.name} className="text-sm">
-                        Telefon
+                        Telefon <span className="text-destructive">*</span>
                       </FieldLabel>
                       <Input
                         id={field.name}
@@ -224,7 +224,7 @@ export function PersonalForm({ submit }: Props) {
                 return (
                   <Field className="gap-2" data-invalid={isInvalid}>
                     <FieldLabel htmlFor={field.name} className="text-sm">
-                      Adresa
+                      Adresa <span className="text-destructive">*</span>
                     </FieldLabel>
                     <Input
                       id={field.name}
