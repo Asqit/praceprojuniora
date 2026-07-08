@@ -1,7 +1,6 @@
 import { ThemeToggle } from "@/components/theme-toggler"
 import { Button } from "@/components/ui/button"
 import { Brand } from "../brand"
-import Link from "next/link"
 import { Menu } from "lucide-react"
 import {
   BubbleMenu,
@@ -9,11 +8,19 @@ import {
   BubblePillItem,
   BubbleTrigger,
 } from "./components/bubble-menu"
+import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 const publicMap = [
   { href: "/", renderName: "Nabídky", rotate: -2 },
   { href: "/about", renderName: "O Nás", rotate: 1 },
   { href: "/bookmarks", renderName: "Záložky", rotate: -1 },
+  {
+    href: "/cv",
+    renderName: "Vytvoř si CVčko",
+    rotate: -2,
+    action: true,
+  },
 ]
 
 export function Navbar() {
@@ -30,9 +37,19 @@ export function Navbar() {
           <div className="hidden items-center gap-2 md:flex">
             <ul className="flex items-center gap-2">
               {publicMap.map((link) => (
-                <li key={link.href}>
+                <li
+                  key={link.href}
+                  className={cn(link?.action ? "relative" : "")}
+                >
+                  {link?.action ? (
+                    <div className="absolute -top-4 -right-2 z-10 rotate-6 rounded-md border bg-secondary p-1 px-2 font-mono text-xs text-black">
+                      NOVĚ!
+                    </div>
+                  ) : null}
                   <Link href={link.href}>
-                    <Button variant={"link"}>{link.renderName}</Button>
+                    <Button variant={link.action ? "default" : "link"}>
+                      {link.renderName}
+                    </Button>
                   </Link>
                 </li>
               ))}
