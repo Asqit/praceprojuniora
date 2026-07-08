@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.7.1](https://github.com/asqit/praceprojuniora/compare/v0.7.0...v0.7.1) (2026-07-08)
+
+### Bug Fixes
+
+* fix missing internal package copy in docker ([fd0670a](https://github.com/asqit/praceprojuniora/commit/fd0670a77a968d961c70dc3bf0ae6dcf6e2dc7ca))
+
 ## [0.7.0](https://github.com/asqit/praceprojuniora/compare/v0.6.1...v0.7.0) (2026-07-08)
 
 ### Features
