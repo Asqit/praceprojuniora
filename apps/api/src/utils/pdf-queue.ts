@@ -16,6 +16,7 @@ interface Success {
 type PdfJob = Progress | PdfError | Success
 
 const cache = new BunCache()
+const JOB_TTL_MS = 15 * 60 * 1000
 
 // Reuse one browser instance instead of launching per job.
 let browserPromise: Promise<Browser> | null = null
@@ -33,14 +34,18 @@ export function getJob(token: string): PdfJob | undefined {
 export async function enqueueJob(token: string): Promise<PdfJob> {
   if (cache.hasKey(token)) return cache.get(token) as PdfJob
 
-  cache.put(token, { status: 'progress' } as PdfJob)
+  cache.put(token, { status: 'progress' } as PdfJob, JOB_TTL_MS)
 
   // fire and forget — caller polls /status
   createPdf(token).catch((err) => {
-    cache.put(token, {
-      status: 'error',
-      error: err instanceof Error ? err.message : 'unknown error',
-    } as PdfJob)
+    cache.put(
+      token,
+      {
+        status: 'error',
+        error: err instanceof Error ? err.message : 'unknown error',
+      } as PdfJob,
+      JOB_TTL_MS
+    )
   })
 
   return { status: 'progress' }
@@ -49,8 +54,8 @@ export async function enqueueJob(token: string): Promise<PdfJob> {
 async function createPdf(token: string): Promise<void> {
   const payload = verifyPayload(token)
 
-  if (!payload) {
-    cache.put(token, { status: 'error', error: 'invalid or expired token' } as PdfJob)
+  if (!payload || payload.kind !== 'cv_export') {
+    cache.put(token, { status: 'error', error: 'invalid or expired token' } as PdfJob, JOB_TTL_MS)
     return
   }
 
@@ -64,15 +69,19 @@ async function createPdf(token: string): Promise<void> {
     })
 
     if (!response || !response.ok()) {
-      cache.put(token, {
-        status: 'error',
-        error: `unexpected status: ${response?.status() ?? 'no response'}`,
-      } as PdfJob)
+      cache.put(
+        token,
+        {
+          status: 'error',
+          error: `unexpected status: ${response?.status() ?? 'no response'}`,
+        } as PdfJob,
+        JOB_TTL_MS
+      )
       return
     }
 
-    const pdf = await page.pdf({ format: 'A4' })
-    cache.put(token, { status: 'success', data: pdf } as PdfJob)
+    const pdf = await page.pdf({ format: 'A4', printBackground: true })
+    cache.put(token, { status: 'success', data: pdf } as PdfJob, JOB_TTL_MS)
   } finally {
     await page.close()
   }

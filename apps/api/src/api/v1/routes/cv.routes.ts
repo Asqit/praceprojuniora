@@ -1,13 +1,46 @@
 import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
+import { isCvTemplate } from '../../../utils/cv-session'
 import { getJob } from '../../../utils/pdf-queue'
 import { CvService } from '../services/cv.service'
 
 const router = new Hono()
-  // ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~ CREATE
-  .post('/create', async (c) => {
-    const data = await c.req.json()
-    const jobToken = CvService.createPdfJob(data)
+  // ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~ SESSION CREATE
+  .post('/session', async (c) => {
+    const body = (await c.req.json()) as { data?: unknown; template?: unknown }
+    const template = isCvTemplate(body?.template) ? body.template : 'default'
+
+    const { sessionToken, session } = CvService.createSession(body?.data ?? {}, template)
+    return c.json({ sessionToken, session })
+  })
+  // ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~ SESSION GET
+  .get('/session/:token', async (c) => {
+    const token = c.req.param('token')
+    const session = CvService.getSession(token)
+
+    if (!session) return c.json({ status: 'not_found' }, 404)
+    return c.json({ session })
+  })
+  // ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~ SESSION UPDATE
+  .put('/session/:token', async (c) => {
+    const token = c.req.param('token')
+    const body = (await c.req.json()) as { data?: unknown; template?: unknown }
+
+    if (!isCvTemplate(body?.template)) {
+      return c.json({ status: 'invalid_template' }, 400)
+    }
+
+    const session = CvService.updateSession(token, body?.data ?? {}, body.template)
+    if (!session) return c.json({ status: 'not_found' }, 404)
+
+    return c.json({ session })
+  })
+  // ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~ CREATE EXPORT JOB
+  .post('/create/:token', async (c) => {
+    const token = c.req.param('token')
+    const jobToken = await CvService.createPdfJobFromSession(token)
+
+    if (!jobToken) return c.json({ status: 'not_found' }, 404)
     return c.json({ jobToken })
   })
   // ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~ STATUS (SSE)

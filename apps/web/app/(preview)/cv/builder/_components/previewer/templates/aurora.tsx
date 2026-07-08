@@ -23,10 +23,8 @@ export function AuroraCvTemplate({ cv }: Props) {
     .filter(Boolean)
     .join(" ")
 
-  const role = cv.experiences[0]?.role ?? "Softwarový inženýr"
-
   return (
-    <div className="relative overflow-hidden bg-[#fafaf8] p-12 text-neutral-900">
+    <div className="relative min-h-[1123px] overflow-hidden bg-[#fafaf8] p-8 text-neutral-900">
       {/* decorative shapes */}
       <Shape
         className="-top-24 right-[-60px] text-orange-300"
@@ -48,41 +46,37 @@ export function AuroraCvTemplate({ cv }: Props) {
 
       <div className="relative z-10">
         {/* HERO */}
-        <header className="mb-16">
-          <div className="mb-8 flex items-start justify-between gap-10">
+        <header className="mb-8">
+          <div className="mb-5 flex items-start justify-between gap-6">
             <div className="max-w-3xl">
-              <div className="mb-3 text-sm tracking-[0.4em] text-orange-500 uppercase">
-                {role}
-              </div>
-
-              <h1 className="font-serif text-7xl leading-[0.9] tracking-tight">
+              <h1 className="font-serif text-5xl leading-tight tracking-tight">
                 {fullName}
               </h1>
 
               {!!cv.personal.summary && (
-                <p className="mt-8 max-w-2xl text-lg leading-8 text-neutral-600">
+                <p className="mt-4 max-w-2xl text-base leading-7 text-neutral-600">
                   {cv.personal.summary}
                 </p>
               )}
             </div>
 
-            <div className="w-[260px] shrink-0 rounded-3xl border border-neutral-200 bg-white/80 p-6 backdrop-blur">
-              <Contact icon={<Mail size={16} />}>{cv.personal.email}</Contact>
+            <div className="w-[220px] shrink-0 rounded-2xl border border-neutral-200 bg-white/80 p-4 backdrop-blur">
+              <Contact icon={<Mail size={14} />}>{cv.personal.email}</Contact>
 
-              <Contact icon={<Phone size={16} />}>{cv.personal.phone}</Contact>
+              <Contact icon={<Phone size={14} />}>{cv.personal.phone}</Contact>
 
-              <Contact icon={<MapPin size={16} />}>
+              <Contact icon={<MapPin size={14} />}>
                 {cv.personal.address}
               </Contact>
 
               {!!cv.personal.links?.length && (
-                <div className="mt-5 space-y-2">
+                <div className="mt-3 space-y-1">
                   {cv.personal.links.map((link) => (
                     <div
                       key={link}
-                      className="flex items-center gap-2 text-sm text-orange-600"
+                      className="flex items-center gap-2 text-xs text-orange-600"
                     >
-                      <ArrowUpRight size={14} />
+                      <ArrowUpRight size={12} />
 
                       <span className="truncate">{link}</span>
                     </div>
@@ -94,31 +88,33 @@ export function AuroraCvTemplate({ cv }: Props) {
         </header>
 
         {/* CONTENT */}
-        <div className="grid gap-14 lg:grid-cols-[1.6fr_0.9fr]">
+        <div className="grid grid-cols-[1.6fr_0.9fr] gap-8">
           {/* MAIN */}
-          <main className="space-y-12">
+          <main className="space-y-6">
             <Section title="Zkušenosti">
-              <div className="space-y-5">
+              <div className="space-y-3">
                 {cv.experiences.map((exp, i) => (
                   <article
                     key={i}
-                    className="rounded-3xl border border-neutral-200 bg-white/80 p-7"
+                    className="rounded-2xl border border-neutral-200 bg-white/80 p-4"
                   >
-                    <div className="mb-5 flex items-start justify-between gap-5">
+                    <div className="mb-2 flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-xl font-semibold">{exp.role}</h3>
+                        <h3 className="font-semibold">{exp.role}</h3>
 
-                        <div className="text-neutral-500">{exp.title}</div>
+                        <div className="text-sm text-neutral-500">
+                          {exp.title}
+                        </div>
                       </div>
 
-                      <div className="text-right text-sm text-orange-500">
+                      <div className="shrink-0 text-right text-xs text-orange-500">
                         {exp.startDate}
                         <br />
                         {exp.endDate ?? "Nyní"}
                       </div>
                     </div>
 
-                    <p className="text-sm leading-7 text-neutral-700">
+                    <p className="text-sm leading-6 text-neutral-700">
                       {exp.description}
                     </p>
                   </article>
@@ -127,21 +123,21 @@ export function AuroraCvTemplate({ cv }: Props) {
             </Section>
 
             <Section title="Vzdělání">
-              <div className="grid gap-5">
+              <div className="grid gap-3">
                 {cv.education.map((edu, i) => (
-                  <div key={i} className="rounded-2xl bg-white/70 p-6">
+                  <div key={i} className="rounded-xl bg-white/70 p-4">
                     <div className="mb-1 font-semibold">{edu.degree}</div>
 
-                    <div className="text-neutral-500">{edu.title}</div>
+                    <div className="text-sm text-neutral-500">{edu.title}</div>
 
-                    <div className="mt-2 text-sm text-orange-500">
+                    <div className="mt-1 text-sm text-orange-500">
                       {edu.startDate}
                       {" — "}
                       {edu.endDate}
                     </div>
 
                     {!!edu.description && (
-                      <p className="mt-4 text-sm leading-6">
+                      <p className="mt-2 text-sm leading-6">
                         {edu.description}
                       </p>
                     )}
@@ -152,20 +148,20 @@ export function AuroraCvTemplate({ cv }: Props) {
           </main>
 
           {/* SIDEBAR */}
-          <aside className="space-y-12">
+          <aside className="space-y-6">
             <Section title="Technologie">
-              <div className="space-y-6">
+              <div className="space-y-3">
                 {Object.entries(cv.skills).map(([group, values]) => (
                   <div key={group}>
-                    <div className="mb-3 text-sm font-bold tracking-widest uppercase">
+                    <div className="mb-2 text-xs font-bold tracking-widest uppercase">
                       {group}
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                       {values.map((skill) => (
                         <span
                           key={skill}
-                          className="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm"
+                          className="rounded-lg border border-neutral-200 bg-white px-2 py-1 text-xs"
                         >
                           {skill}
                         </span>
@@ -177,15 +173,15 @@ export function AuroraCvTemplate({ cv }: Props) {
             </Section>
 
             <Section title="Jazyky">
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {Object.entries(cv.languages).map(([lang, level]) => (
                   <div
                     key={lang}
-                    className="rounded-xl border border-neutral-200 bg-white px-4 py-3"
+                    className="rounded-lg border border-neutral-200 bg-white px-3 py-2"
                   >
-                    <div className="font-medium">{lang}</div>
+                    <div className="text-sm font-medium">{lang}</div>
 
-                    <div className="text-sm text-neutral-500">{level}</div>
+                    <div className="text-xs text-neutral-500">{level}</div>
                   </div>
                 ))}
               </div>
@@ -237,7 +233,7 @@ function Contact({
   icon: React.ReactNode
 }>) {
   return (
-    <div className="mb-3 flex items-center gap-3 text-sm">
+    <div className="mb-2 flex items-center gap-2 text-xs">
       <div className="text-orange-500">{icon}</div>
 
       <div className="break-all">{children}</div>

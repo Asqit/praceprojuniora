@@ -8,7 +8,7 @@ export function DefaultCvTemplate({ cv }: Props) {
   const fullName = `${cv.personal.firstName} ${cv.personal.lastName}`
 
   return (
-    <div className="mx-auto max-w-4xl bg-white p-10 text-neutral-900">
+    <div className="mx-auto min-h-[1123px] max-w-4xl bg-white p-10 text-neutral-900">
       {/* Header */}
       <header className="border-b pb-6">
         <h1 className="text-4xl font-bold">{fullName}</h1>
@@ -18,7 +18,7 @@ export function DefaultCvTemplate({ cv }: Props) {
           <p>{cv.personal.phone}</p>
           <p>{cv.personal.address}</p>
 
-          {cv.personal?.links?.length > 0 && (
+          {cv?.personal?.links?.length ? (
             <div className="flex flex-wrap gap-2">
               {cv.personal?.links?.map((link) => (
                 <span key={link} className="rounded bg-neutral-100 px-2 py-1">
@@ -26,7 +26,7 @@ export function DefaultCvTemplate({ cv }: Props) {
                 </span>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
       </header>
 

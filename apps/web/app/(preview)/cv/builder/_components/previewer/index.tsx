@@ -2,25 +2,30 @@
 
 import { useState } from "react"
 import { CvDetails } from "../types"
-import { templates } from "./templates"
-import { DefaultCvTemplate } from "./templates/default"
+import { templates, type CvTemplateName } from "./templates"
 import { Toolbar } from "./components/toolbar"
 import { useExportPdf } from "../builder/use-export-pdf"
 import { useExportMarkdown } from "../builder/use-export.md"
 
 interface Props {
   content: CvDetails
+  selectedTemplate: CvTemplateName
+  onTemplateChange(template: CvTemplateName): void
+  sessionToken: string | null
 }
 
-export function Previewer({ content }: Props) {
-  const [Template, setTemplate] = useState<
-    React.ComponentType<{ cv: CvDetails }>
-  >(() => DefaultCvTemplate)
+export function Previewer({
+  content,
+  selectedTemplate,
+  onTemplateChange,
+  sessionToken,
+}: Props) {
   const [zoomLevel, setZoomLevel] = useState<number>(0.8)
   const [galleryOpen, setGalleryOpen] = useState<boolean>(false)
   const { exportState, downloadPdf } = useExportPdf()
   const { downloadMarkdown } = useExportMarkdown()
   const isEmpty = !content.personal?.firstName && !content.personal?.lastName
+  const Template = templates[selectedTemplate] ?? templates.default
 
   return (
     <div className="flex min-h-0 flex-col overflow-y-auto">
@@ -28,18 +33,20 @@ export function Previewer({ content }: Props) {
       <nav
         className={[
           "sticky top-0 z-20 border-b-2 bg-background transition-all duration-300",
-          galleryOpen ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0",
+          galleryOpen
+            ? "max-h-[420px] opacity-100"
+            : "pointer-events-none max-h-0 opacity-0",
         ].join(" ")}
       >
         <div className="-mx-4 overflow-x-auto px-4">
           <div className="flex snap-x gap-4 pb-2">
             {Object.entries(templates).map(([name, Component]) => {
-              const selected = Component === Template
+              const selected = name === selectedTemplate
 
               return (
                 <button
                   key={name}
-                  onClick={() => setTemplate(() => Component)}
+                  onClick={() => onTemplateChange(name as CvTemplateName)}
                   className={[
                     "group shrink-0 snap-start overflow-hidden rounded-3xl border transition",
                     "w-[220px]",
@@ -83,11 +90,8 @@ export function Previewer({ content }: Props) {
           galleryOpen={galleryOpen}
           setGalleryOpen={setGalleryOpen}
           exportState={exportState}
-          onExportPdf={() => downloadPdf(content)}
+          onExportPdf={() => downloadPdf(content, sessionToken ?? undefined)}
           onExportMarkdown={() => downloadMarkdown(content)}
-          onPrint={function (): void {
-            throw new Error("Function not implemented.")
-          }}
         />
       </div>
 
@@ -102,7 +106,7 @@ export function Previewer({ content }: Props) {
             <div className="absolute inset-0 flex items-center justify-center bg-white/70 backdrop-blur-[2px]">
               <div className="max-w-xs text-center">
                 <p className="text-lg font-medium text-neutral-800">
-                  Sem se to bude propisovat živě ✨
+                  Sem se to bude propisovat živě
                 </p>
                 <p className="mt-1 text-sm text-neutral-500">
                   Vyplň jméno vlevo a sleduj, jak se CV rovnou skládá.

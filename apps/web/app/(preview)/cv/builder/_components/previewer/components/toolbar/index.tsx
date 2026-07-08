@@ -10,7 +10,6 @@ interface Props {
   setZoomLevel: Dispatch<SetStateAction<number>>
   onExportPdf(): void
   onExportMarkdown(): void
-  onPrint(): void
   exportState: ExportState
 }
 
@@ -22,7 +21,6 @@ export function Toolbar(props: Props) {
     setZoomLevel,
     onExportMarkdown,
     onExportPdf,
-    onPrint,
     exportState,
   } = props
 
@@ -36,7 +34,6 @@ export function Toolbar(props: Props) {
       <Exporter
         onExportPdf={onExportPdf}
         onExportMarkdown={onExportMarkdown}
-        onPrint={onPrint}
         exportState={exportState}
       />
     </div>

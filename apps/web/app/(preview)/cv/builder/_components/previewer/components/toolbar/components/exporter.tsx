@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button"
 import {
   FileText,
   FileCode2,
-  Printer,
   Loader2,
   Download,
   Sparkles,
@@ -21,14 +20,12 @@ interface Props {
 
   onExportPdf: () => void
   onExportMarkdown: () => void
-  onPrint: () => void
 }
 
 export function Exporter({
   exportState,
   onExportPdf,
   onExportMarkdown,
-  onPrint,
 }: Props) {
   const pdfBusy = exportState !== "idle" && exportState !== "error"
 
@@ -38,17 +35,20 @@ export function Exporter({
         <span className="w-14 text-sm text-muted-foreground">Exportovat</span>
 
         <div className="flex gap-2">
-          <Button variant="outline" onClick={onPrint}>
-            <Printer className="mr-2 size-4" />
-            Tisk
-          </Button>
-
-          <Button variant="outline" onClick={onExportMarkdown}>
+          <Button
+            variant="outline"
+            onClick={onExportMarkdown}
+            data-umami-event="cv-export-markdown-click"
+          >
             <FileCode2 className="mr-2 size-4" />
             Markdown
           </Button>
 
-          <Button disabled={pdfBusy} onClick={onExportPdf}>
+          <Button
+            disabled={pdfBusy}
+            onClick={onExportPdf}
+            data-umami-event="cv-export-pdf-click"
+          >
             <PdfState state={exportState} />
           </Button>
         </div>
@@ -102,7 +102,9 @@ function PdfState({ state }: { state: ExportState }) {
   }
 }
 
-function ExportStatus({ state }: { state: ExportState }) {
+type BusyExportState = Exclude<ExportState, "idle" | "error">
+
+function ExportStatus({ state }: { state: BusyExportState }) {
   const messages = {
     creating: "Připravuji dokument…",
     rendering: "Generuji PDF… obvykle to trvá několik sekund",
