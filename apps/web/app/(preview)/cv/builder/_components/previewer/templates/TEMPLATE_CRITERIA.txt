@@ -1,0 +1,35 @@
+CV TEMPLATE CRITERIA
+====================
+
+LAYOUT
+- Fixed canvas: 794 × 1123 px (A4)
+- Root element must have min-h-[1123px]
+- Multi-column layouts must NOT use responsive prefixes (lg:, md:, etc.)
+  Reason: Puppeteer renders at a fixed width — breakpoints never trigger
+- All grid-cols must be applied unconditionally e.g. grid-cols-[1.6fr_0.9fr]
+
+PDF / PRINT
+- Puppeteer renders with printBackground: true — CSS backgrounds, gradients and
+  backdrop filters ARE included in output
+- Avoid transparency-only color effects as the sole source of color — they can
+  render faint or washed out at print. Pair them with solid fallbacks or bump
+  opacity enough to survive PDF rendering (>=50%)
+- blur-3xl on background blobs is fine as long as printBackground is on
+- Do NOT rely on lg:/md:/sm: breakpoints for any structural layout
+
+STYLE RULES
+- No "AI-slop" ornaments: Sparkles, Star, Asterisk icons used as decorative
+  floating elements are banned
+- Decorative shapes (Circle, Triangle, Square from lucide) with low opacity are
+  acceptable as background accents (see aurora)
+- Gradient blobs with blur are acceptable as background accents (see nebula)
+- Font sizes: name/hero max text-5xl, section headings max text-2xl
+- Padding: root container max p-8
+- Section spacing: max space-y-6 between sections
+- No Print button — PDF export is the only export path for print output
+
+EXISTING TEMPLATES
+- default : Clean, single-column, tight spacing, no decorative elements
+- aurora  : Two-column, geometric shape accents (low opacity), orange accent color
+- nebula  : Two-column, gradient blob accents, violet/orange palette
+- modern  : Empty — not registered, ignore

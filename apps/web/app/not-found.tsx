@@ -36,7 +36,7 @@ export default function NotFound() {
 
         <div className="mt-6">
           <Link href="/">
-            <Button size="sm">cd ~</Button>
+            <Button size="sm">ET volá domů (je to old-school, já vím)</Button>
           </Link>
         </div>
       </div>

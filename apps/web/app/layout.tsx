@@ -1,15 +1,16 @@
 import { Geist_Mono, Inter } from "next/font/google"
-import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils"
-import { Navbar } from "@/components/share/navbar"
+import { Metadata } from "next"
 import Providers from "@/lib/tanstack-provider"
 import CelebrationEffect from "@/components/share/celebration-effect"
-import { Metadata } from "next"
 import Script from "next/script"
-import { Footer } from "@/components/share/footer"
+import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -60,13 +61,14 @@ export default function RootLayout({
       suppressHydrationWarning
       className={cn(
         "antialiased",
+        inter.variable,
         fontMono.variable,
-        "font-sans",
-        inter.variable
+        "font-sans"
       )}
     >
       <head>
         <meta name="apple-mobile-web-app-title" content="praceprojuniora" />
+
         {process.env.NODE_ENV === "production" && (
           <Script
             src={process.env.NEXT_PUBLIC_ANALYTICS_URL}
@@ -75,13 +77,12 @@ export default function RootLayout({
           />
         )}
       </head>
+
       <body suppressHydrationWarning>
         <ThemeProvider>
           <Providers>
-            <Navbar />
             {children}
             <CelebrationEffect />
-            <Footer />
           </Providers>
         </ThemeProvider>
       </body>

@@ -1,25 +1,22 @@
-import { Hono } from 'hono'
 import { db } from '../../../db/connection'
 import { jobs } from '../../../db/schema'
-import { zValidator } from '@hono/zod-validator'
-import { bulkJson, clickCounterParam, getAllQuery } from '../validators/listing.validators'
 import { withPagination } from '../../../db/helpers'
 import { match } from 'ts-pattern'
 import { and, count, desc, inArray, like, or, eq, sql } from 'drizzle-orm'
-import { HTTPException } from 'hono/http-exception'
-import { rateLimiter } from 'hono-rate-limiter'
 
-const router = new Hono()
-  .use(
-    rateLimiter({
-      windowMs: 15 * 60 * 1000,
-      limit: 100,
-      keyGenerator: (c) => c.req.header('x-forwarded-for') ?? '',
-    })
-  )
-  // ----------------------------------- GET ALL LISTINGS
-  .get('/', zValidator('query', getAllQuery), async (c) => {
-    const { page, limit, sortBy, search, location } = c.req.valid('query')
+export type ListingSortBy = 'newest' | 'expiration' | 'popularity' | undefined
+
+type GetAllParams = {
+  page: number
+  limit: number
+  sortBy?: ListingSortBy
+  search?: string
+  location?: string
+}
+
+export class ListingService {
+  static async getAll(params: GetAllParams) {
+    const { page, limit, sortBy, search, location } = params
 
     const filters = and(
       location ? like(jobs.location, `%${location}%`) : undefined,
@@ -49,44 +46,33 @@ const router = new Hono()
       db.select({ count: count() }).from(jobs).where(filters),
     ])
 
-    return c.json({
+    return {
       data: rows,
       totalRows,
       page,
       totalPages: Math.ceil(totalRows / limit),
-    })
-  })
-  // ----------------------------------- BULK
-  .post('/bulk', zValidator('json', bulkJson), async (c) => {
-    const { ids } = c.req.valid('json')
-    const rows = await db.select().from(jobs).where(inArray(jobs.id, ids))
-    return c.json({
-      data: rows,
-    })
-  })
-  // ----------------------------------- CLICK
-  .post('/click-counter/:id', zValidator('param', clickCounterParam), async (c) => {
-    const { id } = c.req.valid('param')
+    }
+  }
+
+  static async bulkGet(ids: number[]) {
+    return db.select().from(jobs).where(inArray(jobs.id, ids))
+  }
+
+  static async incrementClick(id: number) {
     const [updated] = await db
       .update(jobs)
       .set({ clicks: sql`${jobs.clicks} + 1` })
       .where(eq(jobs.id, id))
       .returning()
 
-    if (!updated) {
-      throw new HTTPException(404, { message: 'not found!' })
-    }
+    return updated ?? null
+  }
 
-    return c.json(updated)
-  })
-  // ----------------------------------- GET RSS FEED
-  .get('/rss', async (c) => {
-    const rows = await db
-      .select()
-      .from(jobs)
-      .orderBy(desc(jobs.createdAt)) // most recent first
-      .limit(10)
+  static async fetchLatestRssItems() {
+    return db.select().from(jobs).orderBy(desc(jobs.createdAt)).limit(10)
+  }
 
+  static buildRssXml(rows: Array<Record<string, any>>) {
     const esc = (s = '') =>
       String(s)
         .replace(/&/g, '&amp;')
@@ -120,7 +106,7 @@ const router = new Hono()
     const channelLink = esc('https://yourdomain.example/')
     const channelDesc = esc('Latest job listings')
 
-    const rss = `<?xml version="1.0" encoding="UTF-8"?>
+    return `<?xml version="1.0" encoding="UTF-8"?>
   <rss version="2.0">
     <channel>
       <title>${channelTitle}</title>
@@ -129,12 +115,10 @@ const router = new Hono()
       ${itemsXml}
     </channel>
   </rss>`
+  }
 
-    c.res.headers.set('Content-Type', 'application/rss+xml; charset=utf-8')
-    if (rows.length) c.res.headers.set('Last-Modified', rfc2822(rows[0].createdAt))
-    c.res.headers.set('Cache-Control', 'public, max-age=300') // adjust as needed
-
-    return c.text(rss, 200)
-  })
-
-export default router
+  static getRssLastModified(rows: Array<Record<string, any>>) {
+    const rfc2822 = (d: string) => new Date(d).toUTCString()
+    return rows.length ? rfc2822(rows[0].createdAt) : undefined
+  }
+}
