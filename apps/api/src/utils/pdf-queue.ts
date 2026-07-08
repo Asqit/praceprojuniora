@@ -22,7 +22,11 @@ const JOB_TTL_MS = 15 * 60 * 1000
 let browserPromise: Promise<Browser> | null = null
 async function getBrowser(): Promise<Browser> {
   if (!browserPromise) {
-    browserPromise = puppeteer.launch({ headless: true })
+    browserPromise = puppeteer.launch({
+      headless: true,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    })
   }
   return browserPromise
 }

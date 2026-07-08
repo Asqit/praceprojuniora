@@ -2,6 +2,8 @@
 FROM oven/bun:1 AS base
 WORKDIR /app
 
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+
 COPY package.json bun.lock turbo.json ./
 COPY packages/types ./packages/types
 COPY packages/cv-auth ./packages/cv-auth
