@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0](https://github.com/asqit/praceprojuniora/compare/v0.6.1...v0.7.0) (2026-07-08)
+
+### Features
+
+* **client:** base UI for cv-builder. really rough needs lot of more work ([44e4f61](https://github.com/asqit/praceprojuniora/commit/44e4f612a44155cc3fae27d75d1c0a1239b17f0b))
+* **cv:** add session-based builder flow, template export fixes, and desktop only gate ([2c2a74d](https://github.com/asqit/praceprojuniora/commit/2c2a74d4fcbbb31f9baf83737bf125d24f34a55a))
+* **cv:** updated UI/UX, added new template, added export to markdown ([f967004](https://github.com/asqit/praceprojuniora/commit/f967004e26cc2fdd9534360db5b7441b4fea6e31))
+* **pdf:** adding groundwork for pdf generation via puppeteer ([d4d2f6c](https://github.com/asqit/praceprojuniora/commit/d4d2f6c5232293850fac2af6d99b23d31021c5bc))
+
+### Chores
+
+* refactoring ([441b20b](https://github.com/asqit/praceprojuniora/commit/441b20bc5e1a34a71f520c381b4bcfe9530c7b19))
+
 ## [0.6.1](https://github.com/asqit/praceprojuniora/compare/v0.6.0...v0.6.1) (2026-06-29)
 
 ### Bug Fixes
