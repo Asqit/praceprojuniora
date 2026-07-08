@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY package.json bun.lock turbo.json ./
 COPY packages/types ./packages/types
+COPY packages/cv-auth ./packages/cv-auth
 COPY apps/web ./apps/web
 
 RUN bun install
