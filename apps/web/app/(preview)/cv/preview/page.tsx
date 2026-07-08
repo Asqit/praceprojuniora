@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { verifyPayload } from "@ppj/cv-auth"
-import { DefaultCvTemplate } from "@/app/(site)/cv/builder/_components/previewer/templates/default"
-import { CvDetails } from "@/app/(site)/cv/builder/_components/types"
+import { DefaultCvTemplate } from "@/app/(preview)/cv/builder/_components/previewer/templates/default"
+import { CvDetails } from "@/app/(preview)/cv/builder/_components/types"
 
 export const runtime = "nodejs"
 

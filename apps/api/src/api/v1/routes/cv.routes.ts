@@ -1,20 +1,13 @@
 import { Hono } from 'hono'
 import { streamSSE } from 'hono/streaming'
-import { signPayload } from '@ppj/cv-auth' // HMAC TTLed token
-import { enqueueJob, getJob } from '../../../utils/pdf-queue'
+import { getJob } from '../../../utils/pdf-queue'
+import { CvService } from '../services/cv.service'
 
 const router = new Hono()
   // ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~ CREATE
   .post('/create', async (c) => {
     const data = await c.req.json()
-    const payload = {
-      exp: Date.now() + 60_000,
-      data,
-    }
-    const jobToken = signPayload(payload)
-
-    await enqueueJob(jobToken)
-
+    const jobToken = CvService.createPdfJob(data)
     return c.json({ jobToken })
   })
   // ^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~ STATUS (SSE)

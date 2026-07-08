@@ -34,10 +34,10 @@ export function Exporter({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <span className="w-14 text-sm text-muted-foreground">Exportovat</span>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2">
           <Button variant="outline" onClick={onPrint}>
             <Printer className="mr-2 size-4" />
             Tisk
@@ -48,11 +48,7 @@ export function Exporter({
             Markdown
           </Button>
 
-          <Button
-            disabled={pdfBusy}
-            onClick={onExportPdf}
-            className="min-w-[180px]"
-          >
+          <Button disabled={pdfBusy} onClick={onExportPdf}>
             <PdfState state={exportState} />
           </Button>
         </div>
@@ -100,7 +96,7 @@ function PdfState({ state }: { state: ExportState }) {
       return (
         <>
           <FileText className="mr-2 size-4" />
-          Exportovat PDF
+          PDF
         </>
       )
   }

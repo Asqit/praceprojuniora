@@ -30,7 +30,7 @@ export function Zoomer({ zoom, setZoom }: Props) {
         −
       </Button>
 
-      <div className="flex min-w-[220px] flex-col gap-1">
+      <div className="flex min-w-[220px] flex-1 flex-col gap-1">
         <Slider
           value={[zoom]}
           min={MIN}
