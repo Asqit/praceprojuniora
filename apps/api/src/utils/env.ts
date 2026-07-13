@@ -14,10 +14,12 @@ const baseSchema = z.object({
 
 const developmentSchema = baseSchema.extend({
   NODE_ENV: z.literal(runtimeModes.development),
+  FRONTEND_URL: z.url().optional(),
 })
 
 const productionSchema = baseSchema.extend({
   NODE_ENV: z.literal(runtimeModes.production),
+  FRONTEND_URL: z.url(),
 })
 
 export async function validateEnvironment(exit: boolean = false) {

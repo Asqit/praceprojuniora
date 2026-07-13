@@ -25,7 +25,7 @@ async function getBrowser(): Promise<Browser> {
     browserPromise = puppeteer.launch({
       headless: true,
       executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     })
   }
   return browserPromise
@@ -67,8 +67,17 @@ async function createPdf(token: string): Promise<void> {
   const page = await browser.newPage()
 
   try {
-    if (process.env.NODE_ENV === 'PRODUCTION') throw new Error('INVALID FRONTEND URL!')
-    const response = await page.goto(`http://localhost:3000/cv/preview?token=${token}`, {
+    const normalizedNodeEnv = (process.env.NODE_ENV ?? 'development').toLowerCase()
+    const frontendBaseUrl = process.env.FRONTEND_URL?.trim() || 'http://localhost:3000'
+    if (!process.env.FRONTEND_URL?.trim() && normalizedNodeEnv === 'production') {
+      throw new Error('FRONTEND_URL env variable is required in production for PDF export')
+    }
+    const previewUrl = new URL(
+      `/cv/preview?token=${encodeURIComponent(token)}`,
+      frontendBaseUrl
+    ).toString()
+
+    const response = await page.goto(previewUrl, {
       waitUntil: 'networkidle0',
     })
 
