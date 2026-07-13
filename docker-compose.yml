@@ -10,6 +10,7 @@ services:
       - NODE_ENV=PRODUCTION
       - PORT=8080
       - DB_FILENAME=file:/app/data/db.sqlite
+      - FRONTEND_URL=http://web:3000
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
       - /home/andy/data:/app/data
@@ -18,7 +19,7 @@ services:
 
   web:
     ports:
-      - "3001:3000"
+      - '3001:3000'
     build:
       context: .
       dockerfile: apps/web/Dockerfile
