@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.8.0](https://github.com/asqit/praceprojuniora/compare/v0.7.2...v0.8.0) (2026-08-10)
+
+### Features
+
+* enrichment & community scoring ([06a0033](https://github.com/asqit/praceprojuniora/commit/06a0033e64b52655e74e565d7c5fd8b21513b6eb))
+
 ## [0.7.2](https://github.com/asqit/praceprojuniora/compare/v0.7.1...v0.7.2) (2026-07-15)
 
 ### Bug Fixes
