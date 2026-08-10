@@ -56,6 +56,8 @@ export class Application {
   private async initCron(): Promise<void> {
     const { env } = this
 
+    //await listingTasks.enrichPending()
+
     if (env.NODE_ENV === 'PRODUCTION') {
       // fetch only when no data!
       const [{ count: rowCount }] = await db.select({ count: count() }).from(jobs)
@@ -65,13 +67,17 @@ export class Application {
     // every day 6AM
     cron.schedule('0 6 * * *', async () => {
       await listingTasks.fetchNew()
-      // TODO: Implement!
-      //await listingTasks.enrichPending();
+      await listingTasks.enrichPending()
     })
 
     // every hour
     cron.schedule('0 * * * *', async () => {
       await listingTasks.deleteExpired()
+    })
+
+    // every Sunday 3AM
+    cron.schedule('0 3 * * 0', async () => {
+      await listingTasks.pruneIrrelevant()
     })
   }
 

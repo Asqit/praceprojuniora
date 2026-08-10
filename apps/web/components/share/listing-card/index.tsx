@@ -3,9 +3,17 @@
 import type { MouseEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { localStorageKeys } from "@/lib/storage"
-import { timeAgo, isNew, timeTo } from "@/lib/utils"
+import { timeAgo, isNew } from "@/lib/utils"
 import { Listing } from "@ppj/types"
-import { Bookmark, Eye, SquareArrowOutUpRight } from "lucide-react"
+import {
+  Bookmark,
+  BriefcaseBusiness,
+  Clock,
+  MapPin,
+  MoveUpRight,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react"
 import { useCallback, useState } from "react"
 import { useLocalStorage } from "usehooks-ts"
 import { queryClient } from "@/lib/query-client"
@@ -19,10 +27,19 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
 import Link from "next/link"
-import { browser } from "process"
+import { useMemo } from "react"
+
+const WORK_TYPE_LABEL: Record<string, string> = {
+  remote: "Remote",
+  hybrid: "Hybridní",
+  onsite: "Na místě",
+}
 
 export function ListingCard(props: Listing) {
   const [clicks, setClicks] = useState<number>(props.clicks)
+  const [upvotes, setUpvotes] = useState<number>(props.upvotes ?? 0)
+  const [downvotes, setDownvotes] = useState<number>(props.downvotes ?? 0)
+
   const { mutateAsync } = useMutation({
     mutationKey: ["listing", "click", props.id],
     mutationFn: async () => {
@@ -39,11 +56,58 @@ export function ListingCard(props: Listing) {
       })
     },
   })
+  const [votes, setVotes] = useLocalStorage<Record<number, "up" | "down">>(
+    localStorageKeys.votes,
+    {}
+  )
+  const myVote = votes[props.id] ?? null
+
+  const { mutateAsync: castVote } = useMutation({
+    mutationKey: ["listing", "vote", props.id],
+    mutationFn: async (direction: "up" | "down") => {
+      const response = await http(`listing/vote/${props.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ direction }),
+      })
+      return await response.json()
+    },
+    onSuccess(data, direction) {
+      setUpvotes(data?.upvotes ?? upvotes)
+      setDownvotes(data?.downvotes ?? downvotes)
+      setVotes({ ...votes, [props.id]: direction })
+    },
+  })
+
+  const handleVote = useCallback(
+    (event: MouseEvent<HTMLElement>, direction: "up" | "down") => {
+      event.preventDefault()
+      event.stopPropagation()
+      if (myVote) return
+      castVote(direction)
+    },
+    [castVote, myVote, votes]
+  )
+
   const [bookmarks, setBookmarks] = useLocalStorage<Listing[]>(
     localStorageKeys.bookmarks,
     []
   )
   const isBookmarked = bookmarks.some((i) => i.id === props.id)
+
+  const tags = useMemo<string[]>(() => {
+    if (!props.tags) return []
+    try {
+      return JSON.parse(props.tags)
+    } catch {
+      return []
+    }
+  }, [props.tags])
+
+  const workTypeLabel =
+    props.workType && props.workType !== "unknown"
+      ? WORK_TYPE_LABEL[props.workType]
+      : null
 
   const handleBookmark = useCallback(
     (event: MouseEvent<HTMLElement>) => {
@@ -72,61 +136,139 @@ export function ListingCard(props: Listing) {
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        {" "}
         <Link
           href={props.link}
           rel="noopener noreferrer"
           onClick={() => mutateAsync()}
           target="_blank"
           aria-label={`Pracovní nabídka: ${props.title} u ${props.company}`}
-          className="relative z-10! flex h-full animate-in flex-col rounded-lg border p-8 transition-all hover:-translate-y-1 hover:border-primary hover:shadow-lg"
-          /* CUSTOM ANALYTICS EVENT */
+          className="flex h-full animate-in flex-col gap-4 rounded-xl border bg-card p-6 transition-all hover:-translate-y-1 hover:border-primary hover:shadow-lg"
           data-umami-event="listing-click"
           data-umami-event-title={props.title}
         >
-          <div className="w-full px-4">
-            {/* Title -- Bookmark */}
-            <div className="flex w-full items-start justify-between">
-              <div>
-                <h1 className="my-2 text-lg font-bold">{props.title}</h1>
+          {/* Company row */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border bg-muted text-sm font-bold text-muted-foreground uppercase">
+                {props.company.charAt(0)}
+              </div>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                  {props.company}
+                </span>
                 {isNew(props.createdAt) && (
-                  <span className="mb-2 inline-block rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
-                    Nové
+                  <span className="text-xs font-semibold tracking-wider text-primary uppercase">
+                    · Nové
                   </span>
                 )}
-                <h2 className="my-2 font-bold text-zinc-400">
-                  {props.company}
-                </h2>
-                <h3 className="my-2 text-sm text-zinc-500">{props.location}</h3>
+                {(props.relevanceScore ?? 0) >= 80 && (
+                  <span
+                    title={String(props.relevanceScore)}
+                    className="text-xs font-semibold tracking-wider text-yellow-500 uppercase"
+                  >
+                    · Doporučujeme
+                  </span>
+                )}
+                {(props.relevanceScore ?? 100) < 40 &&
+                  props.relevanceScore !== null && (
+                    <span
+                      title={String(props.relevanceScore)}
+                      className="text-xs font-semibold tracking-wider text-red-500 uppercase"
+                    >
+                      · Komunita rozhodla
+                    </span>
+                  )}
               </div>
-              <Button
-                variant={"outline"}
-                size={"icon-sm"}
-                onClick={handleBookmark}
-              >
-                <Bookmark
-                  className={`h-5 w-5 ${isBookmarked ? "fill-current" : ""}`}
-                />
-              </Button>
             </div>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={handleBookmark}
+              className="shrink-0"
+            >
+              <Bookmark
+                className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`}
+              />
+            </Button>
+          </div>
 
-            <ul className="my-3 flex flex-1 flex-wrap items-center justify-between gap-4 text-sm text-zinc-400">
-              <li className="flex items-center gap-2">
-                <Eye size={16} /> {clicks} zobrazení
-              </li>
-              <li className="group h-5 overflow-hidden">
-                <div className="transition-all group-hover:-translate-y-6">
-                  Vyprší: {props.expiresAt ? timeTo(props.expiresAt) : "—"}
-                </div>
-                <div className="transition-all group-hover:-translate-y-5">
-                  Přidáno {timeAgo(props.createdAt)}
-                </div>
-              </li>
-            </ul>
-            <p className="flex items-center gap-2 text-sm text-primary hover:underline">
-              <span>Zobrazit původní inzerát</span>{" "}
-              <SquareArrowOutUpRight size={16} />
+          {/* Title */}
+          <h1 className="text-xl leading-snug font-bold">{props.title}</h1>
+
+          {/* Meta */}
+          <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
+            {props.location && (
+              <span className="flex items-center gap-1.5">
+                <MapPin size={13} />
+                {props.location}
+              </span>
+            )}
+            {workTypeLabel && (
+              <span className="flex items-center gap-1.5">
+                <BriefcaseBusiness size={13} />
+                {workTypeLabel}
+              </span>
+            )}
+            <span className="flex items-center gap-1.5">
+              <Clock size={13} />
+              {timeAgo(props.createdAt)}
+            </span>
+          </div>
+
+          {/* Description snippet */}
+          {props.description && (
+            <p className="line-clamp-2 text-sm text-muted-foreground">
+              {props.description}
             </p>
+          )}
+
+          {/* Tags */}
+          {tags.length > 0 && (
+            <ul className="flex flex-wrap gap-1.5">
+              {tags.slice(0, 6).map((tag) => (
+                <li
+                  key={tag}
+                  className="rounded-full border px-2.5 py-0.5 text-xs text-muted-foreground"
+                >
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Bottom bar */}
+          <div className="mt-auto flex items-center justify-between gap-3 border-t pt-4">
+            <div className="flex items-center gap-1 text-sm text-muted-foreground">
+              <button
+                onClick={(e) => handleVote(e, "up")}
+                aria-label="Palec nahoru"
+                disabled={myVote !== null}
+                className={`flex items-center gap-1 rounded-md px-1.5 py-1 transition-colors hover:text-green-500 disabled:opacity-40 ${myVote === "up" ? "text-green-500" : ""}`}
+              >
+                <ThumbsUp
+                  size={14}
+                  className={myVote === "up" ? "fill-current" : ""}
+                />
+                <span>{upvotes}</span>
+              </button>
+              <button
+                onClick={(e) => handleVote(e, "down")}
+                aria-label="Palec dolů"
+                disabled={myVote !== null}
+                className={`flex items-center rounded-md px-1.5 py-1 transition-colors hover:text-red-500 disabled:opacity-40 ${myVote === "down" ? "text-red-500" : ""}`}
+              >
+                <ThumbsDown
+                  size={14}
+                  className={myVote === "down" ? "fill-current" : ""}
+                />
+              </button>
+              <span className="ml-1 text-xs text-muted-foreground/60">
+                Community score
+              </span>
+            </div>
+            <span className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-accent">
+              Zobrazit nabídku <MoveUpRight size={12} />
+            </span>
           </div>
         </Link>
       </ContextMenuTrigger>

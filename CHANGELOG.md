@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/asqit/praceprojuniora/compare/v0.7.1...v0.7.2) (2026-07-15)
+
+### Bug Fixes
+
+* skip firefox and use chromium for puppeteer ([8dfd0c0](https://github.com/asqit/praceprojuniora/commit/8dfd0c022e589354864ae97d0f8b4a3ad7651e06))
+* trying to apply fix for PDF ([5c34b72](https://github.com/asqit/praceprojuniora/commit/5c34b7277e119b9f6b34970fba70797d8b881735))
+
 ## [0.7.1](https://github.com/asqit/praceprojuniora/compare/v0.7.0...v0.7.1) (2026-07-08)
 
 ### Bug Fixes
