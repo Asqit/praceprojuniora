@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.0](https://github.com/asqit/praceprojuniora/compare/v0.8.1...v0.9.0) (2026-08-11)
+
+### Features
+
+* add rate-limit & analytics ([1c181ed](https://github.com/asqit/praceprojuniora/commit/1c181ed32e18e86a37233055182678eefe914766))
+
+### Chores
+
+* release ([8628c8e](https://github.com/asqit/praceprojuniora/commit/8628c8e187ba1d30f316003201c8e694c677918b))
+
 ## [0.8.1](https://github.com/asqit/praceprojuniora/compare/v0.8.0...v0.8.1) (2026-08-10)
 
 ### Bug Fixes
