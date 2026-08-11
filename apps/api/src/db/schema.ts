@@ -17,6 +17,10 @@ export const jobs = sqliteTable('jobs', {
   clicks: int().notNull().default(0),
   manuallyAdded: int({ mode: 'boolean' }).notNull().default(false),
 
+  // Community
+  upvotes: int().notNull().default(0),
+  downvotes: int().notNull().default(0),
+
   // Enrichment
   isDevRole: int({ mode: 'boolean' }),
   relevanceScore: real(),

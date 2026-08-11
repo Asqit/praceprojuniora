@@ -1,6 +1,12 @@
 import { Hono } from 'hono'
 import { zValidator } from '@hono/zod-validator'
-import { bulkJson, clickCounterParam, getAllQuery } from '../validators/listing.validators'
+import {
+  bulkJson,
+  clickCounterParam,
+  getAllQuery,
+  voteParam,
+  voteBody,
+} from '../validators/listing.validators'
 import { ListingService } from '../services/listing.service'
 import { HTTPException } from 'hono/http-exception'
 
@@ -21,6 +27,18 @@ const router = new Hono()
   .post('/click-counter/:id', zValidator('param', clickCounterParam), async (c) => {
     const { id } = c.req.valid('param')
     const updated = await ListingService.incrementClick(id)
+
+    if (!updated) {
+      throw new HTTPException(404, { message: 'not found!' })
+    }
+
+    return c.json(updated)
+  })
+  // ----------------------------------- VOTE
+  .post('/vote/:id', zValidator('param', voteParam), zValidator('json', voteBody), async (c) => {
+    const { id } = c.req.valid('param')
+    const { direction } = c.req.valid('json')
+    const updated = await ListingService.vote(id, direction)
 
     if (!updated) {
       throw new HTTPException(404, { message: 'not found!' })

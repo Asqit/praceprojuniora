@@ -13,6 +13,10 @@ export type Listing = {
   source: 'manual' | string
   description?: string | null
 
+  // Community
+  upvotes?: number
+  downvotes?: number
+
   // Enrichment
   isDevRole?: boolean | null
   relevanceScore?: number | null

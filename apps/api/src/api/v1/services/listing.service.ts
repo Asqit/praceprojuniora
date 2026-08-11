@@ -68,6 +68,27 @@ export class ListingService {
     return updated ?? null
   }
 
+  static async vote(id: number, direction: 'up' | 'down') {
+    // Weight scales with existing vote count: each additional vote carries slightly more
+    const [updated] = await db
+      .update(jobs)
+      .set(
+        direction === 'up'
+          ? {
+              upvotes: sql`${jobs.upvotes} + 1`,
+              relevanceScore: sql`COALESCE(${jobs.relevanceScore}, 50) + 2.0 * (1 + ${jobs.upvotes} * 0.05)`,
+            }
+          : {
+              downvotes: sql`${jobs.downvotes} + 1`,
+              relevanceScore: sql`COALESCE(${jobs.relevanceScore}, 50) - 3.0 * (1 + ${jobs.downvotes} * 0.05)`,
+            }
+      )
+      .where(eq(jobs.id, id))
+      .returning()
+
+    return updated ?? null
+  }
+
   static async fetchLatestRssItems() {
     return db.select().from(jobs).orderBy(desc(jobs.createdAt)).limit(10)
   }

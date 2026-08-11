@@ -12,6 +12,7 @@
     "@ppj/cv-auth": "workspace:*",
     "@ppj/scraper": "workspace:*",
     "@ppj/types": "workspace:*",
+    "@ppj/enrichment": "workspace:*",
     "bcrypt": "^6.0.0",
     "bun-cache": "^2.0.0",
     "dotenv": "^17.3.1",

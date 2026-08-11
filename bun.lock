@@ -21,6 +21,7 @@
         "@hono/zod-validator": "^0.7.6",
         "@libsql/client": "^0.17.0",
         "@ppj/cv-auth": "workspace:*",
+        "@ppj/enrichment": "workspace:*",
         "@ppj/scraper": "workspace:*",
         "@ppj/types": "workspace:*",
         "bcrypt": "^6.0.0",
@@ -84,6 +85,10 @@
     },
     "packages/cv-auth": {
       "name": "@ppj/cv-auth",
+      "version": "0.1.0",
+    },
+    "packages/enrichment": {
+      "name": "@ppj/enrichment",
       "version": "0.1.0",
     },
     "packages/scraper": {
@@ -472,6 +477,8 @@
     "@ppj/api": ["@ppj/api@workspace:apps/api"],
 
     "@ppj/cv-auth": ["@ppj/cv-auth@workspace:packages/cv-auth"],
+
+    "@ppj/enrichment": ["@ppj/enrichment@workspace:packages/enrichment"],
 
     "@ppj/scraper": ["@ppj/scraper@workspace:packages/scraper"],
 
