@@ -26,5 +26,8 @@
   },
   "npm": {
     "publish": false
+  },
+  "hooks": {
+    "after:bump": "bun run scripts/sync-version.ts"
   }
 }

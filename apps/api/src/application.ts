@@ -29,7 +29,6 @@ export class Application {
     }
 
     this.env = environment
-
     if (this.env.NODE_ENV === 'DEVELOPMENT') {
       await seed()
     }
@@ -55,8 +54,6 @@ export class Application {
 
   private async initCron(): Promise<void> {
     const { env } = this
-
-    //await listingTasks.enrichPending()
 
     if (env.NODE_ENV === 'PRODUCTION') {
       // fetch only when no data!

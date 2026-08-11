@@ -243,6 +243,7 @@ export function ListingCard(props: Listing) {
                 onClick={(e) => handleVote(e, "up")}
                 aria-label="Palec nahoru"
                 disabled={myVote !== null}
+                data-umami-event="listing-upvote"
                 className={`flex items-center gap-1 rounded-md px-1.5 py-1 transition-colors hover:text-green-500 disabled:opacity-40 ${myVote === "up" ? "text-green-500" : ""}`}
               >
                 <ThumbsUp
@@ -255,6 +256,7 @@ export function ListingCard(props: Listing) {
                 onClick={(e) => handleVote(e, "down")}
                 aria-label="Palec dolů"
                 disabled={myVote !== null}
+                data-umami-event="listing-downvote"
                 className={`flex items-center rounded-md px-1.5 py-1 transition-colors hover:text-red-500 disabled:opacity-40 ${myVote === "down" ? "text-red-500" : ""}`}
               >
                 <ThumbsDown

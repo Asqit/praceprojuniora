@@ -5,11 +5,10 @@ import { z } from 'zod'
 import { securityToken } from '../middlewares/security'
 import { jobStore } from '../../../utils/job-store'
 import { ScraperService } from '../services/scraper.service'
+import { generateRatelimiterKey } from '../../../utils/gen-ratelimiter-key'
 
 const providersEnum = z.enum(['inwork.cz', 'jobs.cz', 'prace.cz'])
 const providersArray = z.array(providersEnum)
-
-type ProviderName = z.infer<typeof providersEnum>
 
 const scrapeRequest = z.object({
   providers: z.union([z.literal('all'), providersArray]),
@@ -21,7 +20,7 @@ const router = new Hono()
     rateLimiter({
       windowMs: 5 * 60 * 1000,
       limit: 1,
-      keyGenerator: (c) => c.req.header('x-forwarded-for') ?? '',
+      keyGenerator: generateRatelimiterKey,
     })
   )
   .get('/test', async (c) => {

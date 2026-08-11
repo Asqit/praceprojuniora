@@ -4,11 +4,11 @@
 
 ### Bug Fixes
 
-* add package "enrichment" to docker image ([a1ac0fb](https://github.com/asqit/praceprojuniora/commit/a1ac0fba1128bf731459931b81c019d50e4e8f7c))
+- add package "enrichment" to docker image ([a1ac0fb](https://github.com/asqit/praceprojuniora/commit/a1ac0fba1128bf731459931b81c019d50e4e8f7c))
 
 ### Chores
 
-* update CHANGELOG.md ([058db39](https://github.com/asqit/praceprojuniora/commit/058db3981d8cf829df1a2b7af44db8b01e27f143))
+- update CHANGELOG.md ([058db39](https://github.com/asqit/praceprojuniora/commit/058db3981d8cf829df1a2b7af44db8b01e27f143))
 
 ## [0.8.0](https://github.com/asqit/praceprojuniora/compare/v0.7.2...v0.8.0) (2026-08-10)
 
