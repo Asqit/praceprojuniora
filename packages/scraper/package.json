@@ -14,5 +14,6 @@
     "@ppj/types": "workspace:*",
     "cheerio": "^1.2.0",
     "sax": "^1.6.0"
-  }
+  },
+  "version": "0.8.1"
 }
