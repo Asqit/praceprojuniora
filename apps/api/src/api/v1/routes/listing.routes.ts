@@ -9,6 +9,8 @@ import {
 } from '../validators/listing.validators'
 import { ListingService } from '../services/listing.service'
 import { HTTPException } from 'hono/http-exception'
+import { rateLimiter } from 'hono-rate-limiter'
+import { generateRatelimiterKey } from '../../../utils/gen-ratelimiter-key'
 
 const router = new Hono()
   // ----------------------------------- GET ALL LISTINGS
@@ -24,28 +26,47 @@ const router = new Hono()
     return c.json({ data: rows })
   })
   // ----------------------------------- CLICK
-  .post('/click-counter/:id', zValidator('param', clickCounterParam), async (c) => {
-    const { id } = c.req.valid('param')
-    const updated = await ListingService.incrementClick(id)
+  .post(
+    '/click-counter/:id',
+    zValidator('param', clickCounterParam),
+    rateLimiter({
+      windowMs: 5 * 60 * 1000,
+      limit: 1,
+      keyGenerator: generateRatelimiterKey,
+    }),
+    async (c) => {
+      const { id } = c.req.valid('param')
+      const updated = await ListingService.incrementClick(id)
 
-    if (!updated) {
-      throw new HTTPException(404, { message: 'not found!' })
+      if (!updated) {
+        throw new HTTPException(404, { message: 'not found!' })
+      }
+
+      return c.json(updated)
     }
-
-    return c.json(updated)
-  })
+  )
   // ----------------------------------- VOTE
-  .post('/vote/:id', zValidator('param', voteParam), zValidator('json', voteBody), async (c) => {
-    const { id } = c.req.valid('param')
-    const { direction } = c.req.valid('json')
-    const updated = await ListingService.vote(id, direction)
+  .post(
+    '/vote/:id',
+    zValidator('param', voteParam),
+    zValidator('json', voteBody),
+    rateLimiter({
+      windowMs: 5 * 60 * 1000,
+      limit: 1,
+      keyGenerator: generateRatelimiterKey,
+    }),
+    async (c) => {
+      const { id } = c.req.valid('param')
+      const { direction } = c.req.valid('json')
+      const updated = await ListingService.vote(id, direction)
 
-    if (!updated) {
-      throw new HTTPException(404, { message: 'not found!' })
+      if (!updated) {
+        throw new HTTPException(404, { message: 'not found!' })
+      }
+
+      return c.json(updated)
     }
-
-    return c.json(updated)
-  })
+  )
   // ----------------------------------- GET RSS FEED
   .get('/rss', async (c) => {
     const rows = await ListingService.fetchLatestRssItems()

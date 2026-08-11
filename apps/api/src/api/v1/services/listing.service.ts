@@ -34,7 +34,7 @@ export class ListingService {
       .with('newest', () => desc(jobs.createdAt))
       .with('expiration', () => desc(jobs.expiresAt))
       .with('popularity', () => desc(jobs.clicks))
-      .with(undefined, () => desc(jobs.createdAt))
+      .with(undefined, () => desc(jobs.relevanceScore))
       .exhaustive()
 
     const [rows, [{ count: totalRows }]] = await Promise.all([
