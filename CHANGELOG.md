@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.9.1](https://github.com/asqit/praceprojuniora/compare/v0.9.0...v0.9.1) (2026-09-02)
+
+### Bug Fixes
+
+* add TTL cache instead of map, batch enrichment, delete failed enriched ([1442300](https://github.com/asqit/praceprojuniora/commit/1442300008ab67ff410dae26afa0f28880114702))
+
 ## [0.9.0](https://github.com/asqit/praceprojuniora/compare/v0.8.1...v0.9.0) (2026-08-11)
 
 ### Features
