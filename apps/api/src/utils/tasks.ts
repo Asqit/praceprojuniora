@@ -2,7 +2,7 @@ import { fetchListings } from '@ppj/scraper'
 import { enrichListing } from '@ppj/enrichment'
 import { db } from '../db/connection'
 import { jobs } from '../db/schema'
-import { eq, lte, sql, desc, inArray, and, lt, isNotNull } from 'drizzle-orm'
+import { eq, lte, sql, desc, inArray, and, lt, isNotNull, or } from 'drizzle-orm'
 import { getExpiresAt } from './listing-expiry'
 
 async function fetchNew(): Promise<void> {
@@ -20,27 +20,9 @@ async function fetchNew(): Promise<void> {
     expiresAt: getExpiresAt(listing.status ?? ''),
   }))
 
-  const existingTitles = await db
-    .select({ title: jobs.title })
-    .from(jobs)
-    .where(
-      inArray(
-        jobs.title,
-        withExpiry.map((j) => j.title)
-      )
-    )
-
-  const existingTitleSet = new Set(existingTitles.map((j) => j.title))
-  const toInsert = withExpiry.filter((j) => !existingTitleSet.has(j.title))
-
-  if (toInsert.length === 0) {
-    console.log('No new listings to insert')
-    return
-  }
-
   await db
     .insert(jobs)
-    .values(toInsert)
+    .values(withExpiry)
     .onConflictDoUpdate({
       target: jobs.link,
       set: {
@@ -50,41 +32,49 @@ async function fetchNew(): Promise<void> {
       },
     })
 
-  console.log(`Fetched and upserted ${toInsert.length}/${listings.length} listings`)
+  console.log(`Upserted ${withExpiry.length}/${listings.length} listings`)
 }
 
 async function enrichPending(): Promise<void> {
   console.log('Enriching pending listings...')
 
-  const pending = await db.select().from(jobs).where(eq(jobs.enrichmentStatus, 'pending'))
+  const BATCH_SIZE = 50
+  let totalEnriched = 0
 
-  if (pending.length === 0) {
-    console.log('No pending listings to enrich')
-    return
-  }
+  while (true) {
+    const batch = await db
+      .select()
+      .from(jobs)
+      .where(eq(jobs.enrichmentStatus, 'pending'))
+      .limit(BATCH_SIZE)
 
-  console.log(`Found ${pending.length} pending listings`)
+    if (batch.length === 0) break
 
-  for (const job of pending) {
-    try {
-      const enrichment = enrichListing(job)
+    console.log(`Processing batch of ${batch.length}`)
 
-      await db
-        .update(jobs)
-        .set({
-          relevanceScore: enrichment.relevanceScore,
-          workType: enrichment.workType,
-          tags: JSON.stringify(enrichment.tags),
-          enrichmentStatus: 'done',
-          enrichedAt: new Date().toISOString(),
-        })
-        .where(eq(jobs.id, job.id))
-    } catch {
-      await db.update(jobs).set({ enrichmentStatus: 'failed' }).where(eq(jobs.id, job.id))
+    for (const job of batch) {
+      try {
+        const enrichment = enrichListing(job)
+
+        await db
+          .update(jobs)
+          .set({
+            relevanceScore: enrichment.relevanceScore,
+            workType: enrichment.workType,
+            tags: JSON.stringify(enrichment.tags),
+            enrichmentStatus: 'done',
+            enrichedAt: new Date().toISOString(),
+          })
+          .where(eq(jobs.id, job.id))
+      } catch {
+        await db.update(jobs).set({ enrichmentStatus: 'failed' }).where(eq(jobs.id, job.id))
+      }
     }
+
+    totalEnriched += batch.length
   }
 
-  console.log(`Enriched ${pending.length} listings`)
+  console.log(`Enriched ${totalEnriched} listings`)
 }
 
 async function deleteExpired(): Promise<void> {
@@ -104,8 +94,10 @@ async function pruneIrrelevant(): Promise<void> {
     .delete(jobs)
     .where(
       and(
-        isNotNull(jobs.relevanceScore),
-        lt(jobs.relevanceScore, 35),
+        or(
+          and(isNotNull(jobs.relevanceScore), lt(jobs.relevanceScore, 35)),
+          eq(jobs.enrichmentStatus, 'failed')
+        ),
         lte(jobs.createdAt, cutoff),
         eq(jobs.manuallyAdded, false)
       )
