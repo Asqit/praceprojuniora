@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from "react"
+import type { Dispatch, SetStateAction } from "react"
 import { Exporter, ExportState } from "./components/exporter"
 import { TemplateSwitcher } from "./components/template-switcher"
 import { Zoomer } from "./components/zoomer"
@@ -25,17 +25,23 @@ export function Toolbar(props: Props) {
   } = props
 
   return (
-    <div className="sticky bottom-4 z-50 mx-auto hidden w-[90%] max-w-xl min-w-fit animate-in flex-col gap-2 rounded-md bg-background/70 p-3 shadow-xl backdrop-blur-xl slide-in-from-bottom group-hover:flex">
-      <TemplateSwitcher
-        open={galleryOpen}
-        onToggle={() => setGalleryOpen((v) => !v)}
-      />
-      <Zoomer zoom={zoomLevel} setZoom={setZoomLevel} />
-      <Exporter
-        onExportPdf={onExportPdf}
-        onExportMarkdown={onExportMarkdown}
-        exportState={exportState}
-      />
+    <div className="z-30 grid shrink-0 grid-cols-1 gap-3 border-t bg-background/95 p-3 backdrop-blur">
+      <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center">
+        <div className="min-w-0">
+          <TemplateSwitcher
+            open={galleryOpen}
+            onToggle={() => setGalleryOpen((v) => !v)}
+          />
+        </div>
+        <Zoomer zoom={zoomLevel} setZoom={setZoomLevel} />
+      </div>
+      <div className="min-w-0 border-t pt-3">
+        <Exporter
+          onExportPdf={onExportPdf}
+          onExportMarkdown={onExportMarkdown}
+          exportState={exportState}
+        />
+      </div>
     </div>
   )
 }

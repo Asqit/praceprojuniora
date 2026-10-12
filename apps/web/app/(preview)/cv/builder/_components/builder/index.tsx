@@ -1,148 +1,97 @@
 "use client"
 import type { CvTemplateName } from "../previewer/templates"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
+import { Navbar } from "@/components/share/navbar"
 import { emptyCvDetails } from "../dummy-data"
-import { Previewer } from "../previewer"
 import { CvDetails } from "../types"
-import { http } from "@/lib/http"
-import { trackUmami } from "@/lib/umami"
 import { Wizard } from "./wizard"
+
+const DRAFT_STORAGE_KEY = "ppj:cv-builder:draft:v1"
+
+interface CvDraft {
+  version: 1
+  details: CvDetails
+  template: CvTemplateName
+}
+
+function isCvDraft(value: unknown): value is CvDraft {
+  if (typeof value !== "object" || value === null) return false
+
+  const draft = value as Partial<CvDraft>
+  return (
+    draft.version === 1 &&
+    typeof draft.details === "object" &&
+    draft.details !== null &&
+    typeof draft.template === "string" &&
+    Object.hasOwn(
+      { default: true, aurora: true, nebula: true, cyber: true },
+      draft.template
+    )
+  )
+}
 
 export function Builder() {
   const [details, setDetails] = useState<CvDetails>(emptyCvDetails)
   const [selectedTemplate, setSelectedTemplate] =
     useState<CvTemplateName>("default")
-  const [sessionToken, setSessionToken] = useState<string | null>(null)
-  const [sessionReady, setSessionReady] = useState(false)
-  const [isDesktop, setIsDesktop] = useState<boolean | null>(null)
-  const initializedRef = useRef(false)
+  const [draftReady, setDraftReady] = useState(false)
 
   useEffect(() => {
-    const media = window.matchMedia("(min-width: 768px)")
-    const update = () => setIsDesktop(media.matches)
+    const timeout = window.setTimeout(() => {
+      const url = new URL(window.location.href)
+      if (url.searchParams.has("session")) {
+        url.searchParams.delete("session")
+        window.history.replaceState({}, "", url)
+      }
 
-    update()
-    media.addEventListener("change", update)
+      try {
+        const saved = localStorage.getItem(DRAFT_STORAGE_KEY)
+        if (saved) {
+          const parsed: unknown = JSON.parse(saved)
+          if (isCvDraft(parsed)) {
+            setDetails(parsed.details)
+            setSelectedTemplate(parsed.template)
+          }
+        }
+      } catch (err) {
+        console.error("Failed to restore CV draft:", err)
+      }
 
-    return () => media.removeEventListener("change", update)
+      setDraftReady(true)
+    }, 0)
+
+    return () => window.clearTimeout(timeout)
   }, [])
 
   useEffect(() => {
-    if (isDesktop !== true) return
-    if (initializedRef.current) return
-    initializedRef.current = true
+    if (!draftReady) return
 
-    const initialize = async () => {
-      const params = new URLSearchParams(window.location.search)
-      const token = params.get("session")
-
-      if (token) {
-        try {
-          const res = await http(`cv/session/${encodeURIComponent(token)}`)
-          const parsed = (await res.json()) as {
-            session: { data: CvDetails; template: CvTemplateName }
-          }
-
-          setSessionToken(token)
-          setDetails(parsed.session.data)
-          setSelectedTemplate(parsed.session.template)
-          trackUmami("cv-session-restored", {
-            template: parsed.session.template,
-          })
-          setSessionReady(true)
-          return
-        } catch {
-          // invalid or expired session; continue with creating a fresh one
-        }
-      }
-
-      const res = await http("cv/session", {
-        method: "POST",
-        body: JSON.stringify({
-          data: emptyCvDetails,
-          template: "default",
-        }),
-      })
-      const parsed = (await res.json()) as { sessionToken: string }
-      setSessionToken(parsed.sessionToken)
-      trackUmami("cv-session-created", {
-        template: "default",
-      })
-      setSessionReady(true)
-
-      const next = new URL(window.location.href)
-      next.searchParams.set("session", parsed.sessionToken)
-      window.history.replaceState({}, "", next.toString())
+    try {
+      localStorage.setItem(
+        DRAFT_STORAGE_KEY,
+        JSON.stringify({ version: 1, details, template: selectedTemplate })
+      )
+    } catch (err) {
+      console.error("Failed to save CV draft:", err)
     }
+  }, [details, draftReady, selectedTemplate])
 
-    initialize().catch((err) => {
-      console.error("Failed to initialize CV session:", err)
-      trackUmami("cv-session-init-failed")
-      setSessionReady(true)
-    })
-  }, [isDesktop])
-
-  useEffect(() => {
-    if (isDesktop !== true) return
-    if (!sessionReady || !sessionToken) return
-
-    const timeout = window.setTimeout(() => {
-      http(`cv/session/${encodeURIComponent(sessionToken)}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          data: details,
-          template: selectedTemplate,
-        }),
-      }).catch((err) => {
-        console.error("Failed to autosave CV session:", err)
-      })
-    }, 600)
-
-    return () => window.clearTimeout(timeout)
-  }, [details, isDesktop, selectedTemplate, sessionReady, sessionToken])
-
-  if (isDesktop === null) {
+  if (!draftReady) {
     return <div className="min-h-[70vh]" />
   }
 
-  if (!isDesktop) {
-    return (
-      <section className="mx-auto flex min-h-[70vh] w-full max-w-2xl items-center justify-center px-6 py-12">
-        <div className="w-full border bg-background p-8 text-center shadow-sm">
-          <p className="text-xs font-semibold tracking-[0.28em] text-muted-foreground uppercase">
-            CV Builder
-          </p>
-          <h1 className="mt-3 text-2xl font-semibold">
-            Dostupne jen na desktopu
-          </h1>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Editor CV je zatim optimalizovany jen pro vetsi obrazovky. Otevri ho
-            prosim na desktopu nebo notebooku.
-          </p>
-          <a
-            href="/cv"
-            className="mt-6 inline-flex border px-4 py-2 text-sm font-medium hover:bg-muted"
-          >
-            Zpet na CV stranku
-          </a>
-        </div>
-      </section>
-    )
-  }
-
   return (
-    <div className="flex max-h-screen flex-col overflow-hidden md:flex-row">
-      <main className="w-full overflow-y-scroll pb-6 md:w-1/3">
-        <Wizard details={details} setDetails={setDetails} />
-      </main>
-      <aside className="group relative flex flex-col overflow-y-scroll border-l bg-muted md:w-2/3">
-        <Previewer
-          content={details}
+    <div className="min-h-dvh bg-muted/30 pb-24">
+      <Navbar />
+
+      <main className="mx-auto w-full max-w-3xl">
+        <Wizard
+          details={details}
+          setDetails={setDetails}
           selectedTemplate={selectedTemplate}
           onTemplateChange={setSelectedTemplate}
-          sessionToken={sessionToken}
         />
-      </aside>
+      </main>
     </div>
   )
 }

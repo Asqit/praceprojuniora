@@ -1,8 +1,8 @@
 import { db } from '../../../db/connection'
 import { jobs } from '../../../db/schema'
-import { withPagination } from '../../../db/helpers'
 import { match } from 'ts-pattern'
-import { and, count, desc, inArray, like, or, eq, sql } from 'drizzle-orm'
+import { and, desc, inArray, like, or, eq, sql } from 'drizzle-orm'
+import type { Job } from '../../../db/schema'
 
 export type ListingSortBy = 'newest' | 'expiration' | 'popularity' | undefined
 
@@ -14,11 +14,47 @@ type GetAllParams = {
   location?: string
 }
 
+function normalize(value: string): string {
+  return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9+#]+/g, ' ')
+    .trim()
+}
+
+function collapseDuplicates(rows: Job[]): Job[] {
+  const groups = new Map<string, Job>()
+
+  for (const row of rows) {
+    const company = normalize(row.company)
+    const title = normalize(row.title)
+    const key = company && title ? `${company}|${title}` : `row:${row.id}`
+    const existing = groups.get(key)
+
+    if (!existing) {
+      groups.set(key, row)
+      continue
+    }
+
+    const locations = new Set(
+      [existing.location, row.location]
+        .flatMap((location) => location.split(' · '))
+        .map((location) => location.trim())
+        .filter(Boolean)
+    )
+    groups.set(key, { ...existing, location: Array.from(locations).join(' · ') })
+  }
+
+  return Array.from(groups.values())
+}
+
 export class ListingService {
   static async getAll(params: GetAllParams) {
     const { page, limit, sortBy, search, location } = params
 
     const filters = and(
+      eq(jobs.isActive, true),
       location ? like(jobs.location, `%${location}%`) : undefined,
       search
         ? or(
@@ -37,14 +73,10 @@ export class ListingService {
       .with(undefined, () => desc(jobs.relevanceScore))
       .exhaustive()
 
-    const [rows, [{ count: totalRows }]] = await Promise.all([
-      withPagination(
-        db.select().from(jobs).where(filters).orderBy(sortCol).$dynamic(),
-        page,
-        limit
-      ),
-      db.select({ count: count() }).from(jobs).where(filters),
-    ])
+    const matchingRows = await db.select().from(jobs).where(filters).orderBy(sortCol)
+    const uniqueRows = collapseDuplicates(matchingRows)
+    const totalRows = uniqueRows.length
+    const rows = uniqueRows.slice((page - 1) * limit, page * limit)
 
     return {
       data: rows,
@@ -55,14 +87,17 @@ export class ListingService {
   }
 
   static async bulkGet(ids: number[]) {
-    return db.select().from(jobs).where(inArray(jobs.id, ids))
+    return db
+      .select()
+      .from(jobs)
+      .where(and(inArray(jobs.id, ids), eq(jobs.isActive, true)))
   }
 
   static async incrementClick(id: number) {
     const [updated] = await db
       .update(jobs)
       .set({ clicks: sql`${jobs.clicks} + 1` })
-      .where(eq(jobs.id, id))
+      .where(and(eq(jobs.id, id), eq(jobs.isActive, true)))
       .returning()
 
     return updated ?? null
@@ -83,14 +118,19 @@ export class ListingService {
               relevanceScore: sql`COALESCE(${jobs.relevanceScore}, 50) - 3.0 * (1 + ${jobs.downvotes} * 0.05)`,
             }
       )
-      .where(eq(jobs.id, id))
+      .where(and(eq(jobs.id, id), eq(jobs.isActive, true)))
       .returning()
 
     return updated ?? null
   }
 
   static async fetchLatestRssItems() {
-    return db.select().from(jobs).orderBy(desc(jobs.createdAt)).limit(10)
+    const rows = await db
+      .select()
+      .from(jobs)
+      .where(eq(jobs.isActive, true))
+      .orderBy(desc(jobs.createdAt))
+    return collapseDuplicates(rows).slice(0, 10)
   }
 
   static buildRssXml(rows: Array<Record<string, any>>) {

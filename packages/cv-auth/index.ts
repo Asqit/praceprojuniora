@@ -1,22 +1,47 @@
-import { createHmac } from 'node:crypto'
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto'
 
-const SECRET = process.env.RENDER_SECRET ?? 'secret'
+function getSecret() {
+  const secret = process.env.RENDER_SECRET
+  if (secret) return secret
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('RENDER_SECRET is required in production')
+  }
+  return 'development-only-secret'
+}
+
+function getEncryptionKey() {
+  return createHash('sha256').update(getSecret()).digest()
+}
 
 export function signPayload(payload: any) {
-  const base = Buffer.from(JSON.stringify(payload)).toString('base64')
-  const sig = createHmac('sha256', SECRET).update(base).digest('hex')
+  const iv = randomBytes(12)
+  const cipher = createCipheriv('aes-256-gcm', getEncryptionKey(), iv)
+  const encrypted = Buffer.concat([cipher.update(JSON.stringify(payload), 'utf8'), cipher.final()])
 
-  return `${base}.${sig}`
+  return [iv, cipher.getAuthTag(), encrypted].map((part) => part.toString('base64url')).join('.')
 }
 
 export function verifyPayload(token: string) {
-  const [base, sig] = token.split('.')
+  const [encodedIv, encodedTag, encodedPayload, ...extra] = token.split('.')
+  if (!encodedIv || !encodedTag || !encodedPayload || extra.length > 0) return null
 
-  const expected = createHmac('sha256', SECRET).update(base).digest('hex')
-
-  if (expected !== sig) return null
-
-  const payload = JSON.parse(Buffer.from(base, 'base64').toString())
+  const encryptionKey = getEncryptionKey()
+  let payload
+  try {
+    const decipher = createDecipheriv(
+      'aes-256-gcm',
+      encryptionKey,
+      Buffer.from(encodedIv, 'base64url')
+    )
+    decipher.setAuthTag(Buffer.from(encodedTag, 'base64url'))
+    const decrypted = Buffer.concat([
+      decipher.update(Buffer.from(encodedPayload, 'base64url')),
+      decipher.final(),
+    ])
+    payload = JSON.parse(decrypted.toString('utf8'))
+  } catch {
+    return null
+  }
 
   if (payload.exp && payload.exp < Date.now()) return null
 

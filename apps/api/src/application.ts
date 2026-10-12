@@ -67,11 +67,6 @@ export class Application {
       await listingTasks.enrichPending()
     })
 
-    // every hour
-    cron.schedule('0 * * * *', async () => {
-      await listingTasks.deleteExpired()
-    })
-
     // every Sunday 3AM
     cron.schedule('0 3 * * 0', async () => {
       await listingTasks.pruneIrrelevant()

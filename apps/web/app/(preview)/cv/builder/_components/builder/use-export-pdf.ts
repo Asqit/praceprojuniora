@@ -1,76 +1,33 @@
 import { useCallback, useRef, useState } from "react"
-import { fetchEventSource } from "@microsoft/fetch-event-source"
-import { BASE_URL, http } from "@/lib/http"
+import { http } from "@/lib/http"
+import type { CvTemplateName } from "../previewer/templates"
 import type { CvDetails } from "../types"
 
-export type ExportState =
-  | "idle"
-  | "creating"
-  | "rendering"
-  | "downloading"
-  | "error"
+export type ExportState = "idle" | "rendering" | "downloading" | "error"
 
 export function useExportPdf() {
   const [exportState, setExportState] = useState<ExportState>("idle")
   const abortRef = useRef<AbortController | null>(null)
 
   const downloadPdf = useCallback(
-    async (details: CvDetails, sessionToken?: string) => {
-      if (!sessionToken) {
-        setExportState("error")
-        return
-      }
-
+    async (details: CvDetails, template: CvTemplateName) => {
       abortRef.current?.abort() // supersede any in-flight export
       const controller = new AbortController()
       abortRef.current = controller
 
       try {
-        setExportState("creating")
-
-        const createRes = await http(
-          `cv/create/${encodeURIComponent(sessionToken)}`,
-          {
-            method: "POST",
-            signal: controller.signal,
-          }
-        )
-        const { jobToken } = (await createRes.json()) as { jobToken: string }
-
         setExportState("rendering")
-        await new Promise<void>((resolve, reject) => {
-          fetchEventSource(
-            new URL(`cv/status/${jobToken}`, BASE_URL).toString(),
-            {
-              signal: controller.signal,
-              async onopen(res) {
-                if (!res.ok)
-                  reject(new Error(`status stream failed: ${res.status}`))
-              },
-              onmessage(ev) {
-                if (ev.event === "success") resolve()
-                if (ev.event === "error") {
-                  const parsed = JSON.parse(ev.data || "{}")
-                  reject(new Error(parsed.error ?? "PDF generation failed"))
-                }
-                // "progress" — nothing to do, keep waiting
-              },
-              onerror(err) {
-                reject(
-                  err instanceof Error ? err : new Error("status stream error")
-                )
-                throw err // stop fetchEventSource's built-in retry
-              },
-            }
-          )
+        const response = await http("cv/export", {
+          method: "POST",
+          body: JSON.stringify({ data: details, template }),
+          signal: controller.signal,
         })
 
         setExportState("downloading")
-        const collectRes = await http(`cv/collect/${jobToken}`, {
-          method: "POST",
-          signal: controller.signal,
-        })
-        const blob = await collectRes.blob()
+        const blob = await response.blob()
+        if (blob.type !== "application/pdf") {
+          throw new Error("Export endpoint did not return a PDF")
+        }
 
         const url = URL.createObjectURL(blob)
         const a = document.createElement("a")
@@ -79,7 +36,7 @@ export function useExportPdf() {
         document.body.appendChild(a)
         a.click()
         a.remove()
-        URL.revokeObjectURL(url)
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000)
 
         setExportState("idle")
       } catch (err) {

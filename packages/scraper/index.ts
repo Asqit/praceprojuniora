@@ -1,6 +1,7 @@
 import { inworkcz } from './providers/inwork-cz'
 import { jobscz } from './providers/jobs-cz'
 import { pracecz } from './providers/prace-cz'
+import type { ListingSource, ProviderScrapeResult } from '@ppj/types'
 
 const PROVIDERS = {
   'inwork.cz': inworkcz,
@@ -114,21 +115,35 @@ function isJuniorJob(title: string): boolean {
 }
 
 export async function fetchListings(providers: 'all' | ProviderName[] = 'all') {
-  const selected =
-    providers === 'all' ? Object.values(PROVIDERS) : providers.map((name) => PROVIDERS[name])
+  const selected: [ListingSource, (typeof PROVIDERS)[ProviderName]][] =
+    providers === 'all'
+      ? Object.entries(PROVIDERS) as [ListingSource, (typeof PROVIDERS)[ProviderName]][]
+      : providers.map((name) => [name, PROVIDERS[name]])
 
   console.log(`[scraper] Running providers: ${providers === 'all' ? 'all' : providers.join(', ')}`)
 
-  const listings = (await Promise.all(selected.map((fn) => fn()))).flat()
-  const seen = new Set<string>()
+  const results: ProviderScrapeResult[] = await Promise.all(
+    selected.map(async ([source, scrape]) => {
+      try {
+        return await scrape()
+      } catch (error) {
+        console.error(`[scraper] ${source} failed:`, error)
+        return { source, listings: [], complete: false }
+      }
+    })
+  )
 
-  const juniorListings = listings.filter((job) => {
-    const key = job.link
-    if (seen.has(key)) return false
-    seen.add(key)
-    return isJuniorJob(job.title)
+  const filteredResults = results.map((result) => {
+    const seen = new Set<string>()
+    const listings = result.listings.filter((job) => {
+      if (!isJuniorJob(job.title) || seen.has(job.link)) return false
+      seen.add(job.link)
+      return true
+    })
+    return { ...result, listings }
   })
 
-  console.log(`Fetched ${listings.length}, returning ${juniorListings.length} junior jobs`)
-  return juniorListings
+  const total = filteredResults.reduce((count, result) => count + result.listings.length, 0)
+  console.log(`Fetched ${total} junior jobs across ${filteredResults.length} provider(s)`)
+  return filteredResults
 }

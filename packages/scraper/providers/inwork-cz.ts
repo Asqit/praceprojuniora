@@ -1,4 +1,4 @@
-import type { NewListing } from '@ppj/types'
+import type { NewListing, ProviderScrapeResult } from '@ppj/types'
 import { Readable } from 'stream'
 import { fetchWithTimeout } from '../utils/fetch'
 import { withBoundedConcurrency } from '../utils/concurrency'
@@ -22,12 +22,14 @@ function parseSalary(text: string): { salaryMin: number | null; salaryMax: numbe
 // job description in <article class="entry-content">, date in <div class="info-inzerat">.
 export async function scrapeInworkDetail(url: string): Promise<NewListing | null> {
   const res = await fetchWithTimeout(url)
-  if (!res.ok) return null
+  if (res.status === 404 || res.status === 410) return null
+  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}: ${url}`)
 
   const html = await res.text()
   const $ = cheerio.load(html)
 
   const title = $('h1.detail-hero__wrapper--title').text().trim()
+  if (!title) throw new Error(`Unable to parse listing detail page: ${url}`)
   const company = $('strong:contains("Firma:")').closest('td').next().text().trim()
   const location = $('strong:contains("Pracoviště:")').closest('td').next('td').text().trim()
   const salaryText = $('strong:contains("Mzda:")').closest('td').next('td').text().trim()
@@ -67,7 +69,7 @@ const sitemaps = [
   'https://www.inwork.cz/static/sitemap/sitemap_iw_cz/inzeraty_detail-1.xml',
 ]
 
-async function parseSitemap(sitemap: string): Promise<string[]> {
+async function parseSitemap(sitemap: string): Promise<{ urls: string[]; complete: boolean }> {
   console.log(`[inwork.cz] Fetching sitemap: ${sitemap}`)
   try {
     const response = await fetchWithTimeout(sitemap)
@@ -76,11 +78,11 @@ async function parseSitemap(sitemap: string): Promise<string[]> {
       console.error(
         `[inwork.cz] ❌ Sitemap fetch failed — HTTP ${response.status} ${response.statusText}: ${sitemap}`
       )
-      return []
+      return { urls: [], complete: false }
     }
     if (!response.body) {
       console.error(`[inwork.cz] ❌ Sitemap response has no body: ${sitemap}`)
-      return []
+      return { urls: [], complete: false }
     }
 
     const urls: string[] = []
@@ -113,23 +115,24 @@ async function parseSitemap(sitemap: string): Promise<string[]> {
     console.log(
       `[inwork.cz] Sitemap parsed — ${urls.length} relevant URL(s) out of ${totalLocs} total: ${sitemap}`
     )
-    return urls
+    return { urls, complete: totalLocs > 0 }
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err)
     const isTimeout = err instanceof Error && err.name === 'AbortError'
     console.error(
       `[inwork.cz] ❌ Failed to parse sitemap ${sitemap}: ${isTimeout ? 'request timed out' : message}`
     )
-    return []
+    return { urls: [], complete: false }
   }
 }
 
 const CONCURRENCY = 3
 const RATE_LIMIT_MS = 1_000
 
-export async function inworkcz(): Promise<NewListing[]> {
-  const urlArrays = await Promise.all(sitemaps.map(parseSitemap))
-  const urls = urlArrays.flat()
+export async function inworkcz(): Promise<ProviderScrapeResult> {
+  const sitemapResults = await Promise.all(sitemaps.map(parseSitemap))
+  const urls = sitemapResults.flatMap((result) => result.urls)
+  let complete = sitemapResults.every((result) => result.complete)
   console.log(
     `[inwork.cz] ${urls.length} URL(s) queued for scraping across ${sitemaps.length} sitemap(s)`
   )
@@ -137,12 +140,10 @@ export async function inworkcz(): Promise<NewListing[]> {
   const tasks = urls.map((url) => async () => {
     try {
       const listing = await scrapeInworkDetail(url)
-      if (!listing) {
-        console.warn(`[inwork.cz] ⚠️ No listing returned for ${url} (HTTP error or empty page)`)
-      }
       await new Promise((r) => setTimeout(r, RATE_LIMIT_MS))
       return listing
     } catch (err) {
+      complete = false
       const message = err instanceof Error ? err.message : String(err)
       const isTimeout = err instanceof Error && err.name === 'AbortError'
       console.error(
@@ -157,5 +158,5 @@ export async function inworkcz(): Promise<NewListing[]> {
   console.log(
     `[inwork.cz] Scrape complete — ${listings.length} listing(s) from ${urls.length} URL(s)`
   )
-  return listings
+  return { source: 'inwork.cz', listings, complete }
 }
