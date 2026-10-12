@@ -39,7 +39,7 @@ export default async function CvPreviewPage({ searchParams }: PageProps) {
   const Template = templates[templateName]
 
   return (
-    <main className="cv-preview">
+    <main className="cv-preview" data-cv-ready="true">
       <Template cv={data} />
     </main>
   )

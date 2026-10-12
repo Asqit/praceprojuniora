@@ -3,36 +3,25 @@ import { enrichListing } from '@ppj/enrichment'
 import { db } from '../db/connection'
 import { jobs } from '../db/schema'
 import { eq, lte, sql, desc, inArray, and, lt, isNotNull, or } from 'drizzle-orm'
-import { getExpiresAt } from './listing-expiry'
+import { syncProviderListings } from './sync-listings'
 
 async function fetchNew(): Promise<void> {
   console.log('Fetching new listings...')
-  const lastJob = await db.select().from(jobs).orderBy(desc(jobs.createdAt)).limit(1)
-  const lastScrape = lastJob[0]?.createdAt
+  const lastJob = await db
+    .select({ lastSeenAt: jobs.lastSeenAt })
+    .from(jobs)
+    .orderBy(desc(jobs.lastSeenAt))
+    .limit(1)
+  const lastScrape = lastJob[0]?.lastSeenAt
   if (lastScrape && Date.now() - new Date(lastScrape).getTime() < 1000 * 60 * 60) {
     console.log('Data fresh, skipping scrape')
     return
   }
 
-  const listings = await fetchListings()
-  const withExpiry = listings.map((listing) => ({
-    ...listing,
-    expiresAt: getExpiresAt(listing.status ?? ''),
-  }))
-
-  await db
-    .insert(jobs)
-    .values(withExpiry)
-    .onConflictDoUpdate({
-      target: jobs.link,
-      set: {
-        status: sql`excluded.status`,
-        expiresAt: sql`excluded."expiresAt"`,
-        updatedAt: new Date().toISOString(),
-      },
-    })
-
-  console.log(`Upserted ${withExpiry.length}/${listings.length} listings`)
+  const result = await syncProviderListings(await fetchListings())
+  console.log(
+    `Upserted ${result.inserted}/${result.total} listings; incomplete providers: ${result.incomplete.join(', ') || 'none'}`
+  )
 }
 
 async function enrichPending(): Promise<void> {
@@ -77,14 +66,6 @@ async function enrichPending(): Promise<void> {
   console.log(`Enriched ${totalEnriched} listings`)
 }
 
-async function deleteExpired(): Promise<void> {
-  console.log('Deleting expired listings...')
-
-  const result = await db.delete(jobs).where(lte(jobs.expiresAt, new Date().toISOString()))
-
-  console.log(`Deleted ${result.rowsAffected} expired listings`)
-}
-
 async function pruneIrrelevant(): Promise<void> {
   console.log('Pruning irrelevant listings...')
 
@@ -109,6 +90,5 @@ async function pruneIrrelevant(): Promise<void> {
 export const listingTasks = {
   fetchNew,
   enrichPending,
-  deleteExpired,
   pruneIrrelevant,
 }

@@ -11,6 +11,7 @@ services:
       - PORT=8080
       - DB_FILENAME=file:/app/data/db.sqlite
       - FRONTEND_URL=http://web:3000
+      - RENDER_SECRET=${RENDER_SECRET:?RENDER_SECRET must be set}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     volumes:
       - /home/andy/data:/app/data
@@ -31,6 +32,7 @@ services:
     environment:
       - NODE_ENV=production
       - INTERNAL_API_URL=http://api:8080
+      - RENDER_SECRET=${RENDER_SECRET:?RENDER_SECRET must be set}
     depends_on:
       - api
     networks:

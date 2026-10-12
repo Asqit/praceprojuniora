@@ -1,4 +1,4 @@
-import type { NewListing } from '@ppj/types'
+import type { NewListing, ProviderScrapeResult } from '@ppj/types'
 import { fetchWithTimeout } from '../utils/fetch'
 import { randomDelay } from '../utils/random-sleep'
 import * as cheerio from 'cheerio'
@@ -8,7 +8,7 @@ const BASE_URL = `${DOMAIN}/prace/is-it-vyvoj-aplikaci-a-systemu/`
 const MAX_PAGES = 100
 const MAX_JOBS = 300
 
-function parseJobCards(html: string, sourceUrl: string): NewListing[] {
+function parseJobCards(html: string, sourceUrl: string): { listings: NewListing[]; complete: boolean } {
   const $ = cheerio.load(html)
   const cards = $('article.SearchResultCard')
   const jobs: NewListing[] = []
@@ -53,7 +53,7 @@ function parseJobCards(html: string, sourceUrl: string): NewListing[] {
     )
   }
 
-  return jobs
+  return { listings: jobs, complete: cards.length > 0 && skipped === 0 }
 }
 
 function getPaginationUrls(html: string): string[] {
@@ -72,11 +72,12 @@ function getPaginationUrls(html: string): string[] {
   return urls
 }
 
-async function crawlJobsCZ(): Promise<NewListing[]> {
+async function crawlJobsCZ(): Promise<ProviderScrapeResult> {
   const queue = new Set<string>([BASE_URL])
   const visited = new Set<string>()
   const results: NewListing[] = []
   let pageCount = 0
+  let complete = true
 
   while (queue.size > 0) {
     const url = queue.values().next().value
@@ -87,6 +88,7 @@ async function crawlJobsCZ(): Promise<NewListing[]> {
 
     if (pageCount >= MAX_PAGES) {
       console.warn(`[jobs.cz] Reached page limit (${MAX_PAGES}), stopping crawl early`)
+      complete = false
       break
     }
 
@@ -101,15 +103,17 @@ async function crawlJobsCZ(): Promise<NewListing[]> {
 
       const html = await res.text()
 
-      const newPages = getPaginationUrls(html).slice(0, MAX_PAGES)
+      const paginationUrls = getPaginationUrls(html)
+      if (paginationUrls.length > MAX_PAGES) complete = false
+      const newPages = paginationUrls.slice(0, MAX_PAGES)
       newPages.forEach((p) => queue.add(p))
 
-      const jobs = parseJobCards(html, url).slice(0, MAX_JOBS)
+      const parsed = parseJobCards(html, url)
+      if (!parsed.complete || parsed.listings.length > MAX_JOBS) complete = false
+      const jobs = parsed.listings.slice(0, MAX_JOBS)
       let added = 0
       for (const job of jobs) {
-        const isDuplicate = results.some(
-          (j) => j.link === job.link || j.title.toLowerCase() === job.title.toLowerCase()
-        )
+        const isDuplicate = results.some((existing) => existing.link === job.link)
         if (!isDuplicate) {
           results.push(job)
           added++
@@ -123,6 +127,7 @@ async function crawlJobsCZ(): Promise<NewListing[]> {
       visited.add(url)
       pageCount++
     } catch (err) {
+      complete = false
       const message = err instanceof Error ? err.message : String(err)
       const isTimeout = err instanceof Error && err.name === 'AbortError'
       console.error(
@@ -135,9 +140,9 @@ async function crawlJobsCZ(): Promise<NewListing[]> {
   console.log(
     `[jobs.cz] Crawl complete — ${results.length} total listing(s) across ${pageCount} page(s)`
   )
-  return results
+  return { source: 'jobs.cz', listings: results, complete }
 }
 
-export function jobscz(): Promise<NewListing[]> {
+export function jobscz(): Promise<ProviderScrapeResult> {
   return crawlJobsCZ()
 }

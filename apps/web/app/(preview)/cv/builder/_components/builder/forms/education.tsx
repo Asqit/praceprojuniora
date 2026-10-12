@@ -1,244 +1,225 @@
 /* eslint-disable react/no-children-prop */
 "use client"
 import { useForm } from "@tanstack/react-form"
-import { z } from "zod"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { X, Plus } from "lucide-react"
+import { GraduationCap, X, Plus } from "lucide-react"
 import { FormProps } from "./props"
+import { SectionHeading } from "./section-heading"
+import type { CvDetails } from "../../types"
 
-const educationItemSchema = z.object({
-  title: z.string().min(1, "Název instituce je povinný."),
-  degree: z.string().min(1, "Studijní obor / stupeň je povinný."),
-  startDate: z.string().min(1, "Datum zahájení je povinné."),
-  endDate: z.string().optional(),
-  description: z.string(),
-})
-
-const formSchema = z.object({
-  items: z
-    .array(educationItemSchema)
-    .min(1, "Přidejte alespoň jedno vzdělání."),
-})
-
-type EducationFormValues = z.infer<typeof formSchema>
-
-const defaultValues: EducationFormValues = {
-  items: [
-    {
-      title: "",
-      degree: "",
-      startDate: "",
-      endDate: "",
-      description: "",
-    },
-  ],
+const emptyEducation: CvDetails["education"][number] = {
+  title: "",
+  degree: "",
+  startDate: "",
+  endDate: "",
+  description: "",
 }
 
 type Props = FormProps<"education">
 
-export function EducationForm({ submit }: Props) {
+export function EducationForm({ initialValue, onChange }: Props) {
+  const [initialFormValues] = useState(() => ({
+    items:
+      initialValue.length > 0 ? initialValue.map((item) => ({ ...item })) : [],
+  }))
   const form = useForm({
-    defaultValues,
-    validators: {
-      onSubmit: formSchema,
-    },
-    onSubmit: async ({ value }) => {
-      submit(value.items)
+    defaultValues: initialFormValues,
+    listeners: {
+      onChange: ({ formApi }) => {
+        onChange(formApi.state.values.items)
+      },
     },
   })
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Vzdělání</CardTitle>
-        <CardDescription>Seznam škol a studií.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <form
-          id="education-form"
-          className="scroll-mt-8"
-          onSubmit={(event) => {
-            event.preventDefault()
-            form.handleSubmit()
-          }}
-        >
+    <section id="education-section" className="scroll-mt-20 py-7 sm:py-9">
+      <SectionHeading
+        icon={GraduationCap}
+        tone="blue"
+        title="Co ses naučil?"
+        description="Škola, kurz nebo certifikát. Tuhle část můžeš klidně přeskočit."
+      />
+      <div className="space-y-3">
+        <div>
           <FieldGroup className="grid gap-3">
             <form.Field
               name="items"
               children={(field) => (
                 <Field className="gap-2">
-                  <FieldLabel className="text-sm">Vzdělání</FieldLabel>
-                  <ul className="space-y-4">
-                    {(field.state.value ?? []).map((item, index) => (
-                      <li key={index} className="space-y-2 rounded border p-3">
-                        <div className="grid gap-2">
-                          <div className="grid gap-1">
-                            <FieldLabel className="text-sm">
-                              Název instituce{" "}
-                              <span className="text-destructive">*</span>
-                            </FieldLabel>
-                            <Input
-                              value={item.title}
-                              onChange={(e) => {
-                                const next = [...(field.state.value ?? [])]
-                                next[index] = {
-                                  ...next[index],
-                                  title: e.target.value,
-                                }
-                                field.handleChange(next)
-                              }}
-                              placeholder="Název instituce (např. ČVUT)"
-                            />
-                          </div>
-                          <div className="grid gap-1">
-                            <FieldLabel className="text-sm">
-                              Studijní obor / stupeň{" "}
-                              <span className="text-destructive">*</span>
-                            </FieldLabel>
-                            <Input
-                              value={item.degree}
-                              onChange={(e) => {
-                                const next = [...(field.state.value ?? [])]
-                                next[index] = {
-                                  ...next[index],
-                                  degree: e.target.value,
-                                }
-                                field.handleChange(next)
-                              }}
-                              placeholder="Studijní obor / stupeň"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="grid gap-2">
-                          <div className="grid gap-1">
-                            <FieldLabel className="text-sm">
-                              Začátek{" "}
-                              <span className="text-destructive">*</span>
-                            </FieldLabel>
-                            <Input
-                              value={item.startDate}
-                              onChange={(e) => {
-                                const next = [...(field.state.value ?? [])]
-                                next[index] = {
-                                  ...next[index],
-                                  startDate: e.target.value,
-                                }
-                                field.handleChange(next)
-                              }}
-                              placeholder="Začátek (YYYY-MM)"
-                            />
-                          </div>
-                          <div className="grid gap-1">
-                            <FieldLabel className="text-sm">
-                              Konec{" "}
-                              <span className="text-muted-foreground">
-                                (volitelné)
-                              </span>
-                            </FieldLabel>
-                            <Input
-                              value={item.endDate}
-                              onChange={(e) => {
-                                const next = [...(field.state.value ?? [])]
-                                next[index] = {
-                                  ...next[index],
-                                  endDate: e.target.value,
-                                }
-                                field.handleChange(next)
-                              }}
-                              placeholder="Konec (YYYY-MM) — volitelné"
-                            />
-                          </div>
-                        </div>
-
-                        <Textarea
-                          value={item.description}
-                          onChange={(e) => {
-                            const next = [...(field.state.value ?? [])]
-                            next[index] = {
-                              ...next[index],
-                              description: e.target.value,
-                            }
-                            field.handleChange(next)
-                          }}
-                          placeholder="Krátký popis (např. zaměření)"
-                          rows={2}
-                        />
-
-                        <div className="flex justify-end">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            disabled={(field.state.value ?? []).length <= 1}
-                            onClick={() => {
-                              const next = (field.state.value ?? []).filter(
-                                (_, i) => i !== index
-                              )
-                              field.handleChange(next)
-                            }}
+                  {field.state.value.length === 0 ? (
+                    <div className="space-y-3 border border-dashed border-border px-4 py-5">
+                      <p className="max-w-xl text-sm text-muted-foreground">
+                        Uveď obor nebo téma, které se hodí k práci, kterou
+                        hledáš. Nemusíš vypisovat každou školu.
+                      </p>
+                      <details className="max-w-xl text-sm">
+                        <summary className="w-fit cursor-pointer text-primary underline-offset-4 hover:underline">
+                          Ukázky, co sem patří
+                        </summary>
+                        <p className="mt-2 text-muted-foreground">
+                          Střední škola se zaměřením na IT, online kurz Reactu
+                          nebo certifikát Cisco.
+                        </p>
+                      </details>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          field.handleChange([{ ...emptyEducation }])
+                        }
+                      >
+                        <Plus className="mr-1 h-4 w-4" /> Přidat školu nebo kurz
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <ul className="space-y-4">
+                        {field.state.value.map((item, index) => (
+                          <li
+                            key={index}
+                            className="space-y-2 rounded border p-3"
                           >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                            <div className="grid gap-2">
+                              <div className="grid gap-1">
+                                <FieldLabel className="text-sm">
+                                  Škola nebo kurz{" "}
+                                  <span className="text-destructive">*</span>
+                                </FieldLabel>
+                                <Input
+                                  value={item.title}
+                                  onChange={(e) => {
+                                    const next = [...(field.state.value ?? [])]
+                                    next[index] = {
+                                      ...next[index],
+                                      title: e.target.value,
+                                    }
+                                    field.handleChange(next)
+                                  }}
+                                  placeholder="např. SPŠE České Budějovice"
+                                />
+                              </div>
+                              <div className="grid gap-1">
+                                <FieldLabel className="text-sm">
+                                  Obor nebo zaměření{" "}
+                                  <span className="text-destructive">*</span>
+                                </FieldLabel>
+                                <Input
+                                  value={item.degree}
+                                  onChange={(e) => {
+                                    const next = [...(field.state.value ?? [])]
+                                    next[index] = {
+                                      ...next[index],
+                                      degree: e.target.value,
+                                    }
+                                    field.handleChange(next)
+                                  }}
+                                  placeholder="např. Informační technologie"
+                                />
+                              </div>
+                            </div>
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="mt-2 w-fit"
-                    onClick={() =>
-                      field.handleChange([
-                        ...(field.state.value ?? []),
-                        { ...defaultValues.items[0] },
-                      ])
-                    }
-                  >
-                    <Plus className="mr-1 h-4 w-4" />
-                    Přidat vzdělání
-                  </Button>
+                            <div className="grid gap-2">
+                              <div className="grid gap-1">
+                                <FieldLabel className="text-sm">
+                                  Začátek{" "}
+                                  <span className="text-destructive">*</span>
+                                </FieldLabel>
+                                <Input
+                                  value={item.startDate}
+                                  onChange={(e) => {
+                                    const next = [...(field.state.value ?? [])]
+                                    next[index] = {
+                                      ...next[index],
+                                      startDate: e.target.value,
+                                    }
+                                    field.handleChange(next)
+                                  }}
+                                  placeholder="Začátek (YYYY-MM)"
+                                />
+                              </div>
+                              <div className="grid gap-1">
+                                <FieldLabel className="text-sm">
+                                  Konec{" "}
+                                  <span className="text-muted-foreground">
+                                    (volitelné)
+                                  </span>
+                                </FieldLabel>
+                                <Input
+                                  value={item.endDate}
+                                  onChange={(e) => {
+                                    const next = [...(field.state.value ?? [])]
+                                    next[index] = {
+                                      ...next[index],
+                                      endDate: e.target.value,
+                                    }
+                                    field.handleChange(next)
+                                  }}
+                                  placeholder="Konec (YYYY-MM) — volitelné"
+                                />
+                              </div>
+                            </div>
 
-                  <FieldDescription>Školy, kurzy, atd.</FieldDescription>
+                            <Textarea
+                              value={item.description}
+                              onChange={(e) => {
+                                const next = [...(field.state.value ?? [])]
+                                next[index] = {
+                                  ...next[index],
+                                  description: e.target.value,
+                                }
+                                field.handleChange(next)
+                              }}
+                              placeholder="Krátký popis (např. zaměření)"
+                              rows={2}
+                            />
+
+                            <div className="flex justify-end">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                  const next = (field.state.value ?? []).filter(
+                                    (_, i) => i !== index
+                                  )
+                                  field.handleChange(next)
+                                }}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-2 w-fit"
+                        onClick={() =>
+                          field.handleChange([
+                            ...field.state.value,
+                            { ...emptyEducation },
+                          ])
+                        }
+                      >
+                        <Plus className="mr-1 h-4 w-4" /> Přidat další
+                      </Button>
+                    </>
+                  )}
                 </Field>
               )}
             />
-
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => form.reset()}
-              >
-                Resetovat
-              </Button>
-              <Button type="submit" form="education-form">
-                Uložit
-              </Button>
-            </div>
           </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter className="flex justify-end gap-2"></CardFooter>
-    </Card>
+        </div>
+      </div>
+    </section>
   )
 }
 

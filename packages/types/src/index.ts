@@ -6,6 +6,10 @@ export type Listing = {
   status: string
   location: string
   expiresAt: string
+  lastSeenAt?: string
+  missingRuns?: number
+  missingCheckedAt?: string | null
+  isActive?: boolean
   createdAt: string
   updatedAt?: string | null
   clicks: number
@@ -30,6 +34,14 @@ export type Listing = {
 
 export type NewListing = Omit<Listing, 'id'>
 
+export type ListingSource = 'inwork.cz' | 'jobs.cz' | 'prace.cz'
+
+export type ProviderScrapeResult = {
+  source: ListingSource
+  listings: NewListing[]
+  complete: boolean
+}
+
 export type JobStatus = 'running' | 'done' | 'failed'
 
 export interface ScrapeJob {
@@ -38,6 +50,6 @@ export interface ScrapeJob {
   providers: string
   startedAt: string
   finishedAt?: string
-  result?: { inserted: number; total: number }
+  result?: { inserted: number; total: number; incomplete?: string[] }
   error?: string
 }

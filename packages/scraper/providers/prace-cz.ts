@@ -1,4 +1,4 @@
-import type { NewListing } from '@ppj/types'
+import type { NewListing, ProviderScrapeResult } from '@ppj/types'
 import { fetchWithTimeout } from '../utils/fetch'
 import { randomDelay } from '../utils/random-sleep'
 import * as cheerio from 'cheerio'
@@ -22,7 +22,10 @@ function clean(s?: string) {
   return (s || '').replace(/\s+/g, ' ').trim()
 }
 
-function parseListingsFromHtml(html: string, sourceUrl: string): NewListing[] {
+function parseListingsFromHtml(
+  html: string,
+  sourceUrl: string
+): { listings: NewListing[]; complete: boolean } {
   const $ = cheerio.load(html)
   const out: NewListing[] = []
   let skipped = 0
@@ -77,14 +80,15 @@ function parseListingsFromHtml(html: string, sourceUrl: string): NewListing[] {
     )
   }
 
-  return out
+  return { listings: out, complete: $('article[id^="advert-"]').length > 0 && skipped === 0 }
 }
 
-async function crawlPraceCz(): Promise<NewListing[]> {
+async function crawlPraceCz(): Promise<ProviderScrapeResult> {
   const results: NewListing[] = []
   const queue = new Set<string>([BASE_URL])
   const visited = new Set<string>()
   let pageCount = 0
+  let complete = true
 
   while (queue.size > 0) {
     const url = queue.values().next().value
@@ -95,6 +99,7 @@ async function crawlPraceCz(): Promise<NewListing[]> {
 
     if (pageCount >= MAX_PAGES) {
       console.warn(`[prace.cz] Reached page limit (${MAX_PAGES}), stopping crawl early`)
+      complete = false
       break
     }
 
@@ -109,13 +114,13 @@ async function crawlPraceCz(): Promise<NewListing[]> {
 
       const html = await res.text()
       const nextUrl = getNextPageUrl(html)
-      const jobs = parseListingsFromHtml(html, url)
+      const parsed = parseListingsFromHtml(html, url)
+      if (!parsed.complete) complete = false
+      const jobs = parsed.listings
 
       let added = 0
       for (const job of jobs) {
-        const isDuplicate = results.some(
-          (j) => j.link === job.link || j.title.toLowerCase() === job.title.toLowerCase()
-        )
+        const isDuplicate = results.some((existing) => existing.link === job.link)
         if (!isDuplicate) {
           results.push(job)
           added++
@@ -133,6 +138,7 @@ async function crawlPraceCz(): Promise<NewListing[]> {
       visited.add(url)
       pageCount++
     } catch (error) {
+      complete = false
       const message = error instanceof Error ? error.message : String(error)
       const isTimeout = error instanceof Error && error.name === 'AbortError'
       console.error(
@@ -145,9 +151,9 @@ async function crawlPraceCz(): Promise<NewListing[]> {
   console.log(
     `[prace.cz] Crawl complete — ${results.length} total listing(s) across ${pageCount} page(s)`
   )
-  return results
+  return { source: 'prace.cz', listings: results, complete }
 }
 
-export function pracecz(): Promise<NewListing[]> {
+export function pracecz(): Promise<ProviderScrapeResult> {
   return crawlPraceCz()
 }
