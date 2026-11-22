@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/asqit/praceprojuniora/compare/v0.9.1...v0.10.0) (2026-11-22)
+
+### Features
+
+* rework expiration & cv ([a29a4f6](https://github.com/asqit/praceprojuniora/commit/a29a4f6ac16443745fa0824f0199cd1e87c2822a))
+* update selectors & add tests ([63bdc8e](https://github.com/asqit/praceprojuniora/commit/63bdc8e45affef3126874345cce4052f2c9eac29))
+
 ## [0.9.1](https://github.com/asqit/praceprojuniora/compare/v0.9.0...v0.9.1) (2026-09-02)
 
 ### Bug Fixes
