@@ -9,9 +9,6 @@ import { trafficLogger } from './middleware/traffic-logger'
 import { errorHandler } from './middleware/error-handler'
 import { validateEnvironment } from './utils/env'
 import { listingTasks } from './utils/tasks'
-import { db } from './db/connection'
-import { jobs } from './db/schema'
-import { count } from 'drizzle-orm'
 import { seed } from './utils/seed'
 import cron from 'node-cron'
 
@@ -56,14 +53,18 @@ export class Application {
     const { env } = this
 
     if (env.NODE_ENV === 'PRODUCTION') {
-      // fetch only when no data!
-      const [{ count: rowCount }] = await db.select({ count: count() }).from(jobs)
-      if (rowCount === 0) await listingTasks.fetchNew()
+      // Clean up stale rows before serving traffic. Public queries apply the
+      // same rule so a delayed scheduled task cannot leak expired listings.
+      await listingTasks.deactivateStale()
+      // fetchNew has its own one-hour rate limit. Running it at startup clears
+      // source-removed listings immediately after a deployment or restart.
+      await listingTasks.fetchNew()
     }
 
     // every day 6AM
     cron.schedule('0 6 * * *', async () => {
       await listingTasks.fetchNew()
+      await listingTasks.deactivateStale()
       await listingTasks.enrichPending()
     })
 
