@@ -7,7 +7,7 @@ const DOMAIN = 'https://www.prace.cz'
 const BASE_URL = `${DOMAIN}/nabidky/informatika/`
 const MAX_PAGES = 50
 
-function getNextPageUrl(html: string): string | null {
+export function getNextPageUrl(html: string): string | null {
   const $ = cheerio.load(html)
   const href = ($('a[rel="next"]').first().attr('href') || '').trim()
   if (!href) return null
@@ -22,7 +22,7 @@ function clean(s?: string) {
   return (s || '').replace(/\s+/g, ' ').trim()
 }
 
-function parseListingsFromHtml(
+export function parseListingsFromHtml(
   html: string,
   sourceUrl: string
 ): { listings: NewListing[]; complete: boolean } {
