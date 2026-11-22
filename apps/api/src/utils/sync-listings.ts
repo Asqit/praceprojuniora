@@ -4,7 +4,9 @@ import { db } from '../db/connection'
 import { jobs } from '../db/schema'
 import { getCreatedAt, getExpiresAt } from './listing-expiry'
 
-const MISSING_RUNS_TO_DEACTIVATE = 2
+// A complete provider run is the authoritative result set. A listing absent
+// from it has already been removed at its source and must not remain visible.
+const MISSING_RUNS_TO_DEACTIVATE = 1
 const UPDATE_BATCH_SIZE = 500
 const UPSERT_BATCH_SIZE = 25
 
@@ -47,7 +49,12 @@ async function runSync(
       const existingLinks = await db
         .select({ link: jobs.link })
         .from(jobs)
-        .where(inArray(jobs.link, listings.map((listing) => listing.link)))
+        .where(
+          inArray(
+            jobs.link,
+            listings.map((listing) => listing.link)
+          )
+        )
       const existingLinkSet = new Set(existingLinks.map((listing) => listing.link))
       const newListings = listings.filter((listing) => !existingLinkSet.has(listing.link))
       const existingListings = listings.filter((listing) => existingLinkSet.has(listing.link))
@@ -61,7 +68,10 @@ async function runSync(
               .update(jobs)
               .set({
                 status: listing.status,
-                expiresAt: sql`MIN(${jobs.expiresAt}, ${listing.expiresAt})`,
+                // Seeing the listing in a complete provider result renews our
+                // fallback expiry. Without this, a legitimate long-running
+                // vacancy becomes permanently invisible after its first 30 days.
+                expiresAt: listing.expiresAt,
                 lastSeenAt: runAt,
                 missingRuns: 0,
                 isActive: true,

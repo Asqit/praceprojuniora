@@ -41,6 +41,43 @@ describe('inwork.cz provider', () => {
     })
   })
 
+  test('parses detail pages with the current unwrapped title and description layout', () => {
+    const url = 'https://www.inwork.cz/prace/brno/devops-cloud-platform-engineer/'
+    const html = `
+      <main>
+        <h1 class="__nadpis_inzeratu">DevOps Cloud Platform Engineer</h1>
+        <div class="rich-text-content">
+          <h2>Informace o pracovním místě</h2>
+          <p class="__texty_v_inzeratu"></p>
+          <p>Správa cloudové infrastruktury.</p>
+        </div>
+        <div class="iw-offer-detail__info">
+          <div class="iw-offer-detail__info__item">
+            <span class="__tabulka_nadpisek">Pracoviště:</span>
+            <span class="__tabulka_text">Brno</span>
+          </div>
+          <div class="iw-offer-detail__info__item">
+            <span class="__tabulka_nadpisek">Firma:</span>
+            <span class="__tabulka_text">Manpower</span>
+          </div>
+          <div class="iw-offer-detail__info__bottom">
+            <div><span>Vloženo:</span>13.11.2026</div>
+          </div>
+        </div>
+      </main>
+    `
+
+    const listing = parseInworkDetailHtml(html, url)
+
+    expect(listing).toMatchObject({
+      title: 'DevOps Cloud Platform Engineer',
+      company: 'Manpower',
+      location: 'Brno',
+      createdAt: '2026-11-13T00:00:00.000Z',
+    })
+    expect(listing.description).toContain('Správa cloudové infrastruktury.')
+  })
+
   test('streams sitemap URLs and filters out irrelevant jobs', async () => {
     const xml = `
       <urlset>

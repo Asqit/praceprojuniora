@@ -60,7 +60,7 @@ export function parseJobCards(
   return { listings: jobs, complete: cards.length > 0 && skipped === 0 }
 }
 
-export function getPaginationUrls(html: string): string[] {
+export function getPaginationUrls(html: string, sourceUrl: string = BASE_URL): string[] {
   const $ = cheerio.load(html)
   const urls: string[] = []
 
@@ -69,7 +69,7 @@ export function getPaginationUrls(html: string): string[] {
     const isNextBtn = $(el).hasClass('Pagination__button--next')
 
     if (!isNextBtn && href) {
-      urls.push(href.startsWith('http') ? href : `${DOMAIN}${href}`)
+      urls.push(new URL(href, sourceUrl).toString())
     }
   })
 
@@ -107,12 +107,12 @@ async function crawlJobsCZ(): Promise<ProviderScrapeResult> {
 
       const html = await res.text()
 
-      const paginationUrls = getPaginationUrls(html)
+      const parsed = parseJobCards(html, url)
+      const paginationUrls = parsed.listings.length > 0 ? getPaginationUrls(html, url) : []
       if (paginationUrls.length > MAX_PAGES) complete = false
       const newPages = paginationUrls.slice(0, MAX_PAGES)
       newPages.forEach((p) => queue.add(p))
 
-      const parsed = parseJobCards(html, url)
       if (!parsed.complete || parsed.listings.length > MAX_JOBS) complete = false
       const jobs = parsed.listings.slice(0, MAX_JOBS)
       let added = 0

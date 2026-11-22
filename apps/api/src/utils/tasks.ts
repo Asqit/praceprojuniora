@@ -66,6 +66,27 @@ async function enrichPending(): Promise<void> {
   console.log(`Enriched ${totalEnriched} listings`)
 }
 
+const LISTING_FRESHNESS_WINDOW_MS = 1000 * 60 * 60 * 48
+
+async function deactivateStale(): Promise<void> {
+  const now = new Date().toISOString()
+  const freshnessCutoff = new Date(Date.now() - LISTING_FRESHNESS_WINDOW_MS).toISOString()
+  const result = await db
+    .update(jobs)
+    .set({ isActive: false, updatedAt: now })
+    .where(
+      and(
+        eq(jobs.isActive, true),
+        eq(jobs.manuallyAdded, false),
+        or(lte(jobs.expiresAt, now), lte(jobs.lastSeenAt, freshnessCutoff))
+      )
+    )
+
+  if (result.rowsAffected > 0) {
+    console.log(`Deactivated ${result.rowsAffected} stale listing(s)`)
+  }
+}
+
 async function pruneIrrelevant(): Promise<void> {
   console.log('Pruning irrelevant listings...')
 
@@ -90,5 +111,6 @@ async function pruneIrrelevant(): Promise<void> {
 export const listingTasks = {
   fetchNew,
   enrichPending,
+  deactivateStale,
   pruneIrrelevant,
 }

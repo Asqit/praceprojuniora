@@ -1,10 +1,12 @@
 import { db } from '../../../db/connection'
 import { jobs } from '../../../db/schema'
 import { match } from 'ts-pattern'
-import { and, desc, inArray, like, or, eq, sql } from 'drizzle-orm'
+import { and, desc, gt, inArray, like, or, eq, sql } from 'drizzle-orm'
 import type { Job } from '../../../db/schema'
 
 export type ListingSortBy = 'newest' | 'expiration' | 'popularity' | undefined
+
+const LISTING_FRESHNESS_WINDOW_MS = 1000 * 60 * 60 * 48
 
 type GetAllParams = {
   page: number
@@ -49,12 +51,26 @@ function collapseDuplicates(rows: Job[]): Job[] {
   return Array.from(groups.values())
 }
 
+function activeListingFilters(now: string) {
+  const freshnessCutoff = new Date(Date.parse(now) - LISTING_FRESHNESS_WINDOW_MS).toISOString()
+  return and(
+    eq(jobs.isActive, true),
+    // Manually managed listings do not have scraper timestamps. Scraped
+    // listings must both be unexpired and confirmed in the last 48 hours.
+    or(
+      eq(jobs.manuallyAdded, true),
+      and(gt(jobs.expiresAt, now), gt(jobs.lastSeenAt, freshnessCutoff))
+    )
+  )
+}
+
 export class ListingService {
   static async getAll(params: GetAllParams) {
     const { page, limit, sortBy, search, location } = params
+    const now = new Date().toISOString()
 
     const filters = and(
-      eq(jobs.isActive, true),
+      activeListingFilters(now),
       location ? like(jobs.location, `%${location}%`) : undefined,
       search
         ? or(
@@ -87,23 +103,26 @@ export class ListingService {
   }
 
   static async bulkGet(ids: number[]) {
+    const now = new Date().toISOString()
     return db
       .select()
       .from(jobs)
-      .where(and(inArray(jobs.id, ids), eq(jobs.isActive, true)))
+      .where(and(inArray(jobs.id, ids), activeListingFilters(now)))
   }
 
   static async incrementClick(id: number) {
+    const now = new Date().toISOString()
     const [updated] = await db
       .update(jobs)
       .set({ clicks: sql`${jobs.clicks} + 1` })
-      .where(and(eq(jobs.id, id), eq(jobs.isActive, true)))
+      .where(and(eq(jobs.id, id), activeListingFilters(now)))
       .returning()
 
     return updated ?? null
   }
 
   static async vote(id: number, direction: 'up' | 'down') {
+    const now = new Date().toISOString()
     // Weight scales with existing vote count: each additional vote carries slightly more
     const [updated] = await db
       .update(jobs)
@@ -118,17 +137,18 @@ export class ListingService {
               relevanceScore: sql`COALESCE(${jobs.relevanceScore}, 50) - 3.0 * (1 + ${jobs.downvotes} * 0.05)`,
             }
       )
-      .where(and(eq(jobs.id, id), eq(jobs.isActive, true)))
+      .where(and(eq(jobs.id, id), activeListingFilters(now)))
       .returning()
 
     return updated ?? null
   }
 
   static async fetchLatestRssItems() {
+    const now = new Date().toISOString()
     const rows = await db
       .select()
       .from(jobs)
-      .where(eq(jobs.isActive, true))
+      .where(activeListingFilters(now))
       .orderBy(desc(jobs.createdAt))
     return collapseDuplicates(rows).slice(0, 10)
   }

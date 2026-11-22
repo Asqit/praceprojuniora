@@ -32,15 +32,13 @@ describe('jobs.cz provider', () => {
     })
   })
 
-  test('collects pagination links and ignores the next button', () => {
+  test('resolves relative pagination links against the current search URL', () => {
     const html = `
-      <a class="Pagination__link" href="/prace/it/?page=1">1</a>
-      <a class="Pagination__link" href="/prace/it/?page=2">2</a>
-      <a class="Pagination__link Pagination__button--next" href="/prace/it/?page=2">Další</a>
+      <a class="Pagination__link" href="?page=2">2</a>
+      <a class="Pagination__link Pagination__button--next" href="?page=2">Další</a>
     `
 
-    expect(getPaginationUrls(html)).toEqual([
-      'https://www.jobs.cz/prace/it/?page=1',
+    expect(getPaginationUrls(html, 'https://www.jobs.cz/prace/it/?field=200900013')).toEqual([
       'https://www.jobs.cz/prace/it/?page=2',
     ])
   })
