@@ -8,16 +8,20 @@ const BASE_URL = `${DOMAIN}/prace/is-it-vyvoj-aplikaci-a-systemu/`
 const MAX_PAGES = 100
 const MAX_JOBS = 300
 
-function parseJobCards(html: string, sourceUrl: string): { listings: NewListing[]; complete: boolean } {
+export function parseJobCards(
+  html: string,
+  sourceUrl: string
+): { listings: NewListing[]; complete: boolean } {
   const $ = cheerio.load(html)
   const cards = $('article.SearchResultCard')
   const jobs: NewListing[] = []
   let skipped = 0
 
   cards.each((_, el) => {
-    const title = $(el).find('.SearchResultCard__titleLink').text().trim()
-    const link = $(el).find('.SearchResultCard__titleLink').attr('href') ?? ''
-    const status = $(el).find('.SearchResultCard__status').text().trim()
+    const titleLink = $(el).find('a[data-link="jd-detail"]')
+    const title = titleLink.text().trim()
+    const link = titleLink.attr('href') ?? ''
+    const status = $(el).find('[data-test-ad-status]').text().trim()
     const company = $(el).find('.SearchResultCard__footerItem').first().text().trim()
     const location = $(el).find('li[data-test="serp-locality"]').text().trim()
 
@@ -56,7 +60,7 @@ function parseJobCards(html: string, sourceUrl: string): { listings: NewListing[
   return { listings: jobs, complete: cards.length > 0 && skipped === 0 }
 }
 
-function getPaginationUrls(html: string): string[] {
+export function getPaginationUrls(html: string): string[] {
   const $ = cheerio.load(html)
   const urls: string[] = []
 
