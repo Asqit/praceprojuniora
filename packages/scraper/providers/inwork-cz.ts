@@ -17,25 +17,41 @@ function parseSalary(text: string): { salaryMin: number | null; salaryMax: numbe
   return { salaryMin: nums[0] ?? null, salaryMax: nums[1] ?? nums[0] ?? null }
 }
 
-// Scrapes a single inwork.cz job detail page.
-// Expected DOM: table rows with <td><strong>Label:</strong></td><td>Value</td> pairs,
-// job description in <article class="entry-content">, date in <div class="info-inzerat">.
-export async function scrapeInworkDetail(url: string): Promise<NewListing | null> {
-  const res = await fetchWithTimeout(url)
-  if (res.status === 404 || res.status === 410) return null
-  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}: ${url}`)
-
-  const html = await res.text()
+export function parseInworkDetailHtml(html: string, url: string): NewListing {
   const $ = cheerio.load(html)
 
-  const title = $('h1.detail-hero__wrapper--title').text().trim()
+  const title = $('.iw-offer-detail__headline h1, h1.detail-hero__wrapper--title')
+    .first()
+    .text()
+    .trim()
   if (!title) throw new Error(`Unable to parse listing detail page: ${url}`)
-  const company = $('strong:contains("Firma:")').closest('td').next().text().trim()
-  const location = $('strong:contains("Pracoviště:")').closest('td').next('td').text().trim()
-  const salaryText = $('strong:contains("Mzda:")').closest('td').next('td').text().trim()
-  const description = $('article.entry-content').text().trim()
 
-  const vlozenoText = $('.info-inzerat').text()
+  const getInfoValue = (label: string) => {
+    const item = $('.iw-offer-detail__info__item')
+      .filter(
+        (_, element) =>
+          $(element).find('.__tabulka_nadpisek').first().text().trim().replace(/:$/, '') === label
+      )
+      .first()
+    if (item.length > 0) return item.find('.__tabulka_text').first().text().trim()
+
+    return $('strong')
+      .filter((_, element) => $(element).text().trim() === `${label}:`)
+      .first()
+      .closest('td')
+      .next('td')
+      .text()
+      .trim()
+  }
+
+  const company = getInfoValue('Firma')
+  const location = getInfoValue('Pracoviště')
+  const salaryText = getInfoValue('Mzda')
+  const description =
+    $('.rich-text-content .__texty_v_inzeratu').text().trim() ||
+    $('article.entry-content').text().trim()
+
+  const vlozenoText = $('.iw-offer-detail__info__bottom, .info-inzerat').text()
   const vlozenoMatch = vlozenoText.match(/Vloženo:\s*(\d{2}\.\d{2}\.\d{4})/)
   const createdAt = vlozenoMatch
     ? new Date(vlozenoMatch[1]!.split('.').reverse().join('-')).toISOString()
@@ -64,10 +80,51 @@ export async function scrapeInworkDetail(url: string): Promise<NewListing | null
   }
 }
 
+export async function scrapeInworkDetail(url: string): Promise<NewListing | null> {
+  const res = await fetchWithTimeout(url)
+  if (res.status === 404 || res.status === 410) return null
+  if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}: ${url}`)
+
+  return parseInworkDetailHtml(await res.text(), url)
+}
+
 const sitemaps = [
   'https://www.inwork.cz/static/sitemap/sitemap_iw_cz/inzeraty_detail-0.xml',
   'https://www.inwork.cz/static/sitemap/sitemap_iw_cz/inzeraty_detail-1.xml',
 ]
+
+export async function parseSitemapBody(
+  body: ReadableStream<Uint8Array>
+): Promise<{ urls: string[]; totalLocs: number }> {
+  const urls: string[] = []
+  let totalLocs = 0
+  const parser = sax.createStream(true)
+  let currentLoc = ''
+
+  parser.on('opentag', (node) => {
+    if (node.name === 'loc') currentLoc = ''
+  })
+
+  parser.on('text', (text) => {
+    currentLoc += text
+  })
+
+  parser.on('closetag', (name) => {
+    if (name !== 'loc') return
+    totalLocs++
+    if (isItRelevant(currentLoc)) {
+      urls.push(currentLoc)
+    }
+  })
+
+  await new Promise<void>((resolve, reject) => {
+    parser.on('end', resolve)
+    parser.on('error', reject)
+    Readable.fromWeb(body).pipe(parser)
+  })
+
+  return { urls, totalLocs }
+}
 
 async function parseSitemap(sitemap: string): Promise<{ urls: string[]; complete: boolean }> {
   console.log(`[inwork.cz] Fetching sitemap: ${sitemap}`)
@@ -85,32 +142,7 @@ async function parseSitemap(sitemap: string): Promise<{ urls: string[]; complete
       return { urls: [], complete: false }
     }
 
-    const urls: string[] = []
-    let totalLocs = 0
-    const parser = sax.createStream(true)
-    let currentLoc = ''
-
-    parser.on('opentag', (node) => {
-      if (node.name === 'loc') currentLoc = ''
-    })
-
-    parser.on('text', (text) => {
-      currentLoc += text
-    })
-
-    parser.on('closetag', (name) => {
-      if (name !== 'loc') return
-      totalLocs++
-      if (isItRelevant(currentLoc)) {
-        urls.push(currentLoc)
-      }
-    })
-
-    await new Promise((resolve, reject) => {
-      parser.on('end', resolve)
-      parser.on('error', reject)
-      Readable.fromWeb(response.body!).pipe(parser)
-    })
+    const { urls, totalLocs } = await parseSitemapBody(response.body)
 
     console.log(
       `[inwork.cz] Sitemap parsed — ${urls.length} relevant URL(s) out of ${totalLocs} total: ${sitemap}`
