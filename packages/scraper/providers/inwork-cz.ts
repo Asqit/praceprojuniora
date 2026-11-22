@@ -20,10 +20,7 @@ function parseSalary(text: string): { salaryMin: number | null; salaryMax: numbe
 export function parseInworkDetailHtml(html: string, url: string): NewListing {
   const $ = cheerio.load(html)
 
-  const title = $('.iw-offer-detail__headline h1, h1.detail-hero__wrapper--title')
-    .first()
-    .text()
-    .trim()
+  const title = $('h1').first().text().trim()
   if (!title) throw new Error(`Unable to parse listing detail page: ${url}`)
 
   const getInfoValue = (label: string) => {
@@ -48,8 +45,7 @@ export function parseInworkDetailHtml(html: string, url: string): NewListing {
   const location = getInfoValue('Pracoviště')
   const salaryText = getInfoValue('Mzda')
   const description =
-    $('.rich-text-content .__texty_v_inzeratu').text().trim() ||
-    $('article.entry-content').text().trim()
+    $('.rich-text-content').text().trim() || $('article.entry-content').text().trim()
 
   const vlozenoText = $('.iw-offer-detail__info__bottom, .info-inzerat').text()
   const vlozenoMatch = vlozenoText.match(/Vloženo:\s*(\d{2}\.\d{2}\.\d{4})/)
